@@ -17,16 +17,16 @@ class Transaction
 
     #[ORM\Column(type: "date")]
     #[Assert\NotBlank(message: "La date est obligatoire.")]
-    private \DateTimeInterface $date;
+    private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: "float")]
     #[Assert\NotBlank(message: "Le montant est obligatoire.")]
     #[Assert\Positive(message: "Le montant doit être strictement supérieur à 0.")]
-    private float $montant;
+    private ?float $montant = null;
 
     #[ORM\Column(type: "string")]
     // Pas de contrôle ici car c'est le contrôleur qui va forcer ce champ ('RECETTE' ou 'DEPENSE')
-    private string $type;
+    private ?string $type = null;
 
     #[ORM\Column(type: "string", length: 255)]
     #[Assert\NotBlank(message: "Veuillez entrer une description.")]
@@ -34,7 +34,11 @@ class Transaction
         min: 3,
         minMessage: "La description doit contenir au moins {{ limit }} caractères."
     )]
-    private string $description;
+    #[Assert\Regex(
+        pattern: "/^[A-Za-zÀ-ÿ\s]+$/",
+        message: "La description ne doit contenir que des lettres (pas de chiffres)."
+    )]
+    private ?string $description = null;
 
     #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "transactions")]
     #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE')]

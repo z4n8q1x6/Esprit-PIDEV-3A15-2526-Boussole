@@ -16,7 +16,7 @@ class RecetteType extends AbstractType
     {
         $builder
             ->add('date', DateType::class, [
-                'widget' => 'single_text', // Pour avoir le calendrier (date picker)
+                'widget' => 'single_text',
                 'label' => 'Date',
                 'attr' => ['class' => 'form-control bg-dark text-light border-secondary']
             ])
@@ -26,7 +26,13 @@ class RecetteType extends AbstractType
             ])
             ->add('description', TextType::class, [
                 'label' => 'Description',
-                'attr' => ['class' => 'form-control bg-dark text-light border-secondary', 'placeholder' => 'Ex: Vente du jour']
+                'empty_data' => '',
+                'attr' => [
+                    'class' => 'form-control bg-dark text-light border-secondary',
+                    'placeholder' => 'Ex: Vente du jour',
+                    'pattern' => '^[A-Za-zÀ-ÿ\s]+$',
+                    'title' => 'Uniquement des lettres et des espaces'
+                ]
             ]);
             // On n'ajoute pas le "type" ni la "franchise" ici, on va les forcer dans le Controller !
     }

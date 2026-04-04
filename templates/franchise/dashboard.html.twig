@@ -18,13 +18,23 @@
     </div>
 {% endfor %}
 
+{# Toast notification pour les actions AJAX #}
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+    <div id="actionToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
 <!-- KPI (Statistiques en haut) -->
 <div class="row g-4 mb-4">
     <!-- CARTE SOLDE DISPONIBLE (DYNAMIQUE) -->
     <div class="col-md-4">
         <div class="card card-body bg-dark border border-secondary p-4 h-100 shadow">
             <h6 class="text-muted mb-2">SOLDE DISPONIBLE</h6>
-            <h2 class="mb-0 fw-bold {% if solde < 0 %}text-danger{% else %}text-info{% endif %}">
+            <h2 id="soldeDisplay" class="mb-0 fw-bold {% if solde < 0 %}text-danger{% else %}text-info{% endif %}">
                 {{ solde|number_format(2, ',', ' ') }} TND
             </h2>
             <small class="text-muted">Mis à jour en temps réel</small>
@@ -66,8 +76,16 @@
                     </div>
                     <div class="mb-4">
                         <label class="form-label text-light">Description</label>
-                        {{ form_widget(form.description, {'attr': {'class': 'form-control bg-transparent text-light border-secondary', 'placeholder': 'Ex: Vente du jour'}}) }}
-                        <div class="text-danger small">{{ form_errors(form.description) }}</div>
+                        {{ form_widget(form.description, {
+                            'attr': {
+                                'class': 'form-control bg-transparent text-light border-secondary',
+                                'placeholder': 'Ex: Vente du jour',
+                                'id': 'description_input'
+                            }
+                        }) }}
+                        <div class="text-danger small" id="description_error">
+                            {{- form_errors(form.description) -}}
+                        </div>
                     </div>
                     <button type="submit" class="btn w-100 fw-bold" style="background-color: #00e5ff; color: #000;">
                         VALIDER RECETTE
@@ -82,22 +100,26 @@
         <div class="card bg-dark border border-secondary shadow h-100">
             <div class="card-header bg-transparent border-bottom border-secondary p-4">
                 <h5 class="card-header-title text-white mb-0">Derniers Mouvements</h5>
+                <small class="text-muted">Double-cliquez sur une cellule pour la modifier</small>
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
-                    <table class="table table-dark table-hover table-borderless align-middle mb-0">
+                    <table class="table table-dark table-hover table-borderless align-middle mb-0" id="transactionsTable">
                         <thead class="border-bottom border-secondary">
                             <tr>
                                 <th scope="col" class="text-muted">DATE</th>
                                 <th scope="col" class="text-muted">TYPE</th>
                                 <th scope="col" class="text-muted">DESCRIPTION</th>
-                                <th scope="col" class="text-end text-muted">MONTANT</th>
+                                <th scope="col" class="text-muted">MONTANT</th>
+                                <th scope="col" class="text-muted" style="width: 50px;"></th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for tx in transactions %}
-                                <tr>
-                                    <td>{{ tx.date|date('Y-m-d') }}</td>
+                                <tr data-id="{{ tx.id }}" class="tx-row">
+                                    <td class="editable-cell" data-field="date" data-value="{{ tx.date|date('Y-m-d') }}">
+                                        {{ tx.date|date('Y-m-d') }}
+                                    </td>
                                     <td>
                                         {% if tx.type == 'RECETTE' %}
                                             <span class="text-success"><i class="bi bi-arrow-up-right"></i> {{ tx.type }}</span>
@@ -105,14 +127,22 @@
                                             <span class="text-danger"><i class="bi bi-arrow-down-right"></i> {{ tx.type }}</span>
                                         {% endif %}
                                     </td>
-                                    <td>{{ tx.description }}</td>
-                                    <td class="text-end fw-bold {% if tx.type == 'RECETTE' %}text-success{% else %}text-danger{% endif %}">
+                                    <td class="editable-cell" data-field="description" data-value="{{ tx.description }}">
+                                        {{ tx.description }}
+                                    </td>
+                                    <td class="editable-cell" data-field="montant" data-value="{{ tx.montant }}"
+                                        style="{% if tx.type == 'RECETTE' %}color: #198754{% else %}color: #dc3545{% endif %}; font-weight: bold;">
                                         {{ tx.montant|number_format(2, ',', ' ') }} TND
+                                    </td>
+                                    <td class="text-end">
+                                        <span class="delete-icon" title="Supprimer" data-id="{{ tx.id }}" style="cursor:pointer; opacity:0; transition: opacity 0.2s;">
+                                            <i class="bi bi-trash3 text-danger"></i>
+                                        </span>
                                     </td>
                                 </tr>
                             {% else %}
                                 <tr>
-                                    <td colspan="4" class="text-center text-muted py-4">Aucun mouvement récent. Ajoutez votre première recette !</td>
+                                    <td colspan="5" class="text-center text-muted py-4">Aucun mouvement récent. Ajoutez votre première recette !</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -122,4 +152,367 @@
         </div>
     </div>
 </div>
+
+{# Modal de confirmation de suppression #}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content bg-dark border border-secondary text-white">
+            <div class="modal-body text-center py-4">
+                <i class="bi bi-exclamation-triangle-fill text-warning fs-1 mb-3 d-block"></i>
+                <h6 class="mb-2">Supprimer cette transaction ?</h6>
+                <p class="text-muted small mb-0">Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer border-secondary justify-content-center py-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-sm btn-danger" id="confirmDeleteBtn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hover : afficher l'icône de suppression */
+    .tx-row:hover .delete-icon {
+        opacity: 1 !important;
+    }
+
+    /* Cellule éditable : curseur et surbrillance au survol */
+    .editable-cell {
+        cursor: pointer;
+        position: relative;
+        transition: background-color 0.2s ease;
+        border-radius: 4px;
+    }
+    .editable-cell:hover {
+        background-color: rgba(0, 229, 255, 0.08);
+    }
+    .editable-cell:hover::after {
+        content: '\F4CB'; /* bi-pencil */
+        font-family: 'bootstrap-icons';
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.7rem;
+        color: #00e5ff;
+        opacity: 0.7;
+    }
+
+    /* Input inline en mode édition */
+    .editable-cell input {
+        background: transparent;
+        border: 1px solid #00e5ff;
+        border-radius: 4px;
+        color: #fff;
+        padding: 2px 6px;
+        width: 100%;
+        outline: none;
+        font-size: inherit;
+    }
+    .editable-cell input:focus {
+        box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.25);
+    }
+
+    /* Animation d'erreur en inline */
+    .editable-cell .inline-error {
+        position: absolute;
+        bottom: -18px;
+        left: 0;
+        font-size: 0.7rem;
+        color: #dc3545;
+        white-space: nowrap;
+        animation: fadeInError 0.3s ease;
+    }
+    @keyframes fadeInError {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Animation de suppression de ligne */
+    .tx-row.removing {
+        animation: slideOutLeft 0.4s ease forwards;
+    }
+    @keyframes slideOutLeft {
+        to {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+    }
+
+    /* Animation de succès */
+    .editable-cell.success-flash {
+        animation: successPulse 0.5s ease;
+    }
+    @keyframes successPulse {
+        0% { background-color: rgba(25, 135, 84, 0.3); }
+        100% { background-color: transparent; }
+    }
+
+    /* Toast custom */
+    #actionToast.toast-success { background-color: #198754; color: #fff; }
+    #actionToast.toast-error { background-color: #dc3545; color: #fff; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toast = document.getElementById('actionToast');
+    const toastMessage = document.getElementById('toastMessage');
+    const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
+
+    function showToast(message, type) {
+        toast.className = 'toast align-items-center border-0 toast-' + type;
+        toastMessage.textContent = message;
+        bsToast.show();
+    }
+
+    function formatNumber(num) {
+        return parseFloat(num).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TND';
+    }
+
+    function updateSolde(solde) {
+        const el = document.getElementById('soldeDisplay');
+        el.textContent = formatNumber(solde);
+        el.className = 'mb-0 fw-bold ' + (solde < 0 ? 'text-danger' : 'text-info');
+    }
+
+    // ===== ÉDITION INLINE (double-clic) =====
+    document.querySelectorAll('.editable-cell').forEach(function(cell) {
+        cell.addEventListener('dblclick', function() {
+            if (cell.querySelector('input')) return; // Déjà en édition
+
+            const field = cell.dataset.field;
+            const oldValue = cell.dataset.value;
+            const row = cell.closest('tr');
+            const txId = row.dataset.id;
+            const originalHTML = cell.innerHTML;
+
+            // Supprimer l'ancien message d'erreur s'il existe
+            const oldError = cell.querySelector('.inline-error');
+            if (oldError) oldError.remove();
+
+            // Créer l'input
+            const input = document.createElement('input');
+            input.type = field === 'date' ? 'date' : 'text';
+            input.value = oldValue;
+            input.setAttribute('data-original', oldValue);
+
+            cell.innerHTML = '';
+            cell.appendChild(input);
+            input.focus();
+            input.select();
+
+            function saveEdit() {
+                const newValue = input.value.trim();
+
+                // 1. Si la valeur n'a pas changé, on annule avant même de valider
+                if (newValue === oldValue) {
+                    cancelEdit();
+                    return;
+                }
+
+                // 2. Validation côté client
+                if (field === 'description') {
+                    if (newValue === '') {
+                        cancelEdit();
+                        showToast('La description est obligatoire.', 'error');
+                        return;
+                    }
+                    if (newValue.length < 3) {
+                        cancelEdit();
+                        showToast('Minimum 3 caractères.', 'error');
+                        return;
+                    }
+                    if (!/^[A-Za-zÀ-ÿ\s]+$/.test(newValue)) {
+                        cancelEdit();
+                        showToast('Uniquement des lettres et espaces.', 'error');
+                        return;
+                    }
+                }
+                if (field === 'montant') {
+                    const normalizedValue = newValue.replace(',', '.');
+                    const num = parseFloat(normalizedValue);
+                    if (isNaN(num) || num <= 0) {
+                        cancelEdit();
+                        showToast('Le montant doit être > 0.', 'error');
+                        return;
+                    }
+                }
+
+                // 3. Envoi AJAX
+                const payload = {};
+                payload[field] = field === 'montant' ? parseFloat(newValue.replace(',', '.')) : newValue;
+
+                fetch('/franchise/transaction/' + txId + '/edit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    body: JSON.stringify(payload)
+                })
+                .then(function(r) {
+                    const status = r.status;
+                    return r.text().then(function(text) {
+                        try {
+                            return { ok: r.ok, status: status, data: JSON.parse(text) };
+                        } catch(e) {
+                            // Réponse non-JSON (page d'erreur Symfony HTML)
+                            return { ok: false, status: status, data: { success: false, message: 'Erreur HTTP ' + status } };
+                        }
+                    });
+                })
+                .then(function(result) {
+                    if (result.ok && result.data.success) {
+                        // Mise à jour de la cellule
+                        cell.dataset.value = field === 'montant' ? result.data.transaction.montant : newValue;
+                        if (field === 'montant') {
+                            cell.textContent = formatNumber(result.data.transaction.montant);
+                        } else if (field === 'date') {
+                            cell.textContent = result.data.transaction.date;
+                        } else {
+                            cell.textContent = newValue;
+                        }
+                        cell.classList.add('success-flash');
+                        setTimeout(function() { cell.classList.remove('success-flash'); }, 500);
+                        updateSolde(result.data.solde);
+                        showToast('Modifié avec succès !', 'success');
+                    } else {
+                        cancelEdit();
+                        const errors = result.data.errors || {};
+                        const msg = errors[field] || result.data.message || Object.values(errors).join(' | ') || 'Erreur de validation.';
+                        showToast(msg, 'error');
+                    }
+                })
+                .catch(function(err) {
+                    cancelEdit();
+                    showToast('Connexion impossible au serveur.', 'error');
+                });
+            }
+
+            function cancelEdit() {
+                cell.innerHTML = originalHTML;
+            }
+
+            function showInlineError(cell, message) {
+                // Remove older error if multiple clicks
+                const oldError = cell.querySelector('.inline-error');
+                if (oldError) oldError.remove();
+
+                // Afficher l'erreur en dessous de l'input actuel
+                const errSpan = document.createElement('span');
+                errSpan.className = 'inline-error';
+                errSpan.textContent = message;
+                cell.appendChild(errSpan);
+                cell.style.position = 'relative';
+                
+                // Shake l'input pour un meilleur UX
+                const inputEl = cell.querySelector('input');
+                if (inputEl) {
+                    inputEl.classList.add('is-invalid');
+                    setTimeout(() => inputEl.classList.remove('is-invalid'), 1500);
+                }
+
+                setTimeout(function() { if (errSpan.parentNode) errSpan.remove(); }, 3000);
+            }
+
+            // Valider avec Entrée
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveEdit();
+                }
+                if (e.key === 'Escape') {
+                    cancelEdit();
+                }
+            });
+
+            // Valider en quittant le champ
+            input.addEventListener('blur', function() {
+                // Petit délai pour éviter les conflits
+                setTimeout(function() {
+                    if (cell.querySelector('input')) {
+                        saveEdit();
+                    }
+                }, 150);
+            });
+        });
+    });
+
+    // ===== SUPPRESSION =====
+    let deleteId = null;
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+
+    document.querySelectorAll('.delete-icon').forEach(function(icon) {
+        icon.addEventListener('click', function() {
+            deleteId = this.dataset.id;
+            deleteModal.show();
+        });
+    });
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (!deleteId) return;
+
+        fetch('/franchise/transaction/' + deleteId + '/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                // Animation de suppression
+                const row = document.querySelector('tr[data-id="' + deleteId + '"]');
+                if (row) {
+                    row.classList.add('removing');
+                    setTimeout(function() { row.remove(); }, 400);
+                }
+                updateSolde(data.solde);
+                showToast('Transaction supprimée !', 'success');
+
+                // Vérifier s'il reste des lignes
+                setTimeout(function() {
+                    const tbody = document.querySelector('#transactionsTable tbody');
+                    if (tbody && tbody.querySelectorAll('.tx-row').length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4">Aucun mouvement récent. Ajoutez votre première recette !</td></tr>';
+                    }
+                }, 500);
+            } else {
+                showToast('Erreur lors de la suppression.', 'error');
+            }
+            deleteModal.hide();
+            deleteId = null;
+        })
+        .catch(function() {
+            showToast('Erreur réseau.', 'error');
+            deleteModal.hide();
+            deleteId = null;
+        });
+    });
+
+    // ===== VALIDATION TEMPS-RÉEL DESCRIPTION =====
+    const descInput = document.getElementById('recette_description');
+    const descError = document.getElementById('description_error');
+
+    if (descInput && descError) {
+        function validateDescription() {
+            const val = descInput.value.trim();
+            let msg = '';
+            if (val === '') {
+                msg = ''; // Ne pas crier avant soumission si c'est vide, ou si:
+            } else if (val.length > 0 && val.length < 3) {
+                msg = 'Minimum 3 caract\u00e8res.';
+            } else if (!/^[A-Za-z\u00C0-\u00FF\s]+$/.test(val) && val !== '') {
+                msg = 'lettres et espaces uniquement.';
+            }
+            
+            if (msg) {
+                descError.innerHTML = '<span style="color: #dc3545; font-size: 0.875rem;">\u2022 ' + msg + '</span>';
+                descInput.style.borderColor = '#dc3545';
+            } else {
+                descError.innerHTML = '';
+                descInput.style.borderColor = '';
+            }
+        }
+        descInput.addEventListener('input', validateDescription);
+        descInput.addEventListener('blur', validateDescription);
+    }
+
+});
+</script>
 {% endblock %}
