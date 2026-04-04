@@ -154,8 +154,16 @@
                                 SIEGE_PRINCIPAL
                             {% endif %}
                         </td>
-                        <td>{{ bilan.mois }}</td>
-                        <td>{{ bilan.annee }}</td>
+                        <td>
+                            <div class="editable-cell" data-field="mois" title="Double-cliquer pour modifier">
+                                <span class="value">{{ bilan.mois }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="editable-cell" data-field="annee" title="Double-cliquer pour modifier">
+                                <span class="value">{{ bilan.annee }}</span>
+                            </div>
+                        </td>
                         
                         <!-- Editable Fields -->
                         <td>
@@ -306,14 +314,23 @@ document.addEventListener('DOMContentLoaded', () => {
             if (cell.querySelector('input')) return; // dÃ©jÃ  en Ã©dition
 
             const spanValue = cell.querySelector('.value');
+            const field = cell.dataset.field;
             let currentText = spanValue.innerText.replace(' TND', '');
             let currentValue = parseFloat(currentText);
             if(isNaN(currentValue)) currentValue = 0;
 
             const input = document.createElement('input');
             input.type = 'number';
-            input.step = '0.01';
-            input.min = '0';
+            
+            if (field === 'mois' || field === 'annee') {
+                input.step = '1';
+                if (field === 'mois') { input.min = '1'; input.max = '12'; }
+                else { input.min = '2024'; input.max = '2030'; }
+            } else {
+                input.step = '0.01';
+                input.min = '0';
+            }
+            
             input.value = currentValue;
             input.className = 'editable-input';
 
@@ -325,13 +342,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 const newValue = input.value.trim();
                 const tr = cell.closest('tr');
                 
-                // Contrôle de saisie : ne doit pas être négatif ou vide
-                if (newValue === '' || parseFloat(newValue) < 0) {
+                if (newValue === '') {
+                    restoreCell(currentValue);
+                    return;
+                }
+                
+                let navVal = parseFloat(newValue);
+                if (field === 'mois' && (navVal < 1 || navVal > 12)) {
+                    Toast.fire({ icon: 'warning', title: 'Mois invalide (1-12).' });
+                    input.focus();
+                    return;
+                } else if (field === 'annee' && (navVal < 2024 || navVal > 2030)) {
+                    Toast.fire({ icon: 'warning', title: 'Année invalide (2024-2030).' });
+                    input.focus();
+                    return;
+                } else if ((field === 'total_recettes' || field === 'total_charges') && navVal < 0) {
                     Toast.fire({ icon: 'warning', title: 'Veuillez entrer un montant positif.' });
                     input.focus();
                     return;
                 }
-                const id = tr.dataset.id;
+                
                 const field = cell.dataset.field;
 
                 // Revert si vide ou non changÃ©
@@ -381,19 +411,25 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             function restoreCell(val) {
-                cell.innerHTML = '<span class="value">' + parseFloat(val).toFixed(2) + ' TND</span>';
+                if (field === 'mois' || field === 'annee') {
+                    cell.innerHTML = '<span class="value">' + parseFloat(val) + '</span>';
+                } else {
+                    cell.innerHTML = '<span class="value">' + parseFloat(val).toFixed(2) + ' TND</span>';
+                }
             }
 
             // Sur 'blur' (quand on clique ailleurs), on bloque si mal saisi, sinon on sauvegarde
             input.addEventListener('blur', (e) => {
-                const navVal = input.value.trim();
-                // Si la valeur tapée est valide, on déclenche.
-                if(navVal !== '' && parseFloat(navVal) >= 0) {
-                    saveChange();
-                } else {
-                    // Si effacé ou vide, on restaure la valeur d'avant au lieu de sauvegarder du vide = plantage
+                const navVal = parseFloat(input.value.trim());
+                if (input.value.trim() === '') {
                     restoreCell(currentValue);
+                    return;
                 }
+                
+                if (field === 'mois' && (navVal >= 1 && navVal <= 12)) { saveChange(); }
+                else if (field === 'annee' && (navVal >= 2024 && navVal <= 2030)) { saveChange(); }
+                else if ((field === 'total_recettes' || field === 'total_charges') && navVal >= 0) { saveChange(); }
+                else { restoreCell(currentValue); } // Sinon on annule silencieusement
             });
             input.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') input.blur();

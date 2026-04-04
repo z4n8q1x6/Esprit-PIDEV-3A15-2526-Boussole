@@ -45,6 +45,15 @@ final class BilanController extends AbstractController
             if ($val < 0) return $this->json(['success' => false, 'message' => 'Le montant doit être positif.']);
             $bilan->setTotalCharges($val);
         }
+        
+        if (isset($data['mois'])) {
+            $val = intval($data['mois']);
+            if ($val >= 1 && $val <= 12) $bilan->setMois($val);
+        }
+        if (isset($data['annee'])) {
+            $val = intval($data['annee']);
+            if ($val >= 2024 && $val <= 2030) $bilan->setAnnee($val);
+        }
 
         // Recalcul manuel
         $resultatNet = $bilan->getTotalRecettes() - $bilan->getTotalCharges();
