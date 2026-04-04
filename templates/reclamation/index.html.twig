@@ -1,19 +1,76 @@
 {% extends 'front_base.html.twig' %}
 
+{% block title %}Liste des Réclamations{% endblock %}
 
-{% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{% block content %}
+<div class="card bg-transparent border rounded-3">
+    <div class="card-header bg-transparent border-bottom d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">Liste des Réclamations</h3>
+        <a href="{{ path('reclamation_new') }}" class="btn btn-sm btn-primary mb-0">Nouvelle Réclamation</a>
+    </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    {% if app.flashes %}
+        <div class="card-body pb-0">
+            {% for type, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% endif %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/home/lm001/College/boussole_symfony/src/Controller/ReclamationController.php</code></li>
-        <li>Your template at <code>/home/lm001/College/boussole_symfony/templates/reclamation/index.html.twig</code></li>
-    </ul>
+    <div class="card-body">
+        <div class="table-responsive border-0">
+            <table class="table table-dark-gray align-middle p-4 mb-0 table-hover">
+                <thead>
+                    <tr>
+                        <th class="border-0 rounded-start">Sujet</th>
+                        <th class="border-0">Description</th>
+                        <th class="border-0">Statut</th>
+                        <th class="border-0">Date de création</th>
+                        <th class="border-0 rounded-end">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for reclamation in reclamations %}
+                        <tr>
+                            <td class="fw-semibold text-primary">{{ reclamation.sujet }}</td>
+                            <td class="text-muted">{{ reclamation.description }}</td>
+                            <td>
+                                <span class="badge
+                                    {% if reclamation.statut == 'EN_ATTENTE' %} bg-warning text-dark
+                                    {% elseif reclamation.statut == 'RESOLUE' %} bg-success
+                                    {% else %} bg-secondary
+                                    {% endif %}">
+                                    {{ reclamation.statut }}
+                                </span>
+                            </td>
+                            <td class="text-muted small">
+                                {{ reclamation.dateCreation|date('d/m/Y H:i') }}
+                            </td>
+                            <td>
+                                <form method="post" action="{{ path('reclamation_delete', {'id': reclamation.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?');">
+                                    <input type="hidden" name="token" value="{{ csrf_token('delete-item') }}">
+                                    <button type="submit" class="btn btn-sm btn-danger mb-0">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <div class="alert alert-info m-0">
+                                    Aucune réclamation trouvée.
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}

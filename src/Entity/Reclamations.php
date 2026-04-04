@@ -3,14 +3,13 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use App\Entity\Franchises;
 
 #[ORM\Entity]
 class Reclamations
 {
-
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
     private int $id;
 
@@ -26,7 +25,7 @@ class Reclamations
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $date_creation;
 
-        #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "reclamationss")]
+    #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "reclamationss")]
     #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Franchises $franchise_id;
 
@@ -70,12 +69,12 @@ class Reclamations
         $this->statut = $value;
     }
 
-    public function getDate_creation()
+    public function getDateCreation()
     {
         return $this->date_creation;
     }
 
-    public function setDate_creation($value)
+    public function setDateCreation($value)
     {
         $this->date_creation = $value;
     }
