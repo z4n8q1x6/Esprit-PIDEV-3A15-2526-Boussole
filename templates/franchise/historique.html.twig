@@ -69,7 +69,7 @@
                     </div>
                 </div>
                 <div class="col-md-3 mt-4 d-flex justify-content-end align-items-center">
-                    <a href="{{ path('app_transaction_historique') }}" class="text-muted me-3 text-decoration-none small">Réinitialiser</a>
+                    <a href="#" id="resetFiltersBtn" class="text-muted me-3 text-decoration-none small">Réinitialiser</a>
                     <button type="submit" class="d-none"></button>
                     <a href="#" class="btn btn-primary rounded-pill fw-bold px-4" style="background-color: #0d6efd; color: white; border: none;">Exporter...</a>
                 </div>
@@ -294,6 +294,26 @@ document.addEventListener('DOMContentLoaded', function() {
                  e.stopPropagation();
              });
         });
+        
+        // BOUTON REINITIALISER
+        const resetBtn = document.getElementById('resetFiltersBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Afficher TOUTES les transactions par défaut lors de la réinitialisation
+                periodeValue.value = 'all';
+                // Vider les autres inputs du formulaire form
+                const selects = form.querySelectorAll('select');
+                selects.forEach(sel => { sel.value = 'TOUT'; });
+                const texts = form.querySelectorAll('input[type="text"]');
+                texts.forEach(txt => { txt.value = ''; });
+                const dates = form.querySelectorAll('input[type="date"]');
+                dates.forEach(d => { d.value = ''; });
+                
+                // Soumettre le formulaire vide/réinitialisé
+                form.submit();
+            });
+        }
     }
 
     // ===== GESTION TOAST & UPDATE SOLDE =====
