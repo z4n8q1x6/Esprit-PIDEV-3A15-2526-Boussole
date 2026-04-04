@@ -10,7 +10,6 @@ return [
     [ // $staticRoutes
         '/admin/reclamation' => [[['_route' => 'app_admin_reclamation', '_controller' => 'App\\Controller\\AdminReclamationController::index'], null, null, null, false, false, null]],
         '/afficher_back_charge' => [[['_route' => 'app_afficher_back_charge', '_controller' => 'App\\Controller\\AfficherBackChargeController::index'], null, null, null, false, false, null]],
-        '/ajouter_charge' => [[['_route' => 'app_ajouter_charge', '_controller' => 'App\\Controller\\AjouterChargeController::index'], null, null, null, false, false, null]],
         '/reclamations' => [[['_route' => 'reclamation_index', '_controller' => 'App\\Controller\\ReclamationController::index'], null, ['GET' => 0], null, true, false, null]],
         '/reclamations/new' => [[['_route' => 'reclamation_new', '_controller' => 'App\\Controller\\ReclamationController::new'], null, ['GET' => 0, 'POST' => 1], null, false, false, null]],
     ],

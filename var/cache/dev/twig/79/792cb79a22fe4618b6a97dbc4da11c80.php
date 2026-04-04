@@ -187,15 +187,29 @@ class __TwigTemplate_824142dd533b4875f0d4d221e33332ab extends Template
         yield "</div>
                     </div>
 
+                    ";
+        // line 61
+        yield "                    <div class=\"col-md-12\">
+                        <label class=\"form-label\">Statut de Validation *</label>
+                        ";
+        // line 63
+        yield $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(CoreExtension::getAttribute($this->env, $this->source, (isset($context["form"]) || array_key_exists("form", $context) ? $context["form"] : (function () { throw new RuntimeError('Variable "form" does not exist.', 63, $this->source); })()), "status_validation", [], "any", false, false, false, 63), 'widget', ["attr" => ["class" => "form-select"]]);
+        yield "
+                        <div class=\"text-danger small\">";
+        // line 64
+        yield $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(CoreExtension::getAttribute($this->env, $this->source, (isset($context["form"]) || array_key_exists("form", $context) ? $context["form"] : (function () { throw new RuntimeError('Variable "form" does not exist.', 64, $this->source); })()), "status_validation", [], "any", false, false, false, 64), 'errors');
+        yield "</div>
+                    </div>
+
                     <div class=\"col-12\">
                         <label class=\"form-label\">Justificatif (Image)</label>
                         ";
-        // line 62
-        yield $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(CoreExtension::getAttribute($this->env, $this->source, (isset($context["form"]) || array_key_exists("form", $context) ? $context["form"] : (function () { throw new RuntimeError('Variable "form" does not exist.', 62, $this->source); })()), "preuve_image", [], "any", false, false, false, 62), 'widget', ["attr" => ["class" => "form-control"]]);
+        // line 69
+        yield $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(CoreExtension::getAttribute($this->env, $this->source, (isset($context["form"]) || array_key_exists("form", $context) ? $context["form"] : (function () { throw new RuntimeError('Variable "form" does not exist.', 69, $this->source); })()), "preuve_image", [], "any", false, false, false, 69), 'widget', ["attr" => ["class" => "form-control"]]);
         yield "
                         <div class=\"text-danger small\">";
-        // line 63
-        yield $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(CoreExtension::getAttribute($this->env, $this->source, (isset($context["form"]) || array_key_exists("form", $context) ? $context["form"] : (function () { throw new RuntimeError('Variable "form" does not exist.', 63, $this->source); })()), "preuve_image", [], "any", false, false, false, 63), 'errors');
+        // line 70
+        yield $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->searchAndRenderBlock(CoreExtension::getAttribute($this->env, $this->source, (isset($context["form"]) || array_key_exists("form", $context) ? $context["form"] : (function () { throw new RuntimeError('Variable "form" does not exist.', 70, $this->source); })()), "preuve_image", [], "any", false, false, false, 70), 'errors');
         yield "</div>
                     </div>
 
@@ -203,8 +217,8 @@ class __TwigTemplate_824142dd533b4875f0d4d221e33332ab extends Template
                         <button type=\"submit\" class=\"btn btn-primary mb-0\">Enregistrer la charge</button>
                     </div>
                 ";
-        // line 69
-        yield         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["form"]) || array_key_exists("form", $context) ? $context["form"] : (function () { throw new RuntimeError('Variable "form" does not exist.', 69, $this->source); })()), 'form_end');
+        // line 76
+        yield         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["form"]) || array_key_exists("form", $context) ? $context["form"] : (function () { throw new RuntimeError('Variable "form" does not exist.', 76, $this->source); })()), 'form_end');
         yield "
             </div>
         </div>
@@ -238,7 +252,7 @@ class __TwigTemplate_824142dd533b4875f0d4d221e33332ab extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  207 => 69,  198 => 63,  194 => 62,  186 => 57,  182 => 56,  174 => 51,  170 => 50,  162 => 45,  158 => 44,  150 => 39,  146 => 38,  138 => 33,  134 => 32,  128 => 29,  125 => 28,  119 => 24,  116 => 23,  113 => 21,  103 => 17,  100 => 16,  95 => 15,  85 => 6,  75 => 5,  58 => 3,  41 => 1,);
+        return array (  221 => 76,  212 => 70,  208 => 69,  200 => 64,  196 => 63,  192 => 61,  186 => 57,  182 => 56,  174 => 51,  170 => 50,  162 => 45,  158 => 44,  150 => 39,  146 => 38,  138 => 33,  134 => 32,  128 => 29,  125 => 28,  119 => 24,  116 => 23,  113 => 21,  103 => 17,  100 => 16,  95 => 15,  85 => 6,  75 => 5,  58 => 3,  41 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -302,6 +316,13 @@ class __TwigTemplate_824142dd533b4875f0d4d221e33332ab extends Template
                         <div class=\"text-danger small\">{{ form_errors(form.franchise_id) }}</div>
                     </div>
 
+                    {# AJOUT DU CHAMP STATUT #}
+                    <div class=\"col-md-12\">
+                        <label class=\"form-label\">Statut de Validation *</label>
+                        {{ form_widget(form.status_validation, {'attr': {'class': 'form-select'}}) }}
+                        <div class=\"text-danger small\">{{ form_errors(form.status_validation) }}</div>
+                    </div>
+
                     <div class=\"col-12\">
                         <label class=\"form-label\">Justificatif (Image)</label>
                         {{ form_widget(form.preuve_image, {'attr': {'class': 'form-control'}}) }}
@@ -316,6 +337,6 @@ class __TwigTemplate_824142dd533b4875f0d4d221e33332ab extends Template
         </div>
     </div>
 </div>
-{% endblock %} ", "ajouter_charge/index.html.twig", "C:\\Users\\Wael\\Esprit-PIDEV-3A15-2526-Boussole\\templates\\ajouter_charge\\index.html.twig");
+{% endblock %}", "ajouter_charge/index.html.twig", "C:\\Users\\Wael\\Esprit-PIDEV-3A15-2526-Boussole\\templates\\ajouter_charge\\index.html.twig");
     }
 }
