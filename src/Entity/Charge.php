@@ -3,14 +3,14 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use App\Entity\Franchises;
 
 #[ORM\Entity]
 class Charge
 {
-
     #[ORM\Id]
+    // MODIFICATION : J'ai supprimé #[ORM\GeneratedValue] ici.
+    // Cela permet à Symfony d'accepter l'ID que nous générons dans le contrôleur.
     #[ORM\Column(type: "integer")]
     private int $id;
 
@@ -32,87 +32,98 @@ class Charge
     #[ORM\Column(type: "string")]
     private string $status_validation;
 
-        #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "charges")]
+    #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "charges")]
     #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Franchises $franchise_id;
 
-    public function getId()
-    {
-        return $this->id;
+    // --- GETTERS & SETTERS ---
+
+    public function getId(): int 
+    { 
+        return $this->id; 
     }
 
-    public function setId($value)
-    {
-        $this->id = $value;
+    // Le setId est maintenant OBLIGATOIRE car nous gérons l'ID à la main
+    public function setId(int $id): self 
+    { 
+        $this->id = $id; 
+        return $this; 
     }
 
-    public function getTitre()
-    {
-        return $this->titre;
+    public function getTitre(): string 
+    { 
+        return $this->titre; 
     }
 
-    public function setTitre($value)
-    {
-        $this->titre = $value;
+    public function setTitre(string $titre): self 
+    { 
+        $this->titre = $titre; 
+        return $this; 
     }
 
-    public function getMontant()
-    {
-        return $this->montant;
+    public function getMontant(): float 
+    { 
+        return $this->montant; 
     }
 
-    public function setMontant($value)
-    {
-        $this->montant = $value;
+    public function setMontant(float $montant): self 
+    { 
+        $this->montant = $montant; 
+        return $this; 
     }
 
-    public function getDate_charge()
-    {
-        return $this->date_charge;
+    public function getDateCharge(): \DateTimeInterface 
+    { 
+        return $this->date_charge; 
     }
 
-    public function setDate_charge($value)
-    {
-        $this->date_charge = $value;
+    public function setDateCharge(\DateTimeInterface $date_charge): self 
+    { 
+        $this->date_charge = $date_charge; 
+        return $this; 
     }
 
-    public function getType()
-    {
-        return $this->type;
+    public function getType(): string 
+    { 
+        return $this->type; 
     }
 
-    public function setType($value)
-    {
-        $this->type = $value;
+    public function setType(string $type): self 
+    { 
+        $this->type = $type; 
+        return $this; 
     }
 
-    public function getPreuve_image()
-    {
-        return $this->preuve_image;
+    public function getPreuveImage(): string 
+    { 
+        return $this->preuve_image; 
     }
 
-    public function setPreuve_image($value)
-    {
-        $this->preuve_image = $value;
+    public function setPreuveImage(string $preuve_image): self 
+    { 
+        $this->preuve_image = $preuve_image; 
+        return $this; 
     }
 
-    public function getStatus_validation()
-    {
-        return $this->status_validation;
+    public function getStatusValidation(): string 
+    { 
+        return $this->status_validation; 
     }
 
-    public function setStatus_validation($value)
-    {
-        $this->status_validation = $value;
+    public function setStatusValidation(string $status_validation): self 
+    { 
+        $this->status_validation = $status_validation; 
+        return $this; 
     }
 
-    public function getFranchise_id()
-    {
-        return $this->franchise_id;
+    public function getFranchiseId(): Franchises 
+    { 
+        return $this->franchise_id; 
     }
 
-    public function setFranchise_id($value)
-    {
-        $this->franchise_id = $value;
+    public function setFranchiseId(Franchises $franchise_id): self 
+    { 
+        $this->franchise_id = $franchise_id; 
+        return $this; 
     }
 }
