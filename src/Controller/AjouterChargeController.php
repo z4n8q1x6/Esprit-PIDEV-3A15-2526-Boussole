@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 final class AjouterChargeController extends AbstractController
 {
@@ -21,15 +21,12 @@ final class AjouterChargeController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             
-            // 1. GÉNÉRATION MANUELLE DE L'ID
-            // Puisque ta table n'est pas auto-increment, on génère un ID unique.
-            // On utilise un timestamp combiné à un chiffre aléatoire pour éviter les doublons.
+            // 1. GÉNÉRATION MANUELLE DE L'ID (Logique conservée)
             $manualId = (int) (time() + random_int(1, 1000));
             $charge->setId($manualId);
 
-            // 2. DÉFINITION DU STATUT
-            $charge->setStatusValidation('EN_ATTENTE');
-
+            // 2. SAUVEGARDE
+            // Le statut est maintenant géré par le formulaire lui-même
             $entityManager->persist($charge);
             $entityManager->flush();
 

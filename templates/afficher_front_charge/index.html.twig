@@ -1,0 +1,52 @@
+{% extends 'front_base.html.twig' %}
+
+{% block title %}Boussole - Mes Charges{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Mes Charges Financières</h2>
+        <div class="badge bg-primary fs-6">Total Global : {{ total|number_format(2, ',', ' ') }} TND</div>
+    </div>
+
+    <div class="row g-4">
+        {% for charge in charges %}
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-2">
+                            {# Affichage du Statut avec couleur dynamique #}
+                            <span class="badge {% if charge.statusValidation == 'VALIDE' %}bg-success{% elseif charge.statusValidation == 'REFUSE' %}bg-danger{% else %}bg-warning{% endif %}">
+                                {{ charge.statusValidation }}
+                            </span>
+                            <small class="text-muted">{{ charge.dateCharge|date('d/m/Y') }}</small>
+                        </div>
+                        <h5 class="card-title text-primary">{{ charge.titre }}</h5>
+                        <p class="card-text h4">{{ charge.montant }} TND</p>
+                        <hr>
+                        <p class="small text-muted mb-1">Catégorie : {{ charge.type }}</p>
+                        <p class="small text-muted">ID Franchise : {{ charge.franchiseId }}</p>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info">Aucune charge enregistrée pour le moment.</div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {# Pagination #}
+    {% if pagesCount > 1 %}
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% for i in 1..pagesCount %}
+                    <li class="page-item {% if i == currentPage %}active{% endif %}">
+                        <a class="page-link" href="{{ path('app_afficher_front_charge', {page: i}) }}">{{ i }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+{% endblock %}

@@ -57,6 +57,13 @@
                         <div class="text-danger small">{{ form_errors(form.franchise_id) }}</div>
                     </div>
 
+                    {# AJOUT DU CHAMP STATUT #}
+                    <div class="col-md-12">
+                        <label class="form-label">Statut de Validation *</label>
+                        {{ form_widget(form.status_validation, {'attr': {'class': 'form-select'}}) }}
+                        <div class="text-danger small">{{ form_errors(form.status_validation) }}</div>
+                    </div>
+
                     <div class="col-12">
                         <label class="form-label">Justificatif (Image)</label>
                         {{ form_widget(form.preuve_image, {'attr': {'class': 'form-control'}}) }}
@@ -71,4 +78,4 @@
         </div>
     </div>
 </div>
-{% endblock %} 
+{% endblock %}
