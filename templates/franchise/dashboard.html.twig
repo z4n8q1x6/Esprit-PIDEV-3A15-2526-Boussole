@@ -63,7 +63,7 @@
                 <h5 class="card-header-title text-white mb-0">Nouvelle Transaction</h5>
             </div>
             <div class="card-body p-4">
-                {{ form_start(form) }}
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
                     <div class="mb-3">
                         <label class="form-label text-light">Date</label>
                         {{ form_widget(form.date, {'attr': {'class': 'form-control bg-transparent text-light border-secondary'}}) }}
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const payload = {};
                 payload[field] = field === 'montant' ? parseFloat(newValue.replace(',', '.')) : newValue;
 
-                fetch('/franchise/transaction/' + txId + '/edit', {
+                fetch('/transaction/' + txId + '/edit', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                     body: JSON.stringify(payload)
@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
         if (!deleteId) return;
 
-        fetch('/franchise/transaction/' + deleteId + '/delete', {
+        fetch('/transaction/' + deleteId, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' }
         })
@@ -484,34 +484,6 @@ document.addEventListener('DOMContentLoaded', function() {
             deleteId = null;
         });
     });
-
-    // ===== VALIDATION TEMPS-RÉEL DESCRIPTION =====
-    const descInput = document.getElementById('recette_description');
-    const descError = document.getElementById('description_error');
-
-    if (descInput && descError) {
-        function validateDescription() {
-            const val = descInput.value.trim();
-            let msg = '';
-            if (val === '') {
-                msg = ''; // Ne pas crier avant soumission si c'est vide, ou si:
-            } else if (val.length > 0 && val.length < 3) {
-                msg = 'Minimum 3 caract\u00e8res.';
-            } else if (!/^[A-Za-z\u00C0-\u00FF\s]+$/.test(val) && val !== '') {
-                msg = 'lettres et espaces uniquement.';
-            }
-            
-            if (msg) {
-                descError.innerHTML = '<span style="color: #dc3545; font-size: 0.875rem;">\u2022 ' + msg + '</span>';
-                descInput.style.borderColor = '#dc3545';
-            } else {
-                descError.innerHTML = '';
-                descInput.style.borderColor = '';
-            }
-        }
-        descInput.addEventListener('input', validateDescription);
-        descInput.addEventListener('blur', validateDescription);
-    }
 
 });
 </script>
