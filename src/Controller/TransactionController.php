@@ -49,6 +49,9 @@ final class TransactionController extends AbstractController
         $solde = 0;
         $derniersMouvements =[];
 
+        $limiteDepenses = 0;
+        $objectifRevenu = 0;
+
         if ($dummyFranchise) {
             $toutesLesTransactions = $transactionRepo->findBy(['franchise_id' => $dummyFranchise]);
             
@@ -64,12 +67,26 @@ final class TransactionController extends AbstractController
                 ['date' => 'DESC'],
                 5
             );
+
+            // Charger la DERNIÈRE Limite de Dépenses enregistrée dans tout le système (car pas encore d'authentification)
+            $lastLimite = $entityManager->getRepository(\App\Entity\Budget_previsionnel::class)->findOneBy([
+                "type_budget" => "LIMITE_DEPENSE"
+            ], ["id" => "DESC"]);
+            if ($lastLimite) { $limiteDepenses = $lastLimite->getMontant_cible(); }
+
+            // Charger le DERNIER Objectif de Revenu enregistré dans tout le système
+            $lastObjectif = $entityManager->getRepository(\App\Entity\Budget_previsionnel::class)->findOneBy([
+                "type_budget" => "OBJECTIF_REVENU"
+            ], ["id" => "DESC"]);
+            if ($lastObjectif) { $objectifRevenu = $lastObjectif->getMontant_cible(); }
         }
 
         return $this->render('franchise/dashboard.html.twig',[
             'transactions' => $derniersMouvements,
             'form' => $form->createView(),
             'solde' => $solde,
+            'limiteDepenses' => $limiteDepenses,
+            'objectifRevenu' => $objectifRevenu,
         ]);
     }
 
