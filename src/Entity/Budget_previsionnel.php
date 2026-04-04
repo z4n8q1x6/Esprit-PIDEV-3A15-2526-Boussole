@@ -17,31 +17,31 @@ class Budget_previsionnel
 
     #[ORM\Column(type: "integer")]
     #[Assert\NotBlank(message: "Le mois est obligatoire.")]
-    #[Assert\Range(min: 1, max: 12, notInRangeMessage: "Le mois doit être compris entre {{ min }} et {{ max }}")]
+    #[Assert\Range(min: 1, max: 12, notInRangeMessage: "Le mois doit ÃƒÂªtre compris entre {{ min }} et {{ max }}")]
     private int $mois;
 
     #[ORM\Column(type: "integer")]
-    #[Assert\NotBlank(message: "L'année est obligatoire.")]
-    #[Assert\GreaterThanOrEqual(value: 2024, message: "L'année doit être supérieure ou égale à 2024")]
+    #[Assert\NotBlank(message: "L'annÃƒÂ©e est obligatoire.")]
+    #[Assert\GreaterThanOrEqual(value: 2024, message: "L'annÃƒÂ©e doit ÃƒÂªtre supÃƒÂ©rieure ou ÃƒÂ©gale ÃƒÂ  2024")]
     private int $annee;
 
     #[ORM\Column(type: "float")]
     #[Assert\NotBlank(message: "Le montant est obligatoire.")]
-    #[Assert\Positive(message: "Le montant ciblé doit être un nombre positif.")]
+    #[Assert\Positive(message: "Le montant ciblÃƒÂ© doit ÃƒÂªtre un nombre positif.")]
     private float $montant_cible;
 
     #[ORM\Column(type: "string")]
     #[Assert\NotBlank(message: "Le type de budget est obligatoire.")]
-    #[Assert\Choice(choices: ['LIMITE_DEPENSE', 'OBJECTIF_REVENU'], message: "Le type doit être 'LIMITE_DEPENSE' ou 'OBJECTIF_REVENU'.")]
+    #[Assert\Choice(choices: ['LIMITE_DEPENSE', 'OBJECTIF_REVENU'], message: "Le type doit ÃƒÂªtre 'LIMITE_DEPENSE' ou 'OBJECTIF_REVENU'.")]
     private string $type_budget;
 
     #[ORM\Column(type: "string", length: 100)]
-    #[Assert\NotBlank(message: "La catégorie est obligatoire.")]
+    #[Assert\NotBlank(message: "La catÃƒÂ©gorie est obligatoire.")]
     private string $categorie;
 
         #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "budget_previsionnels")]
-    #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Franchises $franchise_id;
+    #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    private ?Franchises $franchise_id = null;
 
     public function getId()
     {
