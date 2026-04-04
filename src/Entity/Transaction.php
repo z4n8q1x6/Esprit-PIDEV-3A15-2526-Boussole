@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use App\Entity\Franchises;
+use Symfony\Component\Validator\Constraints as Assert; // <-- IMPORT OBLIGATOIRE POUR LE CONTRÔLE DE SAISIE
 
 #[ORM\Entity]
 class Transaction
@@ -16,18 +16,27 @@ class Transaction
     private int $id;
 
     #[ORM\Column(type: "date")]
+    #[Assert\NotBlank(message: "La date est obligatoire.")]
     private \DateTimeInterface $date;
 
     #[ORM\Column(type: "float")]
+    #[Assert\NotBlank(message: "Le montant est obligatoire.")]
+    #[Assert\Positive(message: "Le montant doit être strictement supérieur à 0.")]
     private float $montant;
 
     #[ORM\Column(type: "string")]
+    // Pas de contrôle ici car c'est le contrôleur qui va forcer ce champ ('RECETTE' ou 'DEPENSE')
     private string $type;
 
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank(message: "Veuillez entrer une description.")]
+    #[Assert\Length(
+        min: 3,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères."
+    )]
     private string $description;
 
-        #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "transactions")]
+    #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "transactions")]
     #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Franchises $franchise_id;
 
