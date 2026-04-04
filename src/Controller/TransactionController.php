@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Transaction;
-use App\Form\RecetteType;
+use App\Form\TransactionType;
 use App\Repository\TransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,39 +13,37 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class DashboardFranchiseController extends AbstractController
+#[Route('/transaction')]
+final class TransactionController extends AbstractController
 {
-    #[Route('/franchise/dashboard', name: 'app_franchise_dashboard')]
-    public function index(Request $request, EntityManagerInterface $em, TransactionRepository $transactionRepo): Response
+    #[Route(name: 'app_transaction_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, EntityManagerInterface $entityManager, TransactionRepository $transactionRepo): Response
     {
         $transaction = new Transaction();
         $transaction->setDate(new \DateTime());
         
-        $form = $this->createForm(RecetteType::class, $transaction);
+        $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
 
-        // --- CODE TEMPORAIRE (En attendant l'authentification de Sarra) ---
-        $dummyFranchise = $em->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
-        
-        // 1. GESTION DU FORMULAIRE (Ajout)
+        // --- CODE TEMPORAIRE (En attendant l'authentification) ---
+        $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+
         if ($form->isSubmitted() && $form->isValid()) {
             $transaction->setType('RECETTE');
             if ($dummyFranchise) {
                 $transaction->setFranchise_id($dummyFranchise);
             }
-            $em->persist($transaction);
-            $em->flush();
+            $entityManager->persist($transaction);
+            $entityManager->flush();
 
             $this->addFlash('success', 'Recette validée avec succès !');
-            return $this->redirectToRoute('app_franchise_dashboard');
+            return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        // 2. MÉTIER DE BASE : Calcul du Solde
         $solde = 0;
         $derniersMouvements = [];
 
         if ($dummyFranchise) {
-            // On récupère TOUTES les transactions de cette franchise pour le calcul
             $toutesLesTransactions = $transactionRepo->findBy(['franchise_id' => $dummyFranchise]);
             
             foreach ($toutesLesTransactions as $t) {
@@ -56,7 +54,6 @@ class DashboardFranchiseController extends AbstractController
                 }
             }
 
-            // On récupère juste les 5 dernières pour le tableau d'affichage
             $derniersMouvements = $transactionRepo->findBy(
                 ['franchise_id' => $dummyFranchise],
                 ['date' => 'DESC'],
@@ -65,34 +62,53 @@ class DashboardFranchiseController extends AbstractController
         }
 
         return $this->render('franchise/dashboard.html.twig', [
-            'form' => $form->createView(),
             'transactions' => $derniersMouvements,
+            'form' => $form->createView(),
             'solde' => $solde,
         ]);
     }
 
-    /**
-     * Modification inline d'une transaction (AJAX)
-     */
-    #[Route('/franchise/transaction/{id}/edit', name: 'app_franchise_transaction_edit', methods: ['POST'])]
-    public function editTransaction(
-        int $id,
-        Request $request,
-        EntityManagerInterface $em,
+    #[Route('/new', name: 'app_transaction_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $transaction = new Transaction();
+        $form = $this->createForm(TransactionType::class, $transaction);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($transaction);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('transaction/new.html.twig', [
+            'transaction' => $transaction,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_transaction_show', methods: ['GET'])]
+    public function show(Transaction $transaction): Response
+    {
+        return $this->render('transaction/show.html.twig', [
+            'transaction' => $transaction,
+        ]);
+    }
+
+    #[Route('/{id}/edit', name: 'app_transaction_edit', methods: ['POST'])]
+    public function edit(
+        Request $request, 
+        Transaction $transaction, 
+        EntityManagerInterface $entityManager,
         ValidatorInterface $validator
     ): JsonResponse {
         try {
-            $transaction = $em->getRepository(Transaction::class)->find($id);
-            if (!$transaction) {
-                return new JsonResponse(['success' => false, 'message' => 'Transaction introuvable.'], 404);
-            }
-
             $data = json_decode($request->getContent(), true);
             if (!is_array($data) || empty($data)) {
                 return new JsonResponse(['success' => false, 'message' => 'Données invalides.'], 400);
             }
 
-            // Mise à jour ET validation uniquement du champ modifié
             $errorMessages = [];
 
             if (isset($data['montant'])) {
@@ -129,13 +145,13 @@ class DashboardFranchiseController extends AbstractController
                 return new JsonResponse(['success' => false, 'errors' => $errorMessages], 400);
             }
 
-            $em->flush();
+            $entityManager->flush();
 
-            // Recalculer le solde après modification
-            $dummyFranchise = $em->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+            // Recalculer le solde
+            $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
             $solde = 0;
             if ($dummyFranchise) {
-                $allTx = $em->getRepository(Transaction::class)->findBy(['franchise_id' => $dummyFranchise]);
+                $allTx = $entityManager->getRepository(Transaction::class)->findBy(['franchise_id' => $dummyFranchise]);
                 foreach ($allTx as $t) {
                     if ($t->getType() === 'RECETTE') {
                         $solde += $t->getMontant();
@@ -162,27 +178,17 @@ class DashboardFranchiseController extends AbstractController
         }
     }
 
-    /**
-     * Suppression d'une transaction (AJAX)
-     */
-    #[Route('/franchise/transaction/{id}/delete', name: 'app_franchise_transaction_delete', methods: ['POST'])]
-    public function deleteTransaction(
-        int $id,
-        EntityManagerInterface $em
-    ): JsonResponse {
-        $transaction = $em->getRepository(Transaction::class)->find($id);
-        if (!$transaction) {
-            return new JsonResponse(['success' => false, 'message' => 'Transaction introuvable.'], 404);
-        }
+    #[Route('/{id}', name: 'app_transaction_delete', methods: ['POST'])]
+    public function delete(Transaction $transaction, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $entityManager->remove($transaction);
+        $entityManager->flush();
 
-        $em->remove($transaction);
-        $em->flush();
-
-        // Recalculer le solde après suppression
-        $dummyFranchise = $em->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+        // Recalculer le solde
+        $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
         $solde = 0;
         if ($dummyFranchise) {
-            $allTx = $em->getRepository(Transaction::class)->findBy(['franchise_id' => $dummyFranchise]);
+            $allTx = $entityManager->getRepository(Transaction::class)->findBy(['franchise_id' => $dummyFranchise]);
             foreach ($allTx as $t) {
                 if ($t->getType() === 'RECETTE') {
                     $solde += $t->getMontant();

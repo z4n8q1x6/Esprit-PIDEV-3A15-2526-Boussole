@@ -2,39 +2,37 @@
 
 namespace App\Form;
 
+use App\Entity\Franchises;
 use App\Entity\Transaction;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class RecetteType extends AbstractType
+class TransactionType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('date', DateType::class, [
+            ->add('date', null, [
                 'widget' => 'single_text',
                 'label' => 'Date',
                 'attr' => ['class' => 'form-control bg-dark text-light border-secondary']
             ])
-            ->add('montant', NumberType::class, [
+            ->add('montant', null, [
                 'label' => 'Montant (TND)',
+                'invalid_message' => 'Veuillez entrer un nombre valide.',
                 'attr' => ['class' => 'form-control bg-dark text-light border-secondary', 'placeholder' => '0.00']
             ])
-            ->add('description', TextType::class, [
+            ->add('description', null, [
                 'label' => 'Description',
-                'empty_data' => '',
                 'attr' => [
                     'class' => 'form-control bg-dark text-light border-secondary',
-                    'placeholder' => 'Ex: Vente du jour',
-                    'pattern' => '^[A-Za-zÀ-ÿ\s]+$',
-                    'title' => 'Uniquement des lettres et des espaces'
+                    'placeholder' => 'Ex: Vente du jour'
                 ]
-            ]);
-            // On n'ajoute pas le "type" ni la "franchise" ici, on va les forcer dans le Controller !
+            ])
+        ;
+        // On supprime explicitement 'type' et 'franchise_id' car ils sont gérés par le Controller
     }
 
     public function configureOptions(OptionsResolver $resolver): void
