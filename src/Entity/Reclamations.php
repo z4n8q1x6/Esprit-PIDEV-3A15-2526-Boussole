@@ -69,7 +69,7 @@ class Reclamations
         $this->statut = $value;
     }
 
-    public function getDateCreation()
+    public function getDate_creation()
     {
         return $this->date_creation;
     }
