@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<title>Bilan</title>
+
+{% block body %}
+    <h1>Bilan</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ bilan.id }}</td>
+            </tr>
+            <tr>
+                <th>Mois</th>
+                <td>{{ bilan.mois }}</td>
+            </tr>
+            <tr>
+                <th>Annee</th>
+                <td>{{ bilan.annee }}</td>
+            </tr>
+            <tr>
+                <th>Total_recettes</th>
+                <td>{{ bilan.totalRecettes }}</td>
+            </tr>
+            <tr>
+                <th>Total_charges</th>
+                <td>{{ bilan.totalCharges }}</td>
+            </tr>
+            <tr>
+                <th>Resultat_net</th>
+                <td>{{ bilan.resultatNet }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_bilan_index') }}">back to list</a>
+
+    <a href="{{ path('app_bilan_edit', {'id': bilan.id}) }}">edit</a>
+
+    {{ include('bilan/_delete_form.html.twig') }}
+{% endblock %}
