@@ -3,8 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Transaction;
+use App\Entity\Bilan;
+use App\Entity\Budget_previsionnel;
 use App\Form\TransactionType;
+use App\Form\BilanType;
+use App\Form\BudgetPrevisionnelType;
 use App\Repository\TransactionRepository;
+use App\Repository\BilanRepository;
+use App\Repository\Budget_previsionnelRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,12 +42,12 @@ final class TransactionController extends AbstractController
             $entityManager->persist($transaction);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Recette validée avec succès !');
-            return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Recette validÃ©e avec succÃ¨s !');
+            return $this->redirectToRoute('app_transaction_index',[], Response::HTTP_SEE_OTHER);
         }
 
         $solde = 0;
-        $derniersMouvements = [];
+        $derniersMouvements =[];
 
         if ($dummyFranchise) {
             $toutesLesTransactions = $transactionRepo->findBy(['franchise_id' => $dummyFranchise]);
@@ -54,14 +60,13 @@ final class TransactionController extends AbstractController
                 }
             }
 
-            $derniersMouvements = $transactionRepo->findBy(
-                ['franchise_id' => $dummyFranchise],
+            $derniersMouvements = $transactionRepo->findBy(['franchise_id' => $dummyFranchise],
                 ['date' => 'DESC'],
                 5
             );
         }
 
-        return $this->render('franchise/dashboard.html.twig', [
+        return $this->render('franchise/dashboard.html.twig',[
             'transactions' => $derniersMouvements,
             'form' => $form->createView(),
             'solde' => $solde,
@@ -79,34 +84,93 @@ final class TransactionController extends AbstractController
             $entityManager->persist($transaction);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_transaction_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_transaction_index',[], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('transaction/new.html.twig', [
+        return $this->render('franchise/new.html.twig',[
             'transaction' => $transaction,
             'form' => $form,
         ]);
     }
 
+    // =========================================================================
+    // NOUVELLE ROUTE : HISTORIQUE (PlacÃ©e AVANT le /{id} pour Ã©viter les conflits)
+    // =========================================================================
+    #[Route('/historique', name: 'app_transaction_historique', methods: ['GET'])]
+    public function historique(
+        Request $request,
+        TransactionRepository $transactionRepo, 
+        EntityManagerInterface $entityManager
+    ): Response
+    {
+        $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+
+        $typeFilter = $request->query->get('type', 'TOUT');
+        $searchQuery = $request->query->get('search', '');
+        $periode = $request->query->get('periode', 'this_month');
+        $dateStart = $request->query->get('date_start', '');
+        $dateEnd = $request->query->get('date_end', '');
+
+        // --- LECTURE DES DONNEES ---
+        $transactions = [];
+        $totalRecettes = 0;
+        $totalCharges = 0;
+
+        if ($dummyFranchise) {
+            $transactions = $transactionRepo->findFilteredTransactions(
+                $dummyFranchise, 
+                $typeFilter, 
+                $searchQuery,
+                $periode,
+                $dateStart,
+                $dateEnd
+            );
+
+            foreach ($transactions as $t) {
+                if ($t->getType() === 'RECETTE') {
+                    $totalRecettes += $t->getMontant();
+                } elseif ($t->getType() === 'DEPENSE') {
+                    $totalCharges += $t->getMontant();
+                }
+            }
+        }
+
+        $soldeFiltre = $totalRecettes - $totalCharges;
+
+        return $this->render('franchise/historique.html.twig',[
+            'transactions' => $transactions,
+            'nombreTransactions' => count($transactions),
+            'totalRecettes' => $totalRecettes,
+            'totalCharges' => $totalCharges,
+            'soldeFiltre' => $soldeFiltre,
+            'currentType' => $typeFilter,
+            'currentSearch' => $searchQuery,
+            'currentPeriode' => $periode,
+            'currentStart' => $dateStart,
+            'currentEnd' => $dateEnd
+        ]);
+    }
+    // =========================================================================
+
     #[Route('/{id}', name: 'app_transaction_show', methods: ['GET'])]
     public function show(Transaction $transaction): Response
     {
-        return $this->render('transaction/show.html.twig', [
+        return $this->render('franchise/show.html.twig',[
             'transaction' => $transaction,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_transaction_edit', methods: ['POST'])]
     public function edit(
-        Request $request, 
-        Transaction $transaction, 
+        Request $request,
+        Transaction $transaction,
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator
     ): JsonResponse {
         try {
             $data = json_decode($request->getContent(), true);
             if (!is_array($data) || empty($data)) {
-                return new JsonResponse(['success' => false, 'message' => 'Données invalides.'], 400);
+                return new JsonResponse(['success' => false, 'message' => 'DonnÃ©es invalides.'], 400);
             }
 
             $errorMessages = [];
@@ -163,7 +227,7 @@ final class TransactionController extends AbstractController
 
             return new JsonResponse([
                 'success' => true,
-                'message' => 'Transaction modifiée avec succès !',
+                'message' => 'Transaction modifiÃ©e avec succÃ¨s !',
                 'solde' => $solde,
                 'transaction' => [
                     'id' => $transaction->getId(),
@@ -200,7 +264,7 @@ final class TransactionController extends AbstractController
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Transaction supprimée avec succès !',
+            'message' => 'Transaction supprimÃ©e avec succÃ¨s !',
             'solde' => $solde,
         ]);
     }

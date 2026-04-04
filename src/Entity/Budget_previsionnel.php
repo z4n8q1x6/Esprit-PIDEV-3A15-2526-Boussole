@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use App\Entity\Franchises;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class Budget_previsionnel
@@ -16,18 +16,27 @@ class Budget_previsionnel
     private int $id;
 
     #[ORM\Column(type: "integer")]
+    #[Assert\NotBlank(message: "Le mois est obligatoire.")]
+    #[Assert\Range(min: 1, max: 12, notInRangeMessage: "Le mois doit être compris entre {{ min }} et {{ max }}")]
     private int $mois;
 
     #[ORM\Column(type: "integer")]
+    #[Assert\NotBlank(message: "L'année est obligatoire.")]
+    #[Assert\GreaterThanOrEqual(value: 2024, message: "L'année doit être supérieure ou égale à 2024")]
     private int $annee;
 
     #[ORM\Column(type: "float")]
+    #[Assert\NotBlank(message: "Le montant est obligatoire.")]
+    #[Assert\Positive(message: "Le montant ciblé doit être un nombre positif.")]
     private float $montant_cible;
 
     #[ORM\Column(type: "string")]
+    #[Assert\NotBlank(message: "Le type de budget est obligatoire.")]
+    #[Assert\Choice(choices: ['LIMITE_DEPENSE', 'OBJECTIF_REVENU'], message: "Le type doit être 'LIMITE_DEPENSE' ou 'OBJECTIF_REVENU'.")]
     private string $type_budget;
 
     #[ORM\Column(type: "string", length: 100)]
+    #[Assert\NotBlank(message: "La catégorie est obligatoire.")]
     private string $categorie;
 
         #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "budget_previsionnels")]
@@ -103,4 +112,12 @@ class Budget_previsionnel
     {
         $this->franchise_id = $value;
     }
+
+    // Alias pour la logique de formulaires Symfony (camelCase)
+    public function getMontantCible() { return $this->montant_cible; }
+    public function setMontantCible($value) { $this->montant_cible = $value; }
+    public function getTypeBudget() { return $this->type_budget; }
+    public function setTypeBudget($value) { $this->type_budget = $value; }
+    public function getFranchiseId() { return $this->franchise_id; }
+    public function setFranchiseId($value) { $this->franchise_id = $value; }
 }
