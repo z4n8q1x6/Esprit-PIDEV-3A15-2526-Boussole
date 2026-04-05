@@ -388,12 +388,6 @@ class __TwigTemplate_527135bfef66dfca8d7c654336c302a8 extends Template
             <button id=\"btn-export-pdf\" class=\"btn-new-user\" style=\"background: linear-gradient(135deg, #10b981 0%, #059669 100%);\">
                 <i class=\"fas fa-file-pdf\"></i> Exporter PDF
             </button>
-            <a href=\"";
-        // line 295
-        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_admin_user_new");
-        yield "\" class=\"btn-new-user\">
-                <i class=\"fas fa-plus\"></i> Ajouter une entreprise
-            </a>
         </div>
     </div>
 
@@ -406,8 +400,8 @@ class __TwigTemplate_527135bfef66dfca8d7c654336c302a8 extends Template
             <div class=\"stat-details\">
                 <h3>Total Entreprises</h3>
                 <div class=\"stat-value\" id=\"stat-total\">";
-        // line 309
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), (isset($context["entreprises"]) || array_key_exists("entreprises", $context) ? $context["entreprises"] : (function () { throw new RuntimeError('Variable "entreprises" does not exist.', 309, $this->source); })())), "html", null, true);
+        // line 306
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), (isset($context["entreprises"]) || array_key_exists("entreprises", $context) ? $context["entreprises"] : (function () { throw new RuntimeError('Variable "entreprises" does not exist.', 306, $this->source); })())), "html", null, true);
         yield "</div>
             </div>
         </div>
@@ -420,8 +414,8 @@ class __TwigTemplate_527135bfef66dfca8d7c654336c302a8 extends Template
                 <h3>Actives</h3>
                 <div class=\"stat-value\" id=\"stat-active\">
                     ";
-        // line 320
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), Twig\Extension\CoreExtension::filter($this->env, (isset($context["entreprises"]) || array_key_exists("entreprises", $context) ? $context["entreprises"] : (function () { throw new RuntimeError('Variable "entreprises" does not exist.', 320, $this->source); })()), function ($__e__) use ($context, $macros) { $context["e"] = $__e__; return CoreExtension::getAttribute($this->env, $this->source, (isset($context["e"]) || array_key_exists("e", $context) ? $context["e"] : (function () { throw new RuntimeError('Variable "e" does not exist.', 320, $this->source); })()), "actif", [], "any", false, false, false, 320); })), "html", null, true);
+        // line 317
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), Twig\Extension\CoreExtension::filter($this->env, (isset($context["entreprises"]) || array_key_exists("entreprises", $context) ? $context["entreprises"] : (function () { throw new RuntimeError('Variable "entreprises" does not exist.', 317, $this->source); })()), function ($__e__) use ($context, $macros) { $context["e"] = $__e__; return CoreExtension::getAttribute($this->env, $this->source, (isset($context["e"]) || array_key_exists("e", $context) ? $context["e"] : (function () { throw new RuntimeError('Variable "e" does not exist.', 317, $this->source); })()), "actif", [], "any", false, false, false, 317); })), "html", null, true);
         yield "
                 </div>
             </div>
@@ -435,8 +429,8 @@ class __TwigTemplate_527135bfef66dfca8d7c654336c302a8 extends Template
                 <h3>Inactives</h3>
                 <div class=\"stat-value\" id=\"stat-inactive\">
                     ";
-        // line 332
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), Twig\Extension\CoreExtension::filter($this->env, (isset($context["entreprises"]) || array_key_exists("entreprises", $context) ? $context["entreprises"] : (function () { throw new RuntimeError('Variable "entreprises" does not exist.', 332, $this->source); })()), function ($__e__) use ($context, $macros) { $context["e"] = $__e__; return  !CoreExtension::getAttribute($this->env, $this->source, (isset($context["e"]) || array_key_exists("e", $context) ? $context["e"] : (function () { throw new RuntimeError('Variable "e" does not exist.', 332, $this->source); })()), "actif", [], "any", false, false, false, 332); })), "html", null, true);
+        // line 329
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), Twig\Extension\CoreExtension::filter($this->env, (isset($context["entreprises"]) || array_key_exists("entreprises", $context) ? $context["entreprises"] : (function () { throw new RuntimeError('Variable "entreprises" does not exist.', 329, $this->source); })()), function ($__e__) use ($context, $macros) { $context["e"] = $__e__; return  !CoreExtension::getAttribute($this->env, $this->source, (isset($context["e"]) || array_key_exists("e", $context) ? $context["e"] : (function () { throw new RuntimeError('Variable "e" does not exist.', 329, $this->source); })()), "actif", [], "any", false, false, false, 329); })), "html", null, true);
         yield "
                 </div>
             </div>
@@ -473,57 +467,57 @@ class __TwigTemplate_527135bfef66dfca8d7c654336c302a8 extends Template
             </thead>
             <tbody>
                 ";
-        // line 367
+        // line 364
         $context['_parent'] = $context;
-        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["entreprises"]) || array_key_exists("entreprises", $context) ? $context["entreprises"] : (function () { throw new RuntimeError('Variable "entreprises" does not exist.', 367, $this->source); })()));
+        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["entreprises"]) || array_key_exists("entreprises", $context) ? $context["entreprises"] : (function () { throw new RuntimeError('Variable "entreprises" does not exist.', 364, $this->source); })()));
         $context['_iterated'] = false;
         foreach ($context['_seq'] as $context["_key"] => $context["entreprise"]) {
-            // line 368
+            // line 365
             yield "                <tr data-entreprise-id=\"";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "id", [], "any", false, false, false, 368), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "id", [], "any", false, false, false, 365), "html", null, true);
             yield "\">
                     <td class=\"editable-cell\" data-field=\"nom\" title=\"Double-cliquez pour modifier\">
                         <div class=\"cell-content\">";
-            // line 370
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "nom", [], "any", false, false, false, 370), "html", null, true);
+            // line 367
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "nom", [], "any", false, false, false, 367), "html", null, true);
             yield "</div>
                     </td>
                     <td class=\"editable-cell\" data-field=\"email\" title=\"Double-cliquez pour modifier\">
                         <div class=\"cell-content\">";
-            // line 373
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "email", [], "any", false, false, false, 373), "html", null, true);
+            // line 370
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "email", [], "any", false, false, false, 370), "html", null, true);
             yield "</div>
                     </td>
                     <td class=\"editable-cell\" data-field=\"telephone\" title=\"Double-cliquez pour modifier\">
                         <div class=\"cell-content\">";
-            // line 376
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "telephone", [], "any", false, false, false, 376), "html", null, true);
+            // line 373
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "telephone", [], "any", false, false, false, 373), "html", null, true);
             yield "</div>
                     </td>
                     <td class=\"editable-cell\" data-field=\"adresse\" title=\"Double-cliquez pour modifier\">
                         <div class=\"cell-content\">";
-            // line 379
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "adresse", [], "any", false, false, false, 379), "html", null, true);
+            // line 376
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "adresse", [], "any", false, false, false, 376), "html", null, true);
             yield "</div>
                     </td>
                     <td class=\"editable-cell\" data-field=\"solde_actuel\" title=\"Double-cliquez pour modifier\">
                         <div class=\"cell-content\">";
-            // line 382
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "solde_actuel", [], "any", false, false, false, 382), "html", null, true);
+            // line 379
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "solde_actuel", [], "any", false, false, false, 379), "html", null, true);
             yield "</div>
                     </td>
                     <td class=\"editable-status\" data-field=\"actif\" data-status=\"";
-            // line 384
-            yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "actif", [], "any", false, false, false, 384)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("1") : ("0"));
+            // line 381
+            yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "actif", [], "any", false, false, false, 381)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("1") : ("0"));
             yield "\" title=\"Double-cliquez pour basculer l'état\">
                         <div class=\"cell-content\">
                             <span class=\"role-badge ";
-            // line 386
-            yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "actif", [], "any", false, false, false, 386)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("badge-admin") : ("badge-inactive"));
+            // line 383
+            yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "actif", [], "any", false, false, false, 383)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("badge-admin") : ("badge-inactive"));
             yield "\">
                                 ";
-            // line 387
-            yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "actif", [], "any", false, false, false, 387)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("Actif") : ("Inactif"));
+            // line 384
+            yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "actif", [], "any", false, false, false, 384)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("Actif") : ("Inactif"));
             yield "
                             </span>
                         </div>
@@ -531,8 +525,8 @@ class __TwigTemplate_527135bfef66dfca8d7c654336c302a8 extends Template
                     <td>
                         <!-- Le bouton Voir a été supprimé comme demandé -->
                         <button class=\"btn-action btn-delete-entreprise\" data-id=\"";
-            // line 393
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "id", [], "any", false, false, false, 393), "html", null, true);
+            // line 390
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["entreprise"], "id", [], "any", false, false, false, 390), "html", null, true);
             yield "\" title=\"Supprimer\">
                             <i class=\"fas fa-trash-alt\"></i>
                         </button>
@@ -541,9 +535,9 @@ class __TwigTemplate_527135bfef66dfca8d7c654336c302a8 extends Template
                 ";
             $context['_iterated'] = true;
         }
-        // line 398
+        // line 395
         if (!$context['_iterated']) {
-            // line 399
+            // line 396
             yield "                <tr>
                     <td colspan=\"7\" style=\"text-align: center; padding: 40px; color: #64748b;\">
                         Aucune entreprise trouvée.
@@ -554,7 +548,7 @@ class __TwigTemplate_527135bfef66dfca8d7c654336c302a8 extends Template
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_key'], $context['entreprise'], $context['_parent'], $context['_iterated']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 405
+        // line 402
         yield "            </tbody>
         </table>
     </div>
@@ -585,7 +579,7 @@ class __TwigTemplate_527135bfef66dfca8d7c654336c302a8 extends Template
         yield from [];
     }
 
-    // line 430
+    // line 427
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -595,7 +589,7 @@ class __TwigTemplate_527135bfef66dfca8d7c654336c302a8 extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "javascripts"));
 
-        // line 431
+        // line 428
         yield "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js\"></script>
 <script src=\"https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js\"></script>
 <script>
@@ -911,7 +905,7 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     public function getDebugInfo(): array
     {
-        return array (  599 => 431,  589 => 430,  558 => 405,  547 => 399,  545 => 398,  535 => 393,  526 => 387,  522 => 386,  517 => 384,  512 => 382,  506 => 379,  500 => 376,  494 => 373,  488 => 370,  482 => 368,  477 => 367,  439 => 332,  424 => 320,  410 => 309,  393 => 295,  379 => 283,  369 => 282,  87 => 6,  77 => 5,  60 => 3,  43 => 1,);
+        return array (  593 => 428,  583 => 427,  552 => 402,  541 => 396,  539 => 395,  529 => 390,  520 => 384,  516 => 383,  511 => 381,  506 => 379,  500 => 376,  494 => 373,  488 => 370,  482 => 367,  476 => 365,  471 => 364,  433 => 329,  418 => 317,  404 => 306,  379 => 283,  369 => 282,  87 => 6,  77 => 5,  60 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -1210,9 +1204,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <button id=\"btn-export-pdf\" class=\"btn-new-user\" style=\"background: linear-gradient(135deg, #10b981 0%, #059669 100%);\">
                 <i class=\"fas fa-file-pdf\"></i> Exporter PDF
             </button>
-            <a href=\"{{ path('app_admin_user_new') }}\" class=\"btn-new-user\">
-                <i class=\"fas fa-plus\"></i> Ajouter une entreprise
-            </a>
         </div>
     </div>
 

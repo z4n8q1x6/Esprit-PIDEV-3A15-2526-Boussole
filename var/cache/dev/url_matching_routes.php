@@ -10,7 +10,7 @@ return [
     [ // $staticRoutes
         '/admin/entreprise' => [[['_route' => 'app_admin_entreprise', '_controller' => 'App\\Controller\\AdminEntrepriseController::index'], null, null, null, false, false, null]],
         '/admin/user' => [[['_route' => 'app_admin_user', '_controller' => 'App\\Controller\\AdminUserController::index'], null, null, null, false, false, null]],
-        '/admin/user/new' => [[['_route' => 'app_admin_user_new', '_controller' => 'App\\Controller\\AdminUserController::new'], null, null, null, false, false, null]],
+        '/admin/user/new' => [[['_route' => 'app_admin_user_new', '_controller' => 'App\\Controller\\AdminUserController::new'], null, ['POST' => 0], null, false, false, null]],
         '/front' => [[['_route' => 'app_front_home', '_controller' => 'App\\Controller\\FrontController::index'], null, null, null, false, false, null]],
         '/' => [[['_route' => 'app_home', '_controller' => 'App\\Controller\\SecurityController::home'], null, null, null, false, false, null]],
         '/login' => [[['_route' => 'app_login', '_controller' => 'App\\Controller\\SecurityController::login'], null, null, null, false, false, null]],

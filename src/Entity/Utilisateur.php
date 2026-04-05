@@ -11,8 +11,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id_user;
+    private ?int $id_user = null;
 
     #[ORM\Column(type: "string", length: 50)]
     private string $nom;
@@ -40,7 +41,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Franchises $id_franchise = null;
 
     #[ORM\Column(type: "text", nullable: true)]
-    private string $face_token;
+    private ?string $face_token = null;
 
     public function getId_user()
     {

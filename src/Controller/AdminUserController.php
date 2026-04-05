@@ -73,47 +73,92 @@ final class AdminUserController extends AbstractController
         return $this->json(['success' => true]);
     }
 
-    #[Route('/admin/user/new', name: 'app_admin_user_new')]
-    public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
+    #[Route('/admin/user/new', name: 'app_admin_user_new', methods: ['POST'])]
+    public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): \Symfony\Component\HttpFoundation\JsonResponse
     {
-        $utilisateur = new Utilisateur();
-        $franchise = new Franchises();
-        
-        // Auto default initialization to prevent null constraint errors
-        $franchise->setDate_creation(new \DateTime());
-        $utilisateur->setDate_creation(new \DateTime());
-        $utilisateur->setActif(true);
-        $utilisateur->setRole('ROLE_FRANCHISE');
-        
-        $utilisateur->setId_franchise($franchise);
+        $data = json_decode($request->getContent(), true);
 
-        $form = $this->createForm(UtilisateurType::class, $utilisateur);
-        $form->handleRequest($request);
+        // Server-side validation
+        $errors = [];
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            
-            if (empty($franchise->getEmail())) {
-                $franchise->setEmail($utilisateur->getEmail());
-            }
-
-            // Secure generated random password
-            $randomPassword = bin2hex(random_bytes(8));
-            $hashedPassword = $passwordHasher->hashPassword(
-                $utilisateur,
-                $randomPassword
-            );
-            $utilisateur->setMot_de_passe($hashedPassword);
-
-            // Persist the related entity first since it's required by the User constraints
-            $entityManager->persist($franchise);
-            $entityManager->persist($utilisateur);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_admin_user');
+        // Validate nom (letters and spaces only)
+        if (empty($data['nom']) || !preg_match('/^[a-zA-ZÀ-ÿ\s\-]+$/', $data['nom'])) {
+            $errors[] = 'Le nom ne doit contenir que des lettres.';
         }
 
-        return $this->render('admin_user/new.html.twig', [
-            'form' => $form->createView(),
+        // Validate prenom (letters and spaces only)
+        if (empty($data['prenom']) || !preg_match('/^[a-zA-ZÀ-ÿ\s\-]+$/', $data['prenom'])) {
+            $errors[] = 'Le prénom ne doit contenir que des lettres.';
+        }
+
+        // Validate email
+        if (empty($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'L\'adresse email n\'est pas valide.';
+        }
+
+        // Validate telephone (exactly 8 digits)
+        if (empty($data['telephone']) || !preg_match('/^\d{8}$/', $data['telephone'])) {
+            $errors[] = 'Le téléphone doit contenir exactement 8 chiffres.';
+        }
+
+        // Validate entreprise nom
+        if (empty($data['entreprise_nom']) || !preg_match('/^[a-zA-ZÀ-ÿ0-9\s\-\'\.]+$/', $data['entreprise_nom'])) {
+            $errors[] = 'Le nom de l\'entreprise n\'est pas valide.';
+        }
+
+        // Validate adresse
+        if (empty($data['adresse'])) {
+            $errors[] = 'L\'adresse est obligatoire.';
+        }
+
+        // Validate solde
+        if (!isset($data['solde']) || !is_numeric($data['solde']) || floatval($data['solde']) < 0) {
+            $errors[] = 'Le solde doit être un nombre positif.';
+        }
+
+        if (!empty($errors)) {
+            return $this->json(['success' => false, 'errors' => $errors], 400);
+        }
+
+        // Create Franchise
+        $franchise = new Franchises();
+        $franchise->setNom($data['entreprise_nom']);
+        $franchise->setEmail($data['email']);
+        $franchise->setTelephone($data['telephone']);
+        $franchise->setAdresse($data['adresse']);
+        $franchise->setSolde_actuel(floatval($data['solde']));
+        $franchise->setActif(true);
+        $franchise->setDate_creation(new \DateTime());
+
+        // Create User
+        $utilisateur = new Utilisateur();
+        $utilisateur->setNom($data['nom']);
+        $utilisateur->setPrenom($data['prenom']);
+        $utilisateur->setEmail($data['email']);
+        $utilisateur->setRole('ROLE_FRANCHISE');
+        $utilisateur->setActif(true);
+        $utilisateur->setDate_creation(new \DateTime());
+        $utilisateur->setId_franchise($franchise);
+
+        // Generate and hash password
+        $randomPassword = bin2hex(random_bytes(8));
+        $hashedPassword = $passwordHasher->hashPassword($utilisateur, $randomPassword);
+        $utilisateur->setMot_de_passe($hashedPassword);
+
+        $entityManager->persist($franchise);
+        $entityManager->persist($utilisateur);
+        $entityManager->flush();
+
+        return $this->json([
+            'success' => true,
+            'user' => [
+                'id' => $utilisateur->getId_user(),
+                'nom' => $utilisateur->getNom(),
+                'prenom' => $utilisateur->getPrenom(),
+                'email' => $utilisateur->getEmail(),
+                'role' => 'Entreprise',
+                'actif' => true,
+            ]
         ]);
     }
 }
