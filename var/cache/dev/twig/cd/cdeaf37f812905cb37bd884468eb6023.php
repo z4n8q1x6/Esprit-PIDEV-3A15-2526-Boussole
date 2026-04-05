@@ -332,20 +332,27 @@ class __TwigTemplate_5fc46d8cf5f82c13713d9dfbcb2835a3 extends Template
         transform: translateY(100px);
         opacity: 0;
         transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        z-index: 9999;
+        z-index: 99999;
     }
     #toast-notification.show {
         transform: translateY(0);
         opacity: 1;
     }
 
-    /* Delete Modal */
+    /* Generic Modal Overlay */
     .modal-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 0.3s;
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
+        display: none; align-items: center; justify-content: center;
+        z-index: 9999; opacity: 0; transition: opacity 0.3s;
     }
     .modal-overlay.show { display: flex; opacity: 1; }
+
+    /* Delete Modal */
     .custom-modal {
-        background: #1e293b; border-radius: 16px; padding: 30px; width: 400px; max-width: 90%; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transform: translateY(-20px); transition: transform 0.3s;
+        background: #1e293b; border-radius: 16px; padding: 30px; width: 400px; max-width: 90%;
+        border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        transform: translateY(-20px); transition: transform 0.3s;
     }
     .modal-overlay.show .custom-modal { transform: translateY(0); }
     .modal-icon { width: 60px; height: 60px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 20px; }
@@ -357,6 +364,146 @@ class __TwigTemplate_5fc46d8cf5f82c13713d9dfbcb2835a3 extends Template
     .btn-confirm-delete { flex: 1; padding: 12px; border-radius: 10px; background: #ef4444; color: #fff; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
     .btn-confirm-delete:hover { background: #dc2626; transform: translateY(-2px); }
 
+    /* ===== ADD MEMBER FORM MODAL ===== */
+    .form-modal {
+        background: #1e293b;
+        border-radius: 20px;
+        padding: 0;
+        width: 620px;
+        max-width: 95vw;
+        max-height: 90vh;
+        overflow-y: auto;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 25px 60px -12px rgba(0,0,0,0.6);
+        transform: scale(0.9) translateY(-20px);
+        transition: transform 0.3s ease;
+    }
+    .modal-overlay.show .form-modal { transform: scale(1) translateY(0); }
+
+    .form-modal-header {
+        padding: 28px 32px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .form-modal-header h2 {
+        color: #fff;
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0;
+    }
+    .form-modal-header .close-btn {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #94a3b8;
+        width: 36px; height: 36px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 18px;
+    }
+    .form-modal-header .close-btn:hover { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+    .form-modal-body { padding: 24px 32px 32px; }
+
+    .form-section-title {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #3b82f6;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(59,130,246,0.15);
+    }
+    .form-section-title i { margin-right: 8px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-row.single { grid-template-columns: 1fr; }
+
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #94a3b8;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .form-group label .required { color: #ef4444; margin-left: 2px; }
+
+    .form-group input {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        color: #fff;
+        padding: 12px 14px;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    .form-group input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        background: rgba(15, 23, 42, 0.8);
+    }
+    .form-group input.input-error {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239,68,68,0.15) !important;
+    }
+    .form-group input.input-success {
+        border-color: #10b981 !important;
+    }
+    .field-error {
+        color: #ef4444;
+        font-size: 11px;
+        margin-top: 4px;
+        min-height: 16px;
+        font-weight: 500;
+    }
+
+    .form-modal-footer {
+        padding: 0 32px 28px;
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+    .btn-submit-form {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 32px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-submit-form:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37,99,235,0.3); }
+    .btn-submit-form:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .btn-cancel-form {
+        background: rgba(255,255,255,0.05);
+        color: #e2e8f0;
+        font-weight: 600;
+        font-size: 14px;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding: 12px 24px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-cancel-form:hover { background: rgba(255,255,255,0.1); }
+    
+    .form-modal::-webkit-scrollbar { width: 6px; }
+    .form-modal::-webkit-scrollbar-track { background: transparent; }
+    .form-modal::-webkit-scrollbar-thumb { background: rgba(59,130,246,0.3); border-radius: 3px; }
+
 </style>
 ";
         
@@ -365,7 +512,7 @@ class __TwigTemplate_5fc46d8cf5f82c13713d9dfbcb2835a3 extends Template
         yield from [];
     }
 
-    // line 282
+    // line 429
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -375,7 +522,7 @@ class __TwigTemplate_5fc46d8cf5f82c13713d9dfbcb2835a3 extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "body"));
 
-        // line 283
+        // line 430
         yield "<div class=\"admin-container\">
     
     <!-- HEADER -->
@@ -388,12 +535,9 @@ class __TwigTemplate_5fc46d8cf5f82c13713d9dfbcb2835a3 extends Template
             <button id=\"btn-export-pdf\" class=\"btn-new-user\" style=\"background: linear-gradient(135deg, #10b981 0%, #059669 100%);\">
                 <i class=\"fas fa-file-pdf\"></i> Exporter PDF
             </button>
-            <a href=\"";
-        // line 295
-        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_admin_user_new");
-        yield "\" class=\"btn-new-user\">
+            <button id=\"btn-open-add-form\" class=\"btn-new-user\">
                 <i class=\"fas fa-plus\"></i> Ajouter un membre
-            </a>
+            </button>
         </div>
     </div>
 
@@ -406,8 +550,8 @@ class __TwigTemplate_5fc46d8cf5f82c13713d9dfbcb2835a3 extends Template
             <div class=\"stat-details\">
                 <h3>Total Utilisateurs</h3>
                 <div class=\"stat-value\" id=\"stat-total\">";
-        // line 309
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), (isset($context["users"]) || array_key_exists("users", $context) ? $context["users"] : (function () { throw new RuntimeError('Variable "users" does not exist.', 309, $this->source); })())), "html", null, true);
+        // line 456
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), (isset($context["users"]) || array_key_exists("users", $context) ? $context["users"] : (function () { throw new RuntimeError('Variable "users" does not exist.', 456, $this->source); })())), "html", null, true);
         yield "</div>
             </div>
         </div>
@@ -420,8 +564,8 @@ class __TwigTemplate_5fc46d8cf5f82c13713d9dfbcb2835a3 extends Template
                 <h3>Actifs</h3>
                 <div class=\"stat-value\" id=\"stat-active\">
                     ";
-        // line 320
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), Twig\Extension\CoreExtension::filter($this->env, (isset($context["users"]) || array_key_exists("users", $context) ? $context["users"] : (function () { throw new RuntimeError('Variable "users" does not exist.', 320, $this->source); })()), function ($__u__) use ($context, $macros) { $context["u"] = $__u__; return CoreExtension::getAttribute($this->env, $this->source, (isset($context["u"]) || array_key_exists("u", $context) ? $context["u"] : (function () { throw new RuntimeError('Variable "u" does not exist.', 320, $this->source); })()), "actif", [], "any", false, false, false, 320); })), "html", null, true);
+        // line 467
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), Twig\Extension\CoreExtension::filter($this->env, (isset($context["users"]) || array_key_exists("users", $context) ? $context["users"] : (function () { throw new RuntimeError('Variable "users" does not exist.', 467, $this->source); })()), function ($__u__) use ($context, $macros) { $context["u"] = $__u__; return CoreExtension::getAttribute($this->env, $this->source, (isset($context["u"]) || array_key_exists("u", $context) ? $context["u"] : (function () { throw new RuntimeError('Variable "u" does not exist.', 467, $this->source); })()), "actif", [], "any", false, false, false, 467); })), "html", null, true);
         yield "
                 </div>
             </div>
@@ -435,8 +579,8 @@ class __TwigTemplate_5fc46d8cf5f82c13713d9dfbcb2835a3 extends Template
                 <h3>Inactifs</h3>
                 <div class=\"stat-value\" id=\"stat-inactive\">
                     ";
-        // line 332
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), Twig\Extension\CoreExtension::filter($this->env, (isset($context["users"]) || array_key_exists("users", $context) ? $context["users"] : (function () { throw new RuntimeError('Variable "users" does not exist.', 332, $this->source); })()), function ($__u__) use ($context, $macros) { $context["u"] = $__u__; return  !CoreExtension::getAttribute($this->env, $this->source, (isset($context["u"]) || array_key_exists("u", $context) ? $context["u"] : (function () { throw new RuntimeError('Variable "u" does not exist.', 332, $this->source); })()), "actif", [], "any", false, false, false, 332); })), "html", null, true);
+        // line 479
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), Twig\Extension\CoreExtension::filter($this->env, (isset($context["users"]) || array_key_exists("users", $context) ? $context["users"] : (function () { throw new RuntimeError('Variable "users" does not exist.', 479, $this->source); })()), function ($__u__) use ($context, $macros) { $context["u"] = $__u__; return  !CoreExtension::getAttribute($this->env, $this->source, (isset($context["u"]) || array_key_exists("u", $context) ? $context["u"] : (function () { throw new RuntimeError('Variable "u" does not exist.', 479, $this->source); })()), "actif", [], "any", false, false, false, 479); })), "html", null, true);
         yield "
                 </div>
             </div>
@@ -472,72 +616,72 @@ class __TwigTemplate_5fc46d8cf5f82c13713d9dfbcb2835a3 extends Template
             </thead>
             <tbody>
                 ";
-        // line 366
+        // line 513
         $context['_parent'] = $context;
-        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["users"]) || array_key_exists("users", $context) ? $context["users"] : (function () { throw new RuntimeError('Variable "users" does not exist.', 366, $this->source); })()));
+        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["users"]) || array_key_exists("users", $context) ? $context["users"] : (function () { throw new RuntimeError('Variable "users" does not exist.', 513, $this->source); })()));
         $context['_iterated'] = false;
         foreach ($context['_seq'] as $context["_key"] => $context["user"]) {
-            // line 367
+            // line 514
             yield "                <tr data-user-id=\"";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["user"], "id_user", [], "any", false, false, false, 367), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["user"], "id_user", [], "any", false, false, false, 514), "html", null, true);
             yield "\">
                     <td class=\"editable-cell\" data-field=\"nom\" title=\"Double-cliquez pour modifier\">
                         <div class=\"cell-content\">";
-            // line 369
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["user"], "nom", [], "any", false, false, false, 369), "html", null, true);
+            // line 516
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["user"], "nom", [], "any", false, false, false, 516), "html", null, true);
             yield "</div>
                     </td>
                     <td class=\"editable-cell\" data-field=\"prenom\" title=\"Double-cliquez pour modifier\">
                         <div class=\"cell-content\">";
-            // line 372
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["user"], "prenom", [], "any", false, false, false, 372), "html", null, true);
+            // line 519
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["user"], "prenom", [], "any", false, false, false, 519), "html", null, true);
             yield "</div>
                     </td>
                     <td class=\"editable-cell\" data-field=\"email\" title=\"Double-cliquez pour modifier\">
                         <div class=\"cell-content\">";
-            // line 375
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["user"], "email", [], "any", false, false, false, 375), "html", null, true);
+            // line 522
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["user"], "email", [], "any", false, false, false, 522), "html", null, true);
             yield "</div>
                     </td>
                     <td>
                         ";
-            // line 378
-            if (CoreExtension::inFilter("ROLE_ADMIN", CoreExtension::getAttribute($this->env, $this->source, $context["user"], "roles", [], "any", false, false, false, 378))) {
-                // line 379
+            // line 525
+            if (CoreExtension::inFilter("ROLE_ADMIN", CoreExtension::getAttribute($this->env, $this->source, $context["user"], "roles", [], "any", false, false, false, 525))) {
+                // line 526
                 yield "                            <span class=\"role-badge badge-admin\">Administrateur</span>
                         ";
-            } elseif ((CoreExtension::inFilter("ROLE_FRANCHISE", CoreExtension::getAttribute($this->env, $this->source,             // line 380
-$context["user"], "roles", [], "any", false, false, false, 380)) || CoreExtension::inFilter("ROLE_ENTREPRISE", CoreExtension::getAttribute($this->env, $this->source, $context["user"], "roles", [], "any", false, false, false, 380)))) {
-                // line 381
+            } elseif ((CoreExtension::inFilter("ROLE_FRANCHISE", CoreExtension::getAttribute($this->env, $this->source,             // line 527
+$context["user"], "roles", [], "any", false, false, false, 527)) || CoreExtension::inFilter("ROLE_ENTREPRISE", CoreExtension::getAttribute($this->env, $this->source, $context["user"], "roles", [], "any", false, false, false, 527)))) {
+                // line 528
                 yield "                            <span class=\"role-badge badge-franchise\">Entreprise</span>
                         ";
             } else {
-                // line 383
+                // line 530
                 yield "                            <span class=\"role-badge badge-user\">Utilisateur</span>
                         ";
             }
-            // line 385
+            // line 532
             yield "                    </td>
                     <td class=\"editable-status\" data-field=\"actif\" data-status=\"";
-            // line 386
-            yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["user"], "actif", [], "any", false, false, false, 386)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("1") : ("0"));
+            // line 533
+            yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["user"], "actif", [], "any", false, false, false, 533)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("1") : ("0"));
             yield "\" title=\"Double-cliquez pour basculer l'état\">
                         <div class=\"cell-content\">
                             <span class=\"role-badge ";
-            // line 388
-            yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["user"], "actif", [], "any", false, false, false, 388)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("badge-admin") : ("badge-inactive"));
+            // line 535
+            yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["user"], "actif", [], "any", false, false, false, 535)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("badge-admin") : ("badge-inactive"));
             yield "\">
                                 ";
-            // line 389
-            yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["user"], "actif", [], "any", false, false, false, 389)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("Actif") : ("Inactif"));
+            // line 536
+            yield (((($tmp = CoreExtension::getAttribute($this->env, $this->source, $context["user"], "actif", [], "any", false, false, false, 536)) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("Actif") : ("Inactif"));
             yield "
                             </span>
                         </div>
                     </td>
                     <td>
                         <button class=\"btn-action btn-delete-user\" data-id=\"";
-            // line 394
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["user"], "id_user", [], "any", false, false, false, 394), "html", null, true);
+            // line 541
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["user"], "id_user", [], "any", false, false, false, 541), "html", null, true);
             yield "\" title=\"Supprimer\">
                             <i class=\"fas fa-trash-alt\"></i>
                         </button>
@@ -546,9 +690,9 @@ $context["user"], "roles", [], "any", false, false, false, 380)) || CoreExtensio
                 ";
             $context['_iterated'] = true;
         }
-        // line 399
+        // line 546
         if (!$context['_iterated']) {
-            // line 400
+            // line 547
             yield "                <tr>
                     <td colspan=\"6\" style=\"text-align: center; padding: 40px; color: #64748b;\">
                         Aucun utilisateur trouvé.
@@ -559,7 +703,7 @@ $context["user"], "roles", [], "any", false, false, false, 380)) || CoreExtensio
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_key'], $context['user'], $context['_parent'], $context['_iterated']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 406
+        // line 553
         yield "            </tbody>
         </table>
     </div>
@@ -583,6 +727,74 @@ $context["user"], "roles", [], "any", false, false, false, 380)) || CoreExtensio
     </div>
 </div>
 
+<!-- ===== ADD MEMBER FORM MODAL ===== -->
+<div class=\"modal-overlay\" id=\"add-member-modal\">
+    <div class=\"form-modal\">
+        <div class=\"form-modal-header\">
+            <h2><i class=\"fas fa-user-plus\" style=\"color: #3b82f6; margin-right: 10px;\"></i>Nouveau Membre</h2>
+            <button class=\"close-btn\" id=\"btn-close-form\">&times;</button>
+        </div>
+        <div class=\"form-modal-body\">
+            <!-- User Section -->
+            <div class=\"form-section-title\"><i class=\"fas fa-user\"></i>Informations Utilisateur</div>
+            <div class=\"form-row\">
+                <div class=\"form-group\">
+                    <label>Nom <span class=\"required\">*</span></label>
+                    <input type=\"text\" id=\"field-nom\" placeholder=\"Ex: Ben Ali\">
+                    <div class=\"field-error\" id=\"error-nom\"></div>
+                </div>
+                <div class=\"form-group\">
+                    <label>Prénom <span class=\"required\">*</span></label>
+                    <input type=\"text\" id=\"field-prenom\" placeholder=\"Ex: Mohamed\">
+                    <div class=\"field-error\" id=\"error-prenom\"></div>
+                </div>
+            </div>
+            <div class=\"form-row\">
+                <div class=\"form-group\">
+                    <label>Email <span class=\"required\">*</span></label>
+                    <input type=\"email\" id=\"field-email\" placeholder=\"Ex: contact@entreprise.tn\">
+                    <div class=\"field-error\" id=\"error-email\"></div>
+                </div>
+                <div class=\"form-group\">
+                    <label>Téléphone <span class=\"required\">*</span></label>
+                    <input type=\"text\" id=\"field-telephone\" placeholder=\"Ex: 12345678\" maxlength=\"8\">
+                    <div class=\"field-error\" id=\"error-telephone\"></div>
+                </div>
+            </div>
+
+            <!-- Enterprise Section -->
+            <div class=\"form-section-title\" style=\"margin-top: 28px;\"><i class=\"fas fa-building\"></i>Informations Entreprise</div>
+            <div class=\"form-row single\">
+                <div class=\"form-group\">
+                    <label>Nom de l'entreprise <span class=\"required\">*</span></label>
+                    <input type=\"text\" id=\"field-entreprise-nom\" placeholder=\"Ex: Boussole SARL\">
+                    <div class=\"field-error\" id=\"error-entreprise-nom\"></div>
+                </div>
+            </div>
+            <div class=\"form-row single\">
+                <div class=\"form-group\">
+                    <label>Adresse <span class=\"required\">*</span></label>
+                    <input type=\"text\" id=\"field-adresse\" placeholder=\"Ex: 12 Rue de la Liberté, Tunis\">
+                    <div class=\"field-error\" id=\"error-adresse\"></div>
+                </div>
+            </div>
+            <div class=\"form-row single\">
+                <div class=\"form-group\">
+                    <label>Solde initial (TND) <span class=\"required\">*</span></label>
+                    <input type=\"number\" id=\"field-solde\" placeholder=\"Ex: 5000\" min=\"0\" step=\"0.01\">
+                    <div class=\"field-error\" id=\"error-solde\"></div>
+                </div>
+            </div>
+        </div>
+        <div class=\"form-modal-footer\">
+            <button class=\"btn-cancel-form\" id=\"btn-cancel-form\">Annuler</button>
+            <button class=\"btn-submit-form\" id=\"btn-submit-form\">
+                <i class=\"fas fa-check\"></i> Créer le membre
+            </button>
+        </div>
+    </div>
+</div>
+
 ";
         
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
@@ -590,7 +802,7 @@ $context["user"], "roles", [], "any", false, false, false, 380)) || CoreExtensio
         yield from [];
     }
 
-    // line 431
+    // line 646
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -600,7 +812,7 @@ $context["user"], "roles", [], "any", false, false, false, 380)) || CoreExtensio
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "javascripts"));
 
-        // line 432
+        // line 647
         yield "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js\"></script>
 <script src=\"https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js\"></script>
 <script>
@@ -610,15 +822,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 1. TEXT EDITING
     editableCells.forEach(cell => {
-        // Double-click to edit text
         cell.addEventListener('dblclick', function() {
-            if (this.querySelector('input')) return; // Already editing
+            if (this.querySelector('input')) return;
             
             const contentDiv = this.querySelector('.cell-content');
             const originalValue = contentDiv.innerText.trim();
             const tdElement = this;
 
-            // Hide content, show input
             contentDiv.style.display = 'none';
             
             const input = document.createElement('input');
@@ -628,20 +838,15 @@ document.addEventListener('DOMContentLoaded', function() {
             
             tdElement.appendChild(input);
             input.focus();
-            
-            // Move cursor to end
             input.setSelectionRange(input.value.length, input.value.length);
 
-            // Handle Save
             const saveEdit = async () => {
                 const newValue = input.value.trim();
-                
-                // Remove input, show content
                 input.remove();
                 contentDiv.style.display = 'block';
 
                 if (newValue !== originalValue && newValue !== '') {
-                    contentDiv.innerText = newValue; // Optimistic UI update
+                    contentDiv.innerText = newValue;
                     
                     const userId = tdElement.closest('tr').getAttribute('data-user-id');
                     const field = tdElement.getAttribute('data-field');
@@ -649,19 +854,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     try {
                         const response = await fetch(`/admin/user/\${userId}/edit-inline`, {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
+                            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                             body: JSON.stringify({ field: field, value: newValue })
                         });
-                        
                         const data = await response.json();
-                        
                         if (data.success) {
                             showToast('Modification enregistrée avec succès');
                         } else {
-                            // Revert on failure
                             contentDiv.innerText = originalValue;
                             showToast('Erreur lors de la modification', true);
                         }
@@ -670,21 +869,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         showToast('Erreur serveur', true);
                     }
                 } else {
-                    // Revert if empty or no change
                     contentDiv.innerText = originalValue;
                 }
             };
 
-            // Commit on Enter, Cancel on Escape, Commit on Blur
             input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    saveEdit();
-                } else if (e.key === 'Escape') {
-                    input.remove();
-                    contentDiv.style.display = 'block';
-                }
+                if (e.key === 'Enter') saveEdit();
+                else if (e.key === 'Escape') { input.remove(); contentDiv.style.display = 'block'; }
             });
-            
             input.addEventListener('blur', saveEdit);
         });
     });
@@ -695,10 +887,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const tdElement = this;
             const contentDiv = tdElement.querySelector('.cell-content');
             const userId = tdElement.closest('tr').getAttribute('data-user-id');
-            const field = 'actif'; // or tdElement.getAttribute('data-field')
             
             const currentStatus = tdElement.getAttribute('data-status') === '1';
-            const newStatus = !currentStatus; // Toggle
+            const newStatus = !currentStatus;
             
             tdElement.style.opacity = '0.5';
 
@@ -706,11 +897,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const response = await fetch(`/admin/user/\${userId}/edit-inline`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                    body: JSON.stringify({ field: field, value: newStatus })
+                    body: JSON.stringify({ field: 'actif', value: newStatus })
                 });
-                
                 const data = await response.json();
-                
                 if (data.success) {
                     tdElement.setAttribute('data-status', newStatus ? '1' : '0');
                     if (newStatus) {
@@ -723,7 +912,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         document.getElementById('stat-inactive').innerText = parseInt(document.getElementById('stat-inactive').innerText) + 1;
                     }
                     showToast('Statut mis à jour avec succès');
-                    filterTable(); // Apply current filters to newly toggled state
+                    filterTable();
                 } else {
                     showToast('Erreur lors de la mise à jour', true);
                 }
@@ -743,20 +932,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function filterTable() {
         const searchTerm = searchInput.value.toLowerCase();
         const statusValue = statusFilter.value;
-
         tableRows.forEach(row => {
             const textContent = row.innerText.toLowerCase();
             const statusCell = row.querySelector('.editable-status');
             const rowStatus = statusCell ? statusCell.getAttribute('data-status') : null;
-            
             const matchesSearch = textContent.includes(searchTerm);
             const matchesStatus = statusValue === 'all' || rowStatus === statusValue;
-            
-            if (matchesSearch && matchesStatus) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+            row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
         });
     }
 
@@ -775,41 +957,31 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             userToDeleteId = this.getAttribute('data-id');
             rowToDelete = this.closest('tr');
-            
             deleteModal.style.display = 'flex';
             setTimeout(() => { deleteModal.classList.add('show'); }, 10);
         });
     });
 
-    const closeModal = () => {
+    const closeDeleteModal = () => {
         deleteModal.classList.remove('show');
         setTimeout(() => { deleteModal.style.display = 'none'; }, 300);
         userToDeleteId = null;
         rowToDelete = null;
     };
-
-    btnCancelDelete.addEventListener('click', closeModal);
-    
-    deleteModal.addEventListener('click', function(e) {
-        if (e.target === deleteModal) closeModal();
-    });
+    btnCancelDelete.addEventListener('click', closeDeleteModal);
+    deleteModal.addEventListener('click', function(e) { if (e.target === deleteModal) closeDeleteModal(); });
 
     btnConfirmDelete.addEventListener('click', async function() {
         if (!userToDeleteId) return;
-        
         btnConfirmDelete.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> Suppression...';
         btnConfirmDelete.disabled = true;
-
         try {
             const response = await fetch(`/admin/user/\${userToDeleteId}/delete`, {
                 method: 'DELETE',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
-            
             const data = await response.json();
-            
             if (data.success) {
-                // Update stats
                 const statusCell = rowToDelete.querySelector('.editable-status');
                 if (statusCell) {
                     if (statusCell.getAttribute('data-status') === '1') {
@@ -819,18 +991,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 document.getElementById('stat-total').innerText = parseInt(document.getElementById('stat-total').innerText) - 1;
-
-                // Instant removal without TR transition to fix whitespace bug
                 rowToDelete.remove();
-                
-                // Check if table is empty, show empty state
                 const tbody = document.querySelector('.users-table tbody');
                 if (tbody.querySelectorAll('tr[data-user-id]').length === 0) {
                     tbody.innerHTML = '<tr><td colspan=\"6\" style=\"text-align: center; padding: 40px; color: #64748b;\">Aucun utilisateur trouvé.</td></tr>';
                 }
-
                 showToast('Utilisateur supprimé avec succès');
-                closeModal();
+                closeDeleteModal();
             } else {
                 showToast('Erreur lors de la suppression', true);
             }
@@ -842,41 +1009,243 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // ===== 5. ADD MEMBER FORM MODAL =====
+    const addModal = document.getElementById('add-member-modal');
+    const btnOpenForm = document.getElementById('btn-open-add-form');
+    const btnCloseForm = document.getElementById('btn-close-form');
+    const btnCancelForm = document.getElementById('btn-cancel-form');
+    const btnSubmitForm = document.getElementById('btn-submit-form');
+
+    const fields = {
+        nom: document.getElementById('field-nom'),
+        prenom: document.getElementById('field-prenom'),
+        email: document.getElementById('field-email'),
+        telephone: document.getElementById('field-telephone'),
+        entreprise_nom: document.getElementById('field-entreprise-nom'),
+        adresse: document.getElementById('field-adresse'),
+        solde: document.getElementById('field-solde'),
+    };
+
+    // Open
+    btnOpenForm.addEventListener('click', () => {
+        addModal.style.display = 'flex';
+        setTimeout(() => { addModal.classList.add('show'); }, 10);
+        Object.values(fields).forEach(f => { f.value = ''; f.classList.remove('input-error', 'input-success'); });
+        document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+    });
+
+    // Close
+    const closeAddModal = () => {
+        addModal.classList.remove('show');
+        setTimeout(() => { addModal.style.display = 'none'; }, 300);
+    };
+    btnCloseForm.addEventListener('click', closeAddModal);
+    btnCancelForm.addEventListener('click', closeAddModal);
+    addModal.addEventListener('click', function(e) { if (e.target === addModal) closeAddModal(); });
+
+    // ---- CLIENT-SIDE VALIDATION ----
+    const nameRegex = /^[a-zA-ZÀ-ÿ\\s\\-]+\$/;
+    const phoneRegex = /^\\d{8}\$/;
+    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+\$/;
+
+    function setFieldError(key, msg) {
+        document.getElementById('error-' + key).textContent = msg;
+        fields[key].classList.add('input-error');
+        fields[key].classList.remove('input-success');
+    }
+    function setFieldSuccess(key) {
+        document.getElementById('error-' + key).textContent = '';
+        fields[key].classList.remove('input-error');
+        fields[key].classList.add('input-success');
+    }
+    function clearFieldState(key) {
+        document.getElementById('error-' + key).textContent = '';
+        fields[key].classList.remove('input-error', 'input-success');
+    }
+
+    // Live validation on blur
+    fields.nom.addEventListener('blur', () => {
+        if (!fields.nom.value.trim()) setFieldError('nom', 'Le nom est obligatoire.');
+        else if (!nameRegex.test(fields.nom.value.trim())) setFieldError('nom', 'Le nom ne doit contenir que des lettres.');
+        else setFieldSuccess('nom');
+    });
+    fields.prenom.addEventListener('blur', () => {
+        if (!fields.prenom.value.trim()) setFieldError('prenom', 'Le prénom est obligatoire.');
+        else if (!nameRegex.test(fields.prenom.value.trim())) setFieldError('prenom', 'Le prénom ne doit contenir que des lettres.');
+        else setFieldSuccess('prenom');
+    });
+    fields.email.addEventListener('blur', () => {
+        if (!fields.email.value.trim()) setFieldError('email', 'L\\'email est obligatoire.');
+        else if (!emailRegex.test(fields.email.value.trim())) setFieldError('email', 'Adresse email invalide.');
+        else setFieldSuccess('email');
+    });
+    fields.telephone.addEventListener('blur', () => {
+        if (!fields.telephone.value.trim()) setFieldError('telephone', 'Le téléphone est obligatoire.');
+        else if (!phoneRegex.test(fields.telephone.value.trim())) setFieldError('telephone', 'Le téléphone doit contenir exactement 8 chiffres.');
+        else setFieldSuccess('telephone');
+    });
+    // Block non-numeric input on phone
+    fields.telephone.addEventListener('input', () => {
+        fields.telephone.value = fields.telephone.value.replace(/\\D/g, '').slice(0, 8);
+    });
+    fields.entreprise_nom.addEventListener('blur', () => {
+        if (!fields.entreprise_nom.value.trim()) setFieldError('entreprise-nom', 'Le nom est obligatoire.');
+        else setFieldSuccess('entreprise-nom');
+    });
+    // Fix: map entreprise-nom key for setFieldSuccess/Error
+    function setFieldError2(id, msg) {
+        document.getElementById('error-' + id).textContent = msg;
+        document.getElementById('field-' + id).classList.add('input-error');
+        document.getElementById('field-' + id).classList.remove('input-success');
+    }
+    function setFieldSuccess2(id) {
+        document.getElementById('error-' + id).textContent = '';
+        document.getElementById('field-' + id).classList.remove('input-error');
+        document.getElementById('field-' + id).classList.add('input-success');
+    }
+    fields.entreprise_nom.removeEventListener('blur', () => {});
+    fields.entreprise_nom.addEventListener('blur', () => {
+        if (!fields.entreprise_nom.value.trim()) setFieldError2('entreprise-nom', 'Le nom est obligatoire.');
+        else setFieldSuccess2('entreprise-nom');
+    });
+    fields.adresse.addEventListener('blur', () => {
+        if (!fields.adresse.value.trim()) setFieldError2('adresse', 'L\\'adresse est obligatoire.');
+        else setFieldSuccess2('adresse');
+    });
+    fields.solde.addEventListener('blur', () => {
+        if (fields.solde.value === '' || parseFloat(fields.solde.value) < 0) setFieldError2('solde', 'Le solde doit être un nombre positif.');
+        else setFieldSuccess2('solde');
+    });
+
+    // Full validation
+    function validateAll() {
+        let valid = true;
+
+        if (!fields.nom.value.trim()) { setFieldError('nom', 'Le nom est obligatoire.'); valid = false; }
+        else if (!nameRegex.test(fields.nom.value.trim())) { setFieldError('nom', 'Le nom ne doit contenir que des lettres.'); valid = false; }
+        else setFieldSuccess('nom');
+
+        if (!fields.prenom.value.trim()) { setFieldError('prenom', 'Le prénom est obligatoire.'); valid = false; }
+        else if (!nameRegex.test(fields.prenom.value.trim())) { setFieldError('prenom', 'Le prénom ne doit contenir que des lettres.'); valid = false; }
+        else setFieldSuccess('prenom');
+
+        if (!fields.email.value.trim()) { setFieldError('email', 'L\\'email est obligatoire.'); valid = false; }
+        else if (!emailRegex.test(fields.email.value.trim())) { setFieldError('email', 'Adresse email invalide.'); valid = false; }
+        else setFieldSuccess('email');
+
+        if (!fields.telephone.value.trim()) { setFieldError('telephone', 'Le téléphone est obligatoire.'); valid = false; }
+        else if (!phoneRegex.test(fields.telephone.value.trim())) { setFieldError('telephone', 'Exactement 8 chiffres requis.'); valid = false; }
+        else setFieldSuccess('telephone');
+
+        if (!fields.entreprise_nom.value.trim()) { setFieldError2('entreprise-nom', 'Le nom est obligatoire.'); valid = false; }
+        else setFieldSuccess2('entreprise-nom');
+
+        if (!fields.adresse.value.trim()) { setFieldError2('adresse', 'L\\'adresse est obligatoire.'); valid = false; }
+        else setFieldSuccess2('adresse');
+
+        if (fields.solde.value === '' || parseFloat(fields.solde.value) < 0) { setFieldError2('solde', 'Le solde doit être un nombre positif.'); valid = false; }
+        else setFieldSuccess2('solde');
+
+        return valid;
+    }
+
+    // SUBMIT
+    btnSubmitForm.addEventListener('click', async function() {
+        if (!validateAll()) return;
+
+        btnSubmitForm.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> Création...';
+        btnSubmitForm.disabled = true;
+
+        const payload = {
+            nom: fields.nom.value.trim(),
+            prenom: fields.prenom.value.trim(),
+            email: fields.email.value.trim(),
+            telephone: fields.telephone.value.trim(),
+            entreprise_nom: fields.entreprise_nom.value.trim(),
+            adresse: fields.adresse.value.trim(),
+            solde: parseFloat(fields.solde.value),
+        };
+
+        try {
+            const response = await fetch('/admin/user/new', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Add row to table dynamically
+                const tbody = document.querySelector('.users-table tbody');
+                // Remove empty state row if present
+                const emptyRow = tbody.querySelector('tr:not([data-user-id])');
+                if (emptyRow) emptyRow.remove();
+
+                const newRow = document.createElement('tr');
+                newRow.setAttribute('data-user-id', data.user.id);
+                newRow.innerHTML = `
+                    <td class=\"editable-cell\" data-field=\"nom\" title=\"Double-cliquez pour modifier\"><div class=\"cell-content\">\${data.user.nom}</div></td>
+                    <td class=\"editable-cell\" data-field=\"prenom\" title=\"Double-cliquez pour modifier\"><div class=\"cell-content\">\${data.user.prenom}</div></td>
+                    <td class=\"editable-cell\" data-field=\"email\" title=\"Double-cliquez pour modifier\"><div class=\"cell-content\">\${data.user.email}</div></td>
+                    <td><span class=\"role-badge badge-franchise\">Entreprise</span></td>
+                    <td class=\"editable-status\" data-field=\"actif\" data-status=\"1\" title=\"Double-cliquez pour basculer l'état\">
+                        <div class=\"cell-content\"><span class=\"role-badge badge-admin\">Actif</span></div>
+                    </td>
+                    <td>
+                        <button class=\"btn-action btn-delete-user\" data-id=\"\${data.user.id}\" title=\"Supprimer\">
+                            <i class=\"fas fa-trash-alt\"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(newRow);
+
+                // Update stats
+                document.getElementById('stat-total').innerText = parseInt(document.getElementById('stat-total').innerText) + 1;
+                document.getElementById('stat-active').innerText = parseInt(document.getElementById('stat-active').innerText) + 1;
+
+                showToast('Membre et entreprise créés avec succès !');
+                closeAddModal();
+            } else {
+                const errorMsg = data.errors ? data.errors.join(' ') : 'Erreur lors de la création.';
+                showToast(errorMsg, true);
+            }
+        } catch (error) {
+            showToast('Erreur serveur.', true);
+        } finally {
+            btnSubmitForm.innerHTML = '<i class=\"fas fa-check\"></i> Créer le membre';
+            btnSubmitForm.disabled = false;
+        }
+    });
+
     // Toast logic
     function showToast(message, isError = false) {
         const toast = document.getElementById('toast-notification');
         toast.innerHTML = isError ? `<i class=\"fas fa-exclamation-circle me-2\"></i> \${message}` : `<i class=\"fas fa-check-circle me-2\"></i> \${message}`;
         toast.style.background = isError ? '#ef4444' : '#10b981';
-        
         toast.classList.add('show');
-        
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
+        setTimeout(() => { toast.classList.remove('show'); }, 3000);
     }
 
-    // 5. PDF EXPORT
+    // 6. PDF EXPORT
     document.getElementById('btn-export-pdf').addEventListener('click', function() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        
         doc.setFontSize(18);
         doc.text(\"Rapport des Utilisateurs - Boussole\", 14, 20);
-        
         const rows = [];
         const displayedRows = document.querySelectorAll('.users-table tbody tr[data-user-id]');
-        
         displayedRows.forEach(row => {
             if (row.style.display !== 'none') {
-                const nom = row.cells[0].innerText.trim();
-                const prenom = row.cells[1].innerText.trim();
-                const email = row.cells[2].innerText.trim();
-                const role = row.cells[3].innerText.trim();
-                const status = row.cells[4].innerText.trim();
-                rows.push([nom, prenom, email, role, status]);
+                rows.push([
+                    row.cells[0].innerText.trim(),
+                    row.cells[1].innerText.trim(),
+                    row.cells[2].innerText.trim(),
+                    row.cells[3].innerText.trim(),
+                    row.cells[4].innerText.trim(),
+                ]);
             }
         });
-
         doc.autoTable({
             head: [['Nom', 'Prénom', 'Email', 'Rôle', 'État']],
             body: rows,
@@ -884,7 +1253,6 @@ document.addEventListener('DOMContentLoaded', function() {
             styles: { font: 'helvetica', fontSize: 10 },
             headStyles: { fillColor: [59, 130, 246] }
         });
-
         doc.save('Utilisateurs_Boussole.pdf');
     });
 });
@@ -917,7 +1285,7 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     public function getDebugInfo(): array
     {
-        return array (  604 => 432,  594 => 431,  563 => 406,  552 => 400,  550 => 399,  540 => 394,  532 => 389,  528 => 388,  523 => 386,  520 => 385,  516 => 383,  512 => 381,  510 => 380,  507 => 379,  505 => 378,  499 => 375,  493 => 372,  487 => 369,  481 => 367,  476 => 366,  439 => 332,  424 => 320,  410 => 309,  393 => 295,  379 => 283,  369 => 282,  87 => 6,  77 => 5,  60 => 3,  43 => 1,);
+        return array (  816 => 647,  806 => 646,  707 => 553,  696 => 547,  694 => 546,  684 => 541,  676 => 536,  672 => 535,  667 => 533,  664 => 532,  660 => 530,  656 => 528,  654 => 527,  651 => 526,  649 => 525,  643 => 522,  637 => 519,  631 => 516,  625 => 514,  620 => 513,  583 => 479,  568 => 467,  554 => 456,  526 => 430,  516 => 429,  87 => 6,  77 => 5,  60 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -1175,20 +1543,27 @@ document.addEventListener('DOMContentLoaded', function() {
         transform: translateY(100px);
         opacity: 0;
         transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        z-index: 9999;
+        z-index: 99999;
     }
     #toast-notification.show {
         transform: translateY(0);
         opacity: 1;
     }
 
-    /* Delete Modal */
+    /* Generic Modal Overlay */
     .modal-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 0.3s;
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px);
+        display: none; align-items: center; justify-content: center;
+        z-index: 9999; opacity: 0; transition: opacity 0.3s;
     }
     .modal-overlay.show { display: flex; opacity: 1; }
+
+    /* Delete Modal */
     .custom-modal {
-        background: #1e293b; border-radius: 16px; padding: 30px; width: 400px; max-width: 90%; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transform: translateY(-20px); transition: transform 0.3s;
+        background: #1e293b; border-radius: 16px; padding: 30px; width: 400px; max-width: 90%;
+        border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        transform: translateY(-20px); transition: transform 0.3s;
     }
     .modal-overlay.show .custom-modal { transform: translateY(0); }
     .modal-icon { width: 60px; height: 60px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 20px; }
@@ -1199,6 +1574,146 @@ document.addEventListener('DOMContentLoaded', function() {
     .btn-cancel:hover { background: rgba(255,255,255,0.1); }
     .btn-confirm-delete { flex: 1; padding: 12px; border-radius: 10px; background: #ef4444; color: #fff; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
     .btn-confirm-delete:hover { background: #dc2626; transform: translateY(-2px); }
+
+    /* ===== ADD MEMBER FORM MODAL ===== */
+    .form-modal {
+        background: #1e293b;
+        border-radius: 20px;
+        padding: 0;
+        width: 620px;
+        max-width: 95vw;
+        max-height: 90vh;
+        overflow-y: auto;
+        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 25px 60px -12px rgba(0,0,0,0.6);
+        transform: scale(0.9) translateY(-20px);
+        transition: transform 0.3s ease;
+    }
+    .modal-overlay.show .form-modal { transform: scale(1) translateY(0); }
+
+    .form-modal-header {
+        padding: 28px 32px 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .form-modal-header h2 {
+        color: #fff;
+        font-size: 22px;
+        font-weight: 700;
+        margin: 0;
+    }
+    .form-modal-header .close-btn {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #94a3b8;
+        width: 36px; height: 36px;
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 18px;
+    }
+    .form-modal-header .close-btn:hover { background: rgba(239,68,68,0.15); color: #ef4444; }
+
+    .form-modal-body { padding: 24px 32px 32px; }
+
+    .form-section-title {
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #3b82f6;
+        margin-bottom: 16px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(59,130,246,0.15);
+    }
+    .form-section-title i { margin-right: 8px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-row.single { grid-template-columns: 1fr; }
+
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #94a3b8;
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .form-group label .required { color: #ef4444; margin-left: 2px; }
+
+    .form-group input {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        color: #fff;
+        padding: 12px 14px;
+        font-size: 14px;
+        transition: all 0.2s;
+    }
+    .form-group input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        background: rgba(15, 23, 42, 0.8);
+    }
+    .form-group input.input-error {
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 3px rgba(239,68,68,0.15) !important;
+    }
+    .form-group input.input-success {
+        border-color: #10b981 !important;
+    }
+    .field-error {
+        color: #ef4444;
+        font-size: 11px;
+        margin-top: 4px;
+        min-height: 16px;
+        font-weight: 500;
+    }
+
+    .form-modal-footer {
+        padding: 0 32px 28px;
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+    }
+    .btn-submit-form {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 32px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .btn-submit-form:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(37,99,235,0.3); }
+    .btn-submit-form:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .btn-cancel-form {
+        background: rgba(255,255,255,0.05);
+        color: #e2e8f0;
+        font-weight: 600;
+        font-size: 14px;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 12px;
+        padding: 12px 24px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-cancel-form:hover { background: rgba(255,255,255,0.1); }
+    
+    .form-modal::-webkit-scrollbar { width: 6px; }
+    .form-modal::-webkit-scrollbar-track { background: transparent; }
+    .form-modal::-webkit-scrollbar-thumb { background: rgba(59,130,246,0.3); border-radius: 3px; }
 
 </style>
 {% endblock %}
@@ -1216,9 +1731,9 @@ document.addEventListener('DOMContentLoaded', function() {
             <button id=\"btn-export-pdf\" class=\"btn-new-user\" style=\"background: linear-gradient(135deg, #10b981 0%, #059669 100%);\">
                 <i class=\"fas fa-file-pdf\"></i> Exporter PDF
             </button>
-            <a href=\"{{ path('app_admin_user_new') }}\" class=\"btn-new-user\">
+            <button id=\"btn-open-add-form\" class=\"btn-new-user\">
                 <i class=\"fas fa-plus\"></i> Ajouter un membre
-            </a>
+            </button>
         </div>
     </div>
 
@@ -1350,6 +1865,74 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
+<!-- ===== ADD MEMBER FORM MODAL ===== -->
+<div class=\"modal-overlay\" id=\"add-member-modal\">
+    <div class=\"form-modal\">
+        <div class=\"form-modal-header\">
+            <h2><i class=\"fas fa-user-plus\" style=\"color: #3b82f6; margin-right: 10px;\"></i>Nouveau Membre</h2>
+            <button class=\"close-btn\" id=\"btn-close-form\">&times;</button>
+        </div>
+        <div class=\"form-modal-body\">
+            <!-- User Section -->
+            <div class=\"form-section-title\"><i class=\"fas fa-user\"></i>Informations Utilisateur</div>
+            <div class=\"form-row\">
+                <div class=\"form-group\">
+                    <label>Nom <span class=\"required\">*</span></label>
+                    <input type=\"text\" id=\"field-nom\" placeholder=\"Ex: Ben Ali\">
+                    <div class=\"field-error\" id=\"error-nom\"></div>
+                </div>
+                <div class=\"form-group\">
+                    <label>Prénom <span class=\"required\">*</span></label>
+                    <input type=\"text\" id=\"field-prenom\" placeholder=\"Ex: Mohamed\">
+                    <div class=\"field-error\" id=\"error-prenom\"></div>
+                </div>
+            </div>
+            <div class=\"form-row\">
+                <div class=\"form-group\">
+                    <label>Email <span class=\"required\">*</span></label>
+                    <input type=\"email\" id=\"field-email\" placeholder=\"Ex: contact@entreprise.tn\">
+                    <div class=\"field-error\" id=\"error-email\"></div>
+                </div>
+                <div class=\"form-group\">
+                    <label>Téléphone <span class=\"required\">*</span></label>
+                    <input type=\"text\" id=\"field-telephone\" placeholder=\"Ex: 12345678\" maxlength=\"8\">
+                    <div class=\"field-error\" id=\"error-telephone\"></div>
+                </div>
+            </div>
+
+            <!-- Enterprise Section -->
+            <div class=\"form-section-title\" style=\"margin-top: 28px;\"><i class=\"fas fa-building\"></i>Informations Entreprise</div>
+            <div class=\"form-row single\">
+                <div class=\"form-group\">
+                    <label>Nom de l'entreprise <span class=\"required\">*</span></label>
+                    <input type=\"text\" id=\"field-entreprise-nom\" placeholder=\"Ex: Boussole SARL\">
+                    <div class=\"field-error\" id=\"error-entreprise-nom\"></div>
+                </div>
+            </div>
+            <div class=\"form-row single\">
+                <div class=\"form-group\">
+                    <label>Adresse <span class=\"required\">*</span></label>
+                    <input type=\"text\" id=\"field-adresse\" placeholder=\"Ex: 12 Rue de la Liberté, Tunis\">
+                    <div class=\"field-error\" id=\"error-adresse\"></div>
+                </div>
+            </div>
+            <div class=\"form-row single\">
+                <div class=\"form-group\">
+                    <label>Solde initial (TND) <span class=\"required\">*</span></label>
+                    <input type=\"number\" id=\"field-solde\" placeholder=\"Ex: 5000\" min=\"0\" step=\"0.01\">
+                    <div class=\"field-error\" id=\"error-solde\"></div>
+                </div>
+            </div>
+        </div>
+        <div class=\"form-modal-footer\">
+            <button class=\"btn-cancel-form\" id=\"btn-cancel-form\">Annuler</button>
+            <button class=\"btn-submit-form\" id=\"btn-submit-form\">
+                <i class=\"fas fa-check\"></i> Créer le membre
+            </button>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block javascripts %}
@@ -1362,15 +1945,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // 1. TEXT EDITING
     editableCells.forEach(cell => {
-        // Double-click to edit text
         cell.addEventListener('dblclick', function() {
-            if (this.querySelector('input')) return; // Already editing
+            if (this.querySelector('input')) return;
             
             const contentDiv = this.querySelector('.cell-content');
             const originalValue = contentDiv.innerText.trim();
             const tdElement = this;
 
-            // Hide content, show input
             contentDiv.style.display = 'none';
             
             const input = document.createElement('input');
@@ -1380,20 +1961,15 @@ document.addEventListener('DOMContentLoaded', function() {
             
             tdElement.appendChild(input);
             input.focus();
-            
-            // Move cursor to end
             input.setSelectionRange(input.value.length, input.value.length);
 
-            // Handle Save
             const saveEdit = async () => {
                 const newValue = input.value.trim();
-                
-                // Remove input, show content
                 input.remove();
                 contentDiv.style.display = 'block';
 
                 if (newValue !== originalValue && newValue !== '') {
-                    contentDiv.innerText = newValue; // Optimistic UI update
+                    contentDiv.innerText = newValue;
                     
                     const userId = tdElement.closest('tr').getAttribute('data-user-id');
                     const field = tdElement.getAttribute('data-field');
@@ -1401,19 +1977,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     try {
                         const response = await fetch(`/admin/user/\${userId}/edit-inline`, {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            },
+                            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                             body: JSON.stringify({ field: field, value: newValue })
                         });
-                        
                         const data = await response.json();
-                        
                         if (data.success) {
                             showToast('Modification enregistrée avec succès');
                         } else {
-                            // Revert on failure
                             contentDiv.innerText = originalValue;
                             showToast('Erreur lors de la modification', true);
                         }
@@ -1422,21 +1992,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         showToast('Erreur serveur', true);
                     }
                 } else {
-                    // Revert if empty or no change
                     contentDiv.innerText = originalValue;
                 }
             };
 
-            // Commit on Enter, Cancel on Escape, Commit on Blur
             input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    saveEdit();
-                } else if (e.key === 'Escape') {
-                    input.remove();
-                    contentDiv.style.display = 'block';
-                }
+                if (e.key === 'Enter') saveEdit();
+                else if (e.key === 'Escape') { input.remove(); contentDiv.style.display = 'block'; }
             });
-            
             input.addEventListener('blur', saveEdit);
         });
     });
@@ -1447,10 +2010,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const tdElement = this;
             const contentDiv = tdElement.querySelector('.cell-content');
             const userId = tdElement.closest('tr').getAttribute('data-user-id');
-            const field = 'actif'; // or tdElement.getAttribute('data-field')
             
             const currentStatus = tdElement.getAttribute('data-status') === '1';
-            const newStatus = !currentStatus; // Toggle
+            const newStatus = !currentStatus;
             
             tdElement.style.opacity = '0.5';
 
@@ -1458,11 +2020,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const response = await fetch(`/admin/user/\${userId}/edit-inline`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                    body: JSON.stringify({ field: field, value: newStatus })
+                    body: JSON.stringify({ field: 'actif', value: newStatus })
                 });
-                
                 const data = await response.json();
-                
                 if (data.success) {
                     tdElement.setAttribute('data-status', newStatus ? '1' : '0');
                     if (newStatus) {
@@ -1475,7 +2035,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         document.getElementById('stat-inactive').innerText = parseInt(document.getElementById('stat-inactive').innerText) + 1;
                     }
                     showToast('Statut mis à jour avec succès');
-                    filterTable(); // Apply current filters to newly toggled state
+                    filterTable();
                 } else {
                     showToast('Erreur lors de la mise à jour', true);
                 }
@@ -1495,20 +2055,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function filterTable() {
         const searchTerm = searchInput.value.toLowerCase();
         const statusValue = statusFilter.value;
-
         tableRows.forEach(row => {
             const textContent = row.innerText.toLowerCase();
             const statusCell = row.querySelector('.editable-status');
             const rowStatus = statusCell ? statusCell.getAttribute('data-status') : null;
-            
             const matchesSearch = textContent.includes(searchTerm);
             const matchesStatus = statusValue === 'all' || rowStatus === statusValue;
-            
-            if (matchesSearch && matchesStatus) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
+            row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
         });
     }
 
@@ -1527,41 +2080,31 @@ document.addEventListener('DOMContentLoaded', function() {
         btn.addEventListener('click', function() {
             userToDeleteId = this.getAttribute('data-id');
             rowToDelete = this.closest('tr');
-            
             deleteModal.style.display = 'flex';
             setTimeout(() => { deleteModal.classList.add('show'); }, 10);
         });
     });
 
-    const closeModal = () => {
+    const closeDeleteModal = () => {
         deleteModal.classList.remove('show');
         setTimeout(() => { deleteModal.style.display = 'none'; }, 300);
         userToDeleteId = null;
         rowToDelete = null;
     };
-
-    btnCancelDelete.addEventListener('click', closeModal);
-    
-    deleteModal.addEventListener('click', function(e) {
-        if (e.target === deleteModal) closeModal();
-    });
+    btnCancelDelete.addEventListener('click', closeDeleteModal);
+    deleteModal.addEventListener('click', function(e) { if (e.target === deleteModal) closeDeleteModal(); });
 
     btnConfirmDelete.addEventListener('click', async function() {
         if (!userToDeleteId) return;
-        
         btnConfirmDelete.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> Suppression...';
         btnConfirmDelete.disabled = true;
-
         try {
             const response = await fetch(`/admin/user/\${userToDeleteId}/delete`, {
                 method: 'DELETE',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
-            
             const data = await response.json();
-            
             if (data.success) {
-                // Update stats
                 const statusCell = rowToDelete.querySelector('.editable-status');
                 if (statusCell) {
                     if (statusCell.getAttribute('data-status') === '1') {
@@ -1571,18 +2114,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
                 document.getElementById('stat-total').innerText = parseInt(document.getElementById('stat-total').innerText) - 1;
-
-                // Instant removal without TR transition to fix whitespace bug
                 rowToDelete.remove();
-                
-                // Check if table is empty, show empty state
                 const tbody = document.querySelector('.users-table tbody');
                 if (tbody.querySelectorAll('tr[data-user-id]').length === 0) {
                     tbody.innerHTML = '<tr><td colspan=\"6\" style=\"text-align: center; padding: 40px; color: #64748b;\">Aucun utilisateur trouvé.</td></tr>';
                 }
-
                 showToast('Utilisateur supprimé avec succès');
-                closeModal();
+                closeDeleteModal();
             } else {
                 showToast('Erreur lors de la suppression', true);
             }
@@ -1594,41 +2132,243 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // ===== 5. ADD MEMBER FORM MODAL =====
+    const addModal = document.getElementById('add-member-modal');
+    const btnOpenForm = document.getElementById('btn-open-add-form');
+    const btnCloseForm = document.getElementById('btn-close-form');
+    const btnCancelForm = document.getElementById('btn-cancel-form');
+    const btnSubmitForm = document.getElementById('btn-submit-form');
+
+    const fields = {
+        nom: document.getElementById('field-nom'),
+        prenom: document.getElementById('field-prenom'),
+        email: document.getElementById('field-email'),
+        telephone: document.getElementById('field-telephone'),
+        entreprise_nom: document.getElementById('field-entreprise-nom'),
+        adresse: document.getElementById('field-adresse'),
+        solde: document.getElementById('field-solde'),
+    };
+
+    // Open
+    btnOpenForm.addEventListener('click', () => {
+        addModal.style.display = 'flex';
+        setTimeout(() => { addModal.classList.add('show'); }, 10);
+        Object.values(fields).forEach(f => { f.value = ''; f.classList.remove('input-error', 'input-success'); });
+        document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
+    });
+
+    // Close
+    const closeAddModal = () => {
+        addModal.classList.remove('show');
+        setTimeout(() => { addModal.style.display = 'none'; }, 300);
+    };
+    btnCloseForm.addEventListener('click', closeAddModal);
+    btnCancelForm.addEventListener('click', closeAddModal);
+    addModal.addEventListener('click', function(e) { if (e.target === addModal) closeAddModal(); });
+
+    // ---- CLIENT-SIDE VALIDATION ----
+    const nameRegex = /^[a-zA-ZÀ-ÿ\\s\\-]+\$/;
+    const phoneRegex = /^\\d{8}\$/;
+    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+\$/;
+
+    function setFieldError(key, msg) {
+        document.getElementById('error-' + key).textContent = msg;
+        fields[key].classList.add('input-error');
+        fields[key].classList.remove('input-success');
+    }
+    function setFieldSuccess(key) {
+        document.getElementById('error-' + key).textContent = '';
+        fields[key].classList.remove('input-error');
+        fields[key].classList.add('input-success');
+    }
+    function clearFieldState(key) {
+        document.getElementById('error-' + key).textContent = '';
+        fields[key].classList.remove('input-error', 'input-success');
+    }
+
+    // Live validation on blur
+    fields.nom.addEventListener('blur', () => {
+        if (!fields.nom.value.trim()) setFieldError('nom', 'Le nom est obligatoire.');
+        else if (!nameRegex.test(fields.nom.value.trim())) setFieldError('nom', 'Le nom ne doit contenir que des lettres.');
+        else setFieldSuccess('nom');
+    });
+    fields.prenom.addEventListener('blur', () => {
+        if (!fields.prenom.value.trim()) setFieldError('prenom', 'Le prénom est obligatoire.');
+        else if (!nameRegex.test(fields.prenom.value.trim())) setFieldError('prenom', 'Le prénom ne doit contenir que des lettres.');
+        else setFieldSuccess('prenom');
+    });
+    fields.email.addEventListener('blur', () => {
+        if (!fields.email.value.trim()) setFieldError('email', 'L\\'email est obligatoire.');
+        else if (!emailRegex.test(fields.email.value.trim())) setFieldError('email', 'Adresse email invalide.');
+        else setFieldSuccess('email');
+    });
+    fields.telephone.addEventListener('blur', () => {
+        if (!fields.telephone.value.trim()) setFieldError('telephone', 'Le téléphone est obligatoire.');
+        else if (!phoneRegex.test(fields.telephone.value.trim())) setFieldError('telephone', 'Le téléphone doit contenir exactement 8 chiffres.');
+        else setFieldSuccess('telephone');
+    });
+    // Block non-numeric input on phone
+    fields.telephone.addEventListener('input', () => {
+        fields.telephone.value = fields.telephone.value.replace(/\\D/g, '').slice(0, 8);
+    });
+    fields.entreprise_nom.addEventListener('blur', () => {
+        if (!fields.entreprise_nom.value.trim()) setFieldError('entreprise-nom', 'Le nom est obligatoire.');
+        else setFieldSuccess('entreprise-nom');
+    });
+    // Fix: map entreprise-nom key for setFieldSuccess/Error
+    function setFieldError2(id, msg) {
+        document.getElementById('error-' + id).textContent = msg;
+        document.getElementById('field-' + id).classList.add('input-error');
+        document.getElementById('field-' + id).classList.remove('input-success');
+    }
+    function setFieldSuccess2(id) {
+        document.getElementById('error-' + id).textContent = '';
+        document.getElementById('field-' + id).classList.remove('input-error');
+        document.getElementById('field-' + id).classList.add('input-success');
+    }
+    fields.entreprise_nom.removeEventListener('blur', () => {});
+    fields.entreprise_nom.addEventListener('blur', () => {
+        if (!fields.entreprise_nom.value.trim()) setFieldError2('entreprise-nom', 'Le nom est obligatoire.');
+        else setFieldSuccess2('entreprise-nom');
+    });
+    fields.adresse.addEventListener('blur', () => {
+        if (!fields.adresse.value.trim()) setFieldError2('adresse', 'L\\'adresse est obligatoire.');
+        else setFieldSuccess2('adresse');
+    });
+    fields.solde.addEventListener('blur', () => {
+        if (fields.solde.value === '' || parseFloat(fields.solde.value) < 0) setFieldError2('solde', 'Le solde doit être un nombre positif.');
+        else setFieldSuccess2('solde');
+    });
+
+    // Full validation
+    function validateAll() {
+        let valid = true;
+
+        if (!fields.nom.value.trim()) { setFieldError('nom', 'Le nom est obligatoire.'); valid = false; }
+        else if (!nameRegex.test(fields.nom.value.trim())) { setFieldError('nom', 'Le nom ne doit contenir que des lettres.'); valid = false; }
+        else setFieldSuccess('nom');
+
+        if (!fields.prenom.value.trim()) { setFieldError('prenom', 'Le prénom est obligatoire.'); valid = false; }
+        else if (!nameRegex.test(fields.prenom.value.trim())) { setFieldError('prenom', 'Le prénom ne doit contenir que des lettres.'); valid = false; }
+        else setFieldSuccess('prenom');
+
+        if (!fields.email.value.trim()) { setFieldError('email', 'L\\'email est obligatoire.'); valid = false; }
+        else if (!emailRegex.test(fields.email.value.trim())) { setFieldError('email', 'Adresse email invalide.'); valid = false; }
+        else setFieldSuccess('email');
+
+        if (!fields.telephone.value.trim()) { setFieldError('telephone', 'Le téléphone est obligatoire.'); valid = false; }
+        else if (!phoneRegex.test(fields.telephone.value.trim())) { setFieldError('telephone', 'Exactement 8 chiffres requis.'); valid = false; }
+        else setFieldSuccess('telephone');
+
+        if (!fields.entreprise_nom.value.trim()) { setFieldError2('entreprise-nom', 'Le nom est obligatoire.'); valid = false; }
+        else setFieldSuccess2('entreprise-nom');
+
+        if (!fields.adresse.value.trim()) { setFieldError2('adresse', 'L\\'adresse est obligatoire.'); valid = false; }
+        else setFieldSuccess2('adresse');
+
+        if (fields.solde.value === '' || parseFloat(fields.solde.value) < 0) { setFieldError2('solde', 'Le solde doit être un nombre positif.'); valid = false; }
+        else setFieldSuccess2('solde');
+
+        return valid;
+    }
+
+    // SUBMIT
+    btnSubmitForm.addEventListener('click', async function() {
+        if (!validateAll()) return;
+
+        btnSubmitForm.innerHTML = '<i class=\"fas fa-spinner fa-spin\"></i> Création...';
+        btnSubmitForm.disabled = true;
+
+        const payload = {
+            nom: fields.nom.value.trim(),
+            prenom: fields.prenom.value.trim(),
+            email: fields.email.value.trim(),
+            telephone: fields.telephone.value.trim(),
+            entreprise_nom: fields.entreprise_nom.value.trim(),
+            adresse: fields.adresse.value.trim(),
+            solde: parseFloat(fields.solde.value),
+        };
+
+        try {
+            const response = await fetch('/admin/user/new', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Add row to table dynamically
+                const tbody = document.querySelector('.users-table tbody');
+                // Remove empty state row if present
+                const emptyRow = tbody.querySelector('tr:not([data-user-id])');
+                if (emptyRow) emptyRow.remove();
+
+                const newRow = document.createElement('tr');
+                newRow.setAttribute('data-user-id', data.user.id);
+                newRow.innerHTML = `
+                    <td class=\"editable-cell\" data-field=\"nom\" title=\"Double-cliquez pour modifier\"><div class=\"cell-content\">\${data.user.nom}</div></td>
+                    <td class=\"editable-cell\" data-field=\"prenom\" title=\"Double-cliquez pour modifier\"><div class=\"cell-content\">\${data.user.prenom}</div></td>
+                    <td class=\"editable-cell\" data-field=\"email\" title=\"Double-cliquez pour modifier\"><div class=\"cell-content\">\${data.user.email}</div></td>
+                    <td><span class=\"role-badge badge-franchise\">Entreprise</span></td>
+                    <td class=\"editable-status\" data-field=\"actif\" data-status=\"1\" title=\"Double-cliquez pour basculer l'état\">
+                        <div class=\"cell-content\"><span class=\"role-badge badge-admin\">Actif</span></div>
+                    </td>
+                    <td>
+                        <button class=\"btn-action btn-delete-user\" data-id=\"\${data.user.id}\" title=\"Supprimer\">
+                            <i class=\"fas fa-trash-alt\"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(newRow);
+
+                // Update stats
+                document.getElementById('stat-total').innerText = parseInt(document.getElementById('stat-total').innerText) + 1;
+                document.getElementById('stat-active').innerText = parseInt(document.getElementById('stat-active').innerText) + 1;
+
+                showToast('Membre et entreprise créés avec succès !');
+                closeAddModal();
+            } else {
+                const errorMsg = data.errors ? data.errors.join(' ') : 'Erreur lors de la création.';
+                showToast(errorMsg, true);
+            }
+        } catch (error) {
+            showToast('Erreur serveur.', true);
+        } finally {
+            btnSubmitForm.innerHTML = '<i class=\"fas fa-check\"></i> Créer le membre';
+            btnSubmitForm.disabled = false;
+        }
+    });
+
     // Toast logic
     function showToast(message, isError = false) {
         const toast = document.getElementById('toast-notification');
         toast.innerHTML = isError ? `<i class=\"fas fa-exclamation-circle me-2\"></i> \${message}` : `<i class=\"fas fa-check-circle me-2\"></i> \${message}`;
         toast.style.background = isError ? '#ef4444' : '#10b981';
-        
         toast.classList.add('show');
-        
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 3000);
+        setTimeout(() => { toast.classList.remove('show'); }, 3000);
     }
 
-    // 5. PDF EXPORT
+    // 6. PDF EXPORT
     document.getElementById('btn-export-pdf').addEventListener('click', function() {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
-        
         doc.setFontSize(18);
         doc.text(\"Rapport des Utilisateurs - Boussole\", 14, 20);
-        
         const rows = [];
         const displayedRows = document.querySelectorAll('.users-table tbody tr[data-user-id]');
-        
         displayedRows.forEach(row => {
             if (row.style.display !== 'none') {
-                const nom = row.cells[0].innerText.trim();
-                const prenom = row.cells[1].innerText.trim();
-                const email = row.cells[2].innerText.trim();
-                const role = row.cells[3].innerText.trim();
-                const status = row.cells[4].innerText.trim();
-                rows.push([nom, prenom, email, role, status]);
+                rows.push([
+                    row.cells[0].innerText.trim(),
+                    row.cells[1].innerText.trim(),
+                    row.cells[2].innerText.trim(),
+                    row.cells[3].innerText.trim(),
+                    row.cells[4].innerText.trim(),
+                ]);
             }
         });
-
         doc.autoTable({
             head: [['Nom', 'Prénom', 'Email', 'Rôle', 'État']],
             body: rows,
@@ -1636,7 +2376,6 @@ document.addEventListener('DOMContentLoaded', function() {
             styles: { font: 'helvetica', fontSize: 10 },
             headStyles: { fillColor: [59, 130, 246] }
         });
-
         doc.save('Utilisateurs_Boussole.pdf');
     });
 });

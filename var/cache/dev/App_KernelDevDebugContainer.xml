@@ -9,8 +9,8 @@
     <parameter key="kernel.runtime_mode.cli">%env(not:default:kernel.runtime_mode.web:)%</parameter>
     <parameter key="kernel.runtime_mode.worker">%env(bool:default::key:worker:default:kernel.runtime_mode:)%</parameter>
     <parameter key="kernel.debug">true</parameter>
-    <parameter key="kernel.build_dir">C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev</parameter>
-    <parameter key="kernel.cache_dir">C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev</parameter>
+    <parameter key="kernel.build_dir">C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev</parameter>
+    <parameter key="kernel.cache_dir">C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev</parameter>
     <parameter key="kernel.logs_dir">C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole/var/log</parameter>
     <parameter key="kernel.bundles" type="collection">
       <parameter key="FrameworkBundle">Symfony\Bundle\FrameworkBundle\FrameworkBundle</parameter>
@@ -117,12 +117,12 @@
     <parameter key="asset.request_context.base_path">null</parameter>
     <parameter key="asset.request_context.secure">null</parameter>
     <parameter key="debug.error_handler.throw_at">-1</parameter>
-    <parameter key="debug.container.dump">C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev/App_KernelDevDebugContainer.xml</parameter>
+    <parameter key="debug.container.dump">C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev/App_KernelDevDebugContainer.xml</parameter>
     <parameter key="router.request_context.host">localhost</parameter>
     <parameter key="router.request_context.scheme">http</parameter>
     <parameter key="router.request_context.base_url">%env(DEFAULT_URI)%</parameter>
     <parameter key="router.resource">kernel::loadRoutes</parameter>
-    <parameter key="router.cache_dir">C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev</parameter>
+    <parameter key="router.cache_dir">C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev</parameter>
     <parameter key="request_listener.http_port">80</parameter>
     <parameter key="request_listener.https_port">443</parameter>
     <parameter key="cache.prefix.seed">_C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole.App_KernelDevDebugContainer</parameter>
@@ -199,6 +199,19 @@
       </call>
       <call method="setDescription">
         <argument>Creates a new admin user.</argument>
+      </call>
+    </service>
+    <service id="App\Command\FixPasswordsCommand" class="App\Command\FixPasswordsCommand" autowire="true" autoconfigure="true">
+      <tag name="console.command" command="app:fix-passwords" description="Fix enterprise user passwords" help=""/>
+      <tag name="console.command"/>
+      <tag name="container.no_preload"/>
+      <argument type="service" id="doctrine.orm.default_entity_manager"/>
+      <argument type="service" id="security.user_password_hasher"/>
+      <call method="setName">
+        <argument>app:fix-passwords</argument>
+      </call>
+      <call method="setDescription">
+        <argument>Fix enterprise user passwords</argument>
       </call>
     </service>
     <service id="App\Controller\AdminEntrepriseController" class="App\Controller\AdminEntrepriseController" public="true" autowire="true" autoconfigure="true">
@@ -378,7 +391,7 @@
       <tag name="container.no_preload"/>
       <argument type="tagged_iterator" tag="kernel.cache_warmer"/>
       <argument>true</argument>
-      <argument>C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev/App_KernelDevDebugContainerDeprecations.log</argument>
+      <argument>C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev/App_KernelDevDebugContainerDeprecations.log</argument>
     </service>
     <service id="cache_clearer" class="Symfony\Component\HttpKernel\CacheClearer\ChainCacheClearer">
       <argument type="tagged_iterator" tag="kernel.cache_clearer"/>
@@ -999,7 +1012,7 @@
       <argument>w7N4TmHFDJ</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev/pools/system</argument>
+      <argument>C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev/pools/system</argument>
       <argument type="service" id="logger" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -1009,7 +1022,7 @@
       <argument>Y2xDFfBH26</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev/pools/system</argument>
+      <argument>C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev/pools/system</argument>
       <argument type="service" id="logger" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -1019,7 +1032,7 @@
       <argument>NsEsMvB5yz</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev/pools/system</argument>
+      <argument>C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev/pools/system</argument>
       <argument type="service" id="logger" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -1029,7 +1042,7 @@
       <argument>f1v+M+3Eqo</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev/pools/system</argument>
+      <argument>C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev/pools/system</argument>
       <argument type="service" id="logger" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -1039,7 +1052,7 @@
       <argument/>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev/pools/system</argument>
+      <argument>C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev/pools/system</argument>
       <argument type="service" id="logger" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -1707,7 +1720,7 @@
       <argument type="service" id=".service_locator.TVmQFtt.router.default"/>
       <argument>kernel::loadRoutes</argument>
       <argument type="collection">
-        <argument key="cache_dir">C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev</argument>
+        <argument key="cache_dir">C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev</argument>
         <argument key="debug">true</argument>
         <argument key="generator_class">Symfony\Component\Routing\Generator\CompiledUrlGenerator</argument>
         <argument key="generator_dumper_class">Symfony\Component\Routing\Generator\Dumper\CompiledUrlGeneratorDumper</argument>
@@ -1900,7 +1913,7 @@
       <argument>true</argument>
     </service>
     <service id="session.storage.factory.mock_file" class="Symfony\Component\HttpFoundation\Session\Storage\MockFileSessionStorageFactory">
-      <argument>C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev/sessions</argument>
+      <argument>C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev/sessions</argument>
       <argument>MOCKSESSID</argument>
       <argument type="service">
         <service class="Symfony\Component\HttpFoundation\Session\Storage\MetadataBag">
@@ -2834,7 +2847,7 @@
       <tag name="kernel.reset" method="?resetGlobals"/>
       <argument type="service" id="twig.loader.native_filesystem"/>
       <argument type="collection">
-        <argument key="cache">C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev/twig</argument>
+        <argument key="cache">C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev/twig</argument>
         <argument key="charset">UTF-8</argument>
         <argument key="debug">true</argument>
         <argument key="strict_variables">true</argument>
@@ -3226,7 +3239,7 @@
       <argument>UwLQ0Edtk5</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev/pools/system</argument>
+      <argument>C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev/pools/system</argument>
       <argument type="service" id="logger" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -3242,7 +3255,7 @@
       <argument>eqlLmYUKDd</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev/pools/system</argument>
+      <argument>C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev/pools/system</argument>
       <argument type="service" id="logger" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -3252,7 +3265,7 @@
       <argument>uLOZFSSKU-</argument>
       <argument>0</argument>
       <argument>%container.build_id%</argument>
-      <argument>C:\Users\Technologie\Desktop\Esprit-PIDEV-3A15-2526-Boussole\var\cache\dev/pools/system</argument>
+      <argument>C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/cache/dev/pools/system</argument>
       <argument type="service" id="logger" on-invalid="ignore"/>
       <factory class="Symfony\Component\Cache\Adapter\AbstractAdapter" method="createSystemCache"/>
     </service>
@@ -4035,8 +4048,8 @@
       <call method="setOptions">
         <argument type="collection">
           <argument key="login_path">app_login</argument>
+          <argument key="default_target_path">app_home</argument>
           <argument key="always_use_default_target_path">false</argument>
-          <argument key="default_target_path">/</argument>
           <argument key="target_path_parameter">_target_path</argument>
           <argument key="use_referer">false</argument>
         </argument>
@@ -4298,6 +4311,9 @@
     <service id=".instanceof.Symfony\Component\Console\Command\Command.0.App\Command\CreateAdminCommand" class="App\Command\CreateAdminCommand" autowire="true" abstract="true"/>
     <service id=".instanceof.App\Command\CreateAdminCommand.0.App\Command\CreateAdminCommand" class="App\Command\CreateAdminCommand" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Command\CreateAdminCommand" class="App\Command\CreateAdminCommand" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Component\Console\Command\Command.0.App\Command\FixPasswordsCommand" class="App\Command\FixPasswordsCommand" autowire="true" abstract="true"/>
+    <service id=".instanceof.App\Command\FixPasswordsCommand.0.App\Command\FixPasswordsCommand" class="App\Command\FixPasswordsCommand" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Command\FixPasswordsCommand" class="App\Command\FixPasswordsCommand" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\AdminEntrepriseController" class="App\Controller\AdminEntrepriseController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\AdminEntrepriseController" class="App\Controller\AdminEntrepriseController" autowire="true" abstract="true"/>
     <service id=".instanceof.App\Controller\AdminEntrepriseController.0.App\Controller\AdminEntrepriseController" class="App\Controller\AdminEntrepriseController" autowire="true" abstract="true"/>
@@ -5519,6 +5535,13 @@
       <argument>false</argument>
       <argument type="service_closure" id="App\Command\CreateAdminCommand"/>
     </service>
+    <service id=".App\Command\FixPasswordsCommand.lazy" class="Symfony\Component\Console\Command\LazyCommand">
+      <argument>app:fix-passwords</argument>
+      <argument type="collection"/>
+      <argument>Fix enterprise user passwords</argument>
+      <argument>false</argument>
+      <argument type="service_closure" id="App\Command\FixPasswordsCommand"/>
+    </service>
     <service id=".console.command.about.lazy" class="Symfony\Component\Console\Command\LazyCommand">
       <argument>about</argument>
       <argument type="collection"/>
@@ -6065,9 +6088,10 @@
     </service>
     <service id="console.command_loader" class="Symfony\Component\Console\CommandLoader\ContainerCommandLoader" public="true">
       <tag name="container.no_preload"/>
-      <argument type="service" id=".service_locator.3PiRP4w"/>
+      <argument type="service" id=".service_locator.cSKn86d"/>
       <argument type="collection">
         <argument key="app:create-admin">App\Command\CreateAdminCommand</argument>
+        <argument key="app:fix-passwords">App\Command\FixPasswordsCommand</argument>
         <argument key="about">console.command.about</argument>
         <argument key="assets:install">console.command.assets_install</argument>
         <argument key="cache:clear">console.command.cache_clear</argument>
@@ -6168,10 +6192,11 @@
         <argument key="make:webhook">maker.auto_command.make_webhook</argument>
       </argument>
     </service>
-    <service id=".service_locator.3PiRP4w" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.cSKn86d" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Command\CreateAdminCommand" type="service_closure" id=".App\Command\CreateAdminCommand.lazy"/>
+        <argument key="App\Command\FixPasswordsCommand" type="service_closure" id=".App\Command\FixPasswordsCommand.lazy"/>
         <argument key="console.command.about" type="service_closure" id=".console.command.about.lazy"/>
         <argument key="console.command.assets_install" type="service_closure" id=".console.command.assets_install.lazy"/>
         <argument key="console.command.cache_clear" type="service_closure" id=".console.command.cache_clear.lazy"/>

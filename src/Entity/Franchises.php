@@ -4,16 +4,22 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\Utilisateur;
 
 #[ORM\Entity]
 class Franchises
 {
+    public function __construct()
+    {
+        $this->utilisateurs = new ArrayCollection();
+    }
 
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: "string", length: 100)]
     private string $nom;
