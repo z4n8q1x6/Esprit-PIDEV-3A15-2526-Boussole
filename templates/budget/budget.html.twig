@@ -168,7 +168,7 @@
                     <tbody>
                     {% for b in budgets %}
                         <tr id="row-{{ b.id }}">
-                            <td>{{ b.franchiseId ? "Franchise " ~ b.franchiseId.id : '<span class="badge bg-secondary text-dark">Réseau Global</span>'|raw }}</td>
+                            <td>{{ b.franchiseId ? b.franchiseId.nom : '<span class="badge bg-secondary text-dark">Réseau Global</span>'|raw }}</td>
                             <td>
                                 <div class="editable-cell d-inline-block fw-bold text-white" data-id="{{ b.id }}" data-field="mois" title="Double-cliquez pour modifier le mois">{{ "%02d"|format(b.mois) }}</div> /
                                 <div class="editable-cell d-inline-block fw-bold text-white" data-id="{{ b.id }}" data-field="annee" title="Double-cliquez pour modifier l'annÃ©e">{{ b.annee }}</div>
