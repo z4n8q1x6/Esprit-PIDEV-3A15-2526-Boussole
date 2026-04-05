@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // --- ENVOI AJAX ---
-            fetch('/afficher_back_fournisseur/edit/' + id, {
+            fetch('/admin/afficher_back_fournisseur/edit/' + id, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 body: JSON.stringify({ field: field, value: value })
@@ -348,8 +348,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.innerText = oldValue; // Restauration en cas d'erreur serveur
                 }
             }.bind(this))
-            .catch(function() { 
-                showToast('Erreur de connexion', true); 
+            .catch(function() {
+                showToast('Erreur de connexion', true);
                 this.innerText = oldValue;
             }.bind(this));
         });
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var value = this.value;
             var id    = this.closest('tr').getAttribute('data-id');
 
-            fetch('/afficher_back_fournisseur/edit/' + id, {
+            fetch('/admin/afficher_back_fournisseur/edit/' + id, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 body: JSON.stringify({ field: field, value: value })
@@ -391,7 +391,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var id  = this.getAttribute('data-id');
             var row = this.closest('tr');
 
-            fetch('/afficher_back_fournisseur/delete/' + id, {
+            fetch('/admin/afficher_back_fournisseur/delete/' + id, {
                 method: 'DELETE',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
@@ -400,7 +400,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     row.remove();
                     showToast('Fournisseur supprimé avec succès !', false);
-                    
+
                     // Mise à jour du total
                     var totalDisplay = document.getElementById('totalDisplay');
                     totalDisplay.innerText = parseInt(totalDisplay.innerText) - 1;
