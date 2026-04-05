@@ -14,12 +14,11 @@ class ComposerStaticInite064a0e1181409b1e4e2ad96000eab3b
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
+        '2203a247e6fda86070a5e4e07aed533a' => __DIR__ . '/..' . '/symfony/clock/Resources/now.php',
         '89efb1254ef2d1c5d80096acd12c4098' => __DIR__ . '/..' . '/twig/twig/src/Resources/core.php',
         'ffecb95d45175fd40f75be8a23b34f90' => __DIR__ . '/..' . '/twig/twig/src/Resources/debug.php',
         'c7baa00073ee9c61edf148c51917cfb4' => __DIR__ . '/..' . '/twig/twig/src/Resources/escaper.php',
         'f844ccf1d25df8663951193c3fc307c8' => __DIR__ . '/..' . '/twig/twig/src/Resources/string_loader.php',
-        '2203a247e6fda86070a5e4e07aed533a' => __DIR__ . '/..' . '/symfony/clock/Resources/now.php',
-        '6a47392539ca2329373e0d33e1dba053' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -33,7 +32,6 @@ class ComposerStaticInite064a0e1181409b1e4e2ad96000eab3b
             'Symfony\\Polyfill\\Php85\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Intl\\Normalizer\\' => 33,
-            'Symfony\\Polyfill\\Intl\\Icu\\' => 26,
             'Symfony\\Polyfill\\Intl\\Grapheme\\' => 31,
             'Symfony\\Flex\\' => 13,
             'Symfony\\Contracts\\Translation\\' => 30,
@@ -55,10 +53,8 @@ class ComposerStaticInite064a0e1181409b1e4e2ad96000eab3b
             'Symfony\\Component\\PropertyAccess\\' => 33,
             'Symfony\\Component\\Process\\' => 26,
             'Symfony\\Component\\PasswordHasher\\' => 33,
-            'Symfony\\Component\\OptionsResolver\\' => 34,
             'Symfony\\Component\\HttpKernel\\' => 29,
             'Symfony\\Component\\HttpFoundation\\' => 33,
-            'Symfony\\Component\\Form\\' => 23,
             'Symfony\\Component\\Finder\\' => 25,
             'Symfony\\Component\\Filesystem\\' => 29,
             'Symfony\\Component\\EventDispatcher\\' => 34,
@@ -85,6 +81,11 @@ class ComposerStaticInite064a0e1181409b1e4e2ad96000eab3b
             'Psr\\Clock\\' => 10,
             'Psr\\Cache\\' => 10,
             'PhpParser\\' => 10,
+        ),
+        'L' =>
+        array (
+            'Lexik\\Bundle\\JWTAuthenticationBundle\\' => 37,
+            'Lcobucci\\JWT\\' => 13,
         ),
         'D' =>
         array (
@@ -129,10 +130,6 @@ class ComposerStaticInite064a0e1181409b1e4e2ad96000eab3b
         'Symfony\\Polyfill\\Intl\\Normalizer\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer',
-        ),
-        'Symfony\\Polyfill\\Intl\\Icu\\' =>
-        array (
-            0 => __DIR__ . '/..' . '/symfony/polyfill-intl-icu',
         ),
         'Symfony\\Polyfill\\Intl\\Grapheme\\' =>
         array (
@@ -218,10 +215,6 @@ class ComposerStaticInite064a0e1181409b1e4e2ad96000eab3b
         array (
             0 => __DIR__ . '/..' . '/symfony/password-hasher',
         ),
-        'Symfony\\Component\\OptionsResolver\\' =>
-        array (
-            0 => __DIR__ . '/..' . '/symfony/options-resolver',
-        ),
         'Symfony\\Component\\HttpKernel\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-kernel',
@@ -229,10 +222,6 @@ class ComposerStaticInite064a0e1181409b1e4e2ad96000eab3b
         'Symfony\\Component\\HttpFoundation\\' =>
         array (
             0 => __DIR__ . '/..' . '/symfony/http-foundation',
-        ),
-        'Symfony\\Component\\Form\\' =>
-        array (
-            0 => __DIR__ . '/..' . '/symfony/form',
         ),
         'Symfony\\Component\\Finder\\' =>
         array (
@@ -326,6 +315,14 @@ class ComposerStaticInite064a0e1181409b1e4e2ad96000eab3b
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
         ),
+        'Lexik\\Bundle\\JWTAuthenticationBundle\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/lexik/jwt-authentication-bundle',
+        ),
+        'Lcobucci\\JWT\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/lcobucci/jwt/src',
+        ),
         'Doctrine\\SqlFormatter\\' =>
         array (
             0 => __DIR__ . '/..' . '/doctrine/sql-formatter/src',
@@ -389,13 +386,9 @@ class ComposerStaticInite064a0e1181409b1e4e2ad96000eab3b
     );
 
     public static $classMap = array (
-        'Collator' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/Resources/stubs/Collator.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'IntlDateFormatter' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/Resources/stubs/IntlDateFormatter.php',
-        'Locale' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/Resources/stubs/Locale.php',
         'NoDiscard' => __DIR__ . '/..' . '/symfony/polyfill-php85/Resources/stubs/NoDiscard.php',
         'Normalizer' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/Resources/stubs/Normalizer.php',
-        'NumberFormatter' => __DIR__ . '/..' . '/symfony/polyfill-intl-icu/Resources/stubs/NumberFormatter.php',
         '©' => __DIR__ . '/..' . '/symfony/cache/Traits/ValueWrapper.php',
     );
 

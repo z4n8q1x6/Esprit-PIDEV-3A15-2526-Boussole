@@ -1,0 +1,17 @@
+
+Mapping
+-------
+
+[critical] Error thrown while running command "doctrine:schema:validate --no-interaction --no-ansi". Message: "The target-entity App\Entity\Alerteias cannot be found in 'App\Entity\Franchises#alerteiass'."
+
+In MappingException.php line 565:
+                          
+  The target-entity App\  
+  Entity\Alerteias canno  
+  t be found in 'App\Ent  
+  ity\Franchises#alertei  
+  ass'.                   
+                          
+
+doctrine:schema:validate [--em EM] [--skip-mapping] [--skip-sync] [--skip-property-types]
+

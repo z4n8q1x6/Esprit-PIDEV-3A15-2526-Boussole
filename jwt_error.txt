@@ -1,0 +1,11 @@
+[critical] Error thrown while running command "lexik:jwt:generate-keypair --skip-if-exists". Message: "error:80000003:system library::No such process"
+
+In GenerateKeyPairCommand.php line 143:
+                          
+  error:80000003:system   
+  library::No such proce  
+  ss                      
+                          
+
+lexik:jwt:generate-keypair [--dry-run] [--skip-if-exists] [--overwrite]
+
