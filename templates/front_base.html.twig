@@ -209,13 +209,16 @@
 
 				<!-- Nav Search START -->
 				<div class="nav my-3 my-xl-0 px-4 flex-nowrap align-items-center">
-					<div class="nav-item w-100">
+					<div class="nav-item w-100 position-relative">
 						<form class="position-relative">
-							<input class="form-control pe-5 bg-transparent" type="search" placeholder="Search" aria-label="Search">
-							<button class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset" type="submit">
+							<input class="form-control pe-5 bg-transparent" id="front-search-input" type="search" placeholder="Rechercher..." aria-label="Search" autocomplete="off">
+							<button class="bg-transparent p-2 position-absolute top-50 end-0 translate-middle-y border-0 text-primary-hover text-reset" type="submit" onclick="event.preventDefault();">
 								<i class="fas fa-search fs-6 "></i>
 							</button>
 						</form>
+						<!-- Search Results Box -->
+						<ul id="search-results-box" class="dropdown-menu shadow w-100 mt-2 position-absolute" style="display: none; max-height: 350px; overflow-y: auto; z-index: 1050; border-radius: 8px;">
+						</ul>
 					</div>
 				</div>
 				<!-- Nav Search END -->
@@ -320,6 +323,96 @@ Page content END -->
 <script src="{{ asset('assets/vendor/apexcharts/js/apexcharts.min.js') }}"></script>
 
 <script src="{{ asset('assets/js/functions.js') }}"></script>
+
+<!-- SweetAlert2 pour Notifications Dynamiques et Script de Recherche -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Système de Notifications (Toasts SweetAlert2 via app.flashes Symfony)
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            let iconType = '{{ label }}';
+            if (iconType === 'danger') iconType = 'error';
+
+            Toast.fire({
+                icon: iconType,
+                title: '{{ message | escape('js') }}'
+            });
+        {% endfor %}
+    {% endfor %}
+
+    // 2. Système de Recherche (Affichage en direct sous la barre de recherche)
+    const searchInput = document.getElementById('front-search-input');
+    const resultsBox = document.getElementById('search-results-box');
+    const menuItems = document.querySelectorAll('.navbar-nav .dropdown-menu li:not(:has(.dropdown-divider))'); 
+    
+    if (searchInput && resultsBox) {
+        searchInput.addEventListener('input', function(e) {
+            const filter = searchInput.value.toLowerCase().trim();
+            resultsBox.innerHTML = ''; 
+            
+            if (filter.length > 0) {
+                let hasMatches = false;
+                
+                menuItems.forEach(function(item) {
+                    const linkLabel = item.textContent.trim();
+                    const linkA = item.querySelector('a');
+                    const url = linkA ? linkA.getAttribute('href') : '#';
+
+                    // Si on a un match et que ce n'est pas un lien mort '#'
+                    if(linkLabel.toLowerCase().includes(filter) && url && url !== '#') {
+                        hasMatches = true;
+                        const li = document.createElement('li');
+                        li.innerHTML = item.innerHTML; // Copie conforme du lien avec son icone
+                        
+                        // Ajustement de style
+                        const aTag = li.querySelector('a');
+                        if(aTag) aTag.classList.add('py-2');
+                        
+                        resultsBox.appendChild(li);
+                    }
+                });
+
+                if(!hasMatches) {
+                    const li = document.createElement('li');
+                    li.innerHTML = '<span class="dropdown-item py-2 text-muted" style="cursor: default;"><i class="fas fa-search fs-6 me-2"></i>Aucun résultat trouvé</span>';
+                    resultsBox.appendChild(li);
+                }
+                
+                resultsBox.style.display = 'block';
+            } else {
+                resultsBox.style.display = 'none';
+            }
+        });
+
+        // Hide results when clicking outside
+        document.addEventListener('click', function(e) {
+            if(!searchInput.contains(e.target) && !resultsBox.contains(e.target)) {
+                resultsBox.style.display = 'none';
+            }
+        });
+        
+        // Show results if clicking on input and there is text
+        searchInput.addEventListener('click', function() {
+            if(searchInput.value.trim().length > 0) {
+                resultsBox.style.display = 'block';
+            }
+        });
+    }
+});
+</script>
 
 </body>
 </html>

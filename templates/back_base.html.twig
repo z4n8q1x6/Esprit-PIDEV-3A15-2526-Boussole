@@ -256,8 +256,8 @@
 						<div class="nav my-3 my-xl-0 flex-nowrap align-items-center">
 							<div class="nav-item w-100">
 								<form class="position-relative">
-									<input class="form-control pe-5 bg-secondary bg-opacity-10 border-0" type="search" placeholder="Search" aria-label="Search">
-									<button class="bg-transparent px-2 py-0 border-0 position-absolute top-50 end-0 translate-middle-y" type="submit"><i class="fas fa-search fs-6 text-primary"></i></button>
+									<input class="form-control pe-5 bg-secondary bg-opacity-10 border-0" id="back-search-input" type="search" placeholder="Rechercher..." aria-label="Search">
+									<button class="bg-transparent px-2 py-0 border-0 position-absolute top-50 end-0 translate-middle-y" type="submit" onclick="event.preventDefault();"><i class="fas fa-search fs-6 text-primary"></i></button>
 								</form>
 							</div>
 						</div>
@@ -459,7 +459,60 @@
 
 {% block javascripts %}{% endblock %}
 
+<!-- SweetAlert2 pour Notifications Dynamiques et Script de Recherche -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Système de Notifications (Toasts SweetAlert2 via app.flashes Symfony)
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
 
+            let iconType = '{{ label }}';
+            if (iconType === 'danger') iconType = 'error';
+
+            Toast.fire({
+                icon: iconType,
+                title: '{{ message | escape('js') }}'
+            });
+        {% endfor %}
+    {% endfor %}
+
+    // 2. Système de Recherche (Filtrage du menu latéral en direct)
+    const searchInput = document.getElementById('back-search-input');
+    const menuItems = document.querySelectorAll('#navbar-sidebar .nav-item');
+    
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function(e) {
+            e.preventDefault();
+            const filter = searchInput.value.toLowerCase().trim();
+            
+            menuItems.forEach(function(item) {
+                // Ignore les titres de section (qui on un style différent, souvent contenant 'ms-3')
+                if(item.textContent.trim() === 'Principal' || item.textContent.trim() === 'Outils') {
+                    return; // ne pas cacher systématiquement les entêtes, bien qu'on puisse les gérer après
+                }
+                const linkLabel = item.textContent.toLowerCase();
+                if(linkLabel.includes(filter)) {
+                    item.style.setProperty("display", "block", "important"); // Afficher
+                } else {
+                    item.style.setProperty("display", "none", "important"); // Cacher
+                }
+            });
+        });
+    }
+});
+</script>
 
 </body>
 
