@@ -138,7 +138,7 @@
     <parameter key="form.type_extension.csrf.field_attr" type="collection">
       <parameter key="data-controller">csrf-protection</parameter>
     </parameter>
-    <parameter key=".form.type_extension.csrf.token_id">submit</parameter>
+    <parameter key=".form.type_extension.csrf.token_id">null</parameter>
     <parameter key="data_collector.templates" type="collection"/>
     <parameter key="doctrine.entity_managers" type="collection">
       <parameter key="default">doctrine.orm.default_entity_manager</parameter>
@@ -183,45 +183,12 @@
       <tag name="controller.service_arguments"/>
       <tag name="routing.route_loader"/>
     </service>
-    <service id="App\Command\GenerateEntitiesCommand" class="App\Command\GenerateEntitiesCommand" autowire="true" autoconfigure="true">
-      <tag name="console.command" command="app:generate:entities" description="Automatically generates entity classes from the database schema" help=""/>
-      <tag name="console.command"/>
-      <tag name="container.no_preload"/>
-      <argument type="service" id="doctrine.dbal.default_connection"/>
-      <argument type="service" id="filesystem"/>
-      <call method="setName">
-        <argument>app:generate:entities</argument>
-      </call>
-      <call method="setDescription">
-        <argument>Automatically generates entity classes from the database schema</argument>
-      </call>
-    </service>
-    <service id="App\Command\GenerateRepositoriesCommand" class="App\Command\GenerateRepositoriesCommand" autowire="true" autoconfigure="true">
-      <tag name="console.command" command="app:generate:repositories" description="Generates repository classes for all entities." help=""/>
-      <tag name="console.command"/>
-      <tag name="container.no_preload"/>
-      <argument type="service" id="filesystem"/>
-      <call method="setName">
-        <argument>app:generate:repositories</argument>
-      </call>
-      <call method="setDescription">
-        <argument>Generates repository classes for all entities.</argument>
-      </call>
-    </service>
     <service id="App\Controller\AdminEntrepriseController" class="App\Controller\AdminEntrepriseController" public="true" autowire="true" autoconfigure="true">
       <tag name="controller.service_arguments"/>
       <tag name="routing.controller"/>
       <tag name="container.service_subscriber"/>
       <call method="setContainer">
         <argument type="service" id=".service_locator.TJNRSaV.App\Controller\AdminEntrepriseController"/>
-      </call>
-    </service>
-    <service id="App\Controller\AdminReclamationController" class="App\Controller\AdminReclamationController" public="true" autowire="true" autoconfigure="true">
-      <tag name="controller.service_arguments"/>
-      <tag name="routing.controller"/>
-      <tag name="container.service_subscriber"/>
-      <call method="setContainer">
-        <argument type="service" id=".service_locator.TJNRSaV.App\Controller\AdminReclamationController"/>
       </call>
     </service>
     <service id="App\Controller\AdminUserController" class="App\Controller\AdminUserController" public="true" autowire="true" autoconfigure="true">
@@ -232,16 +199,6 @@
         <argument type="service" id=".service_locator.TJNRSaV.App\Controller\AdminUserController"/>
       </call>
     </service>
-    <service id="App\Controller\ReclamationController" class="App\Controller\ReclamationController" public="true" autowire="true" autoconfigure="true">
-      <tag name="controller.service_arguments"/>
-      <tag name="routing.controller"/>
-      <tag name="container.service_subscriber"/>
-      <argument type="service" id="doctrine.orm.default_entity_manager"/>
-      <argument type="service" id="App\Repository\ReclamationsRepository"/>
-      <call method="setContainer">
-        <argument type="service" id=".service_locator.TJNRSaV.App\Controller\ReclamationController"/>
-      </call>
-    </service>
     <service id="App\Controller\SecurityController" class="App\Controller\SecurityController" public="true" autowire="true" autoconfigure="true">
       <tag name="controller.service_arguments"/>
       <tag name="routing.controller"/>
@@ -250,55 +207,7 @@
         <argument type="service" id=".service_locator.TJNRSaV.App\Controller\SecurityController"/>
       </call>
     </service>
-    <service id="App\Entity\Alerteias" class="App\Entity\Alerteias" autowire="true" autoconfigure="true">
-      <tag name="container.excluded" source="because it's a Doctrine entity"/>
-      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
-    </service>
-    <service id="App\Entity\Bilan" class="App\Entity\Bilan" autowire="true" autoconfigure="true">
-      <tag name="container.excluded" source="because it's a Doctrine entity"/>
-      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
-    </service>
-    <service id="App\Entity\Budget_previsionnel" class="App\Entity\Budget_previsionnel" autowire="true" autoconfigure="true">
-      <tag name="container.excluded" source="because it's a Doctrine entity"/>
-      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
-    </service>
-    <service id="App\Entity\Charge" class="App\Entity\Charge" autowire="true" autoconfigure="true">
-      <tag name="container.excluded" source="because it's a Doctrine entity"/>
-      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
-    </service>
-    <service id="App\Entity\Commande" class="App\Entity\Commande" autowire="true" autoconfigure="true">
-      <tag name="container.excluded" source="because it's a Doctrine entity"/>
-      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
-    </service>
-    <service id="App\Entity\Fournisseur" class="App\Entity\Fournisseur" autowire="true" autoconfigure="true">
-      <tag name="container.excluded" source="because it's a Doctrine entity"/>
-      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
-    </service>
     <service id="App\Entity\Franchises" class="App\Entity\Franchises" autowire="true" autoconfigure="true">
-      <tag name="container.excluded" source="because it's a Doctrine entity"/>
-      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
-    </service>
-    <service id="App\Entity\Ligne_commande" class="App\Entity\Ligne_commande" autowire="true" autoconfigure="true">
-      <tag name="container.excluded" source="because it's a Doctrine entity"/>
-      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
-    </service>
-    <service id="App\Entity\Mensualite" class="App\Entity\Mensualite" autowire="true" autoconfigure="true">
-      <tag name="container.excluded" source="because it's a Doctrine entity"/>
-      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
-    </service>
-    <service id="App\Entity\Pret" class="App\Entity\Pret" autowire="true" autoconfigure="true">
-      <tag name="container.excluded" source="because it's a Doctrine entity"/>
-      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
-    </service>
-    <service id="App\Entity\Produit" class="App\Entity\Produit" autowire="true" autoconfigure="true">
-      <tag name="container.excluded" source="because it's a Doctrine entity"/>
-      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
-    </service>
-    <service id="App\Entity\Reclamations" class="App\Entity\Reclamations" autowire="true" autoconfigure="true">
-      <tag name="container.excluded" source="because it's a Doctrine entity"/>
-      <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
-    </service>
-    <service id="App\Entity\Transaction" class="App\Entity\Transaction" autowire="true" autoconfigure="true">
       <tag name="container.excluded" source="because it's a Doctrine entity"/>
       <tag name="container.excluded" source="with #[Doctrine\ORM\Mapping\Entity] attribute"/>
     </service>
@@ -309,67 +218,8 @@
     <service id="App\Form\FranchisesType" class="App\Form\FranchisesType" autowire="true" autoconfigure="true">
       <tag name="form.type" csrf_token_id="%.form.type_extension.csrf.token_id%"/>
     </service>
-    <service id="App\Form\ReclamationsType" class="App\Form\ReclamationsType" autowire="true" autoconfigure="true">
-      <tag name="form.type" csrf_token_id="%.form.type_extension.csrf.token_id%"/>
-    </service>
     <service id="App\Form\UtilisateurType" class="App\Form\UtilisateurType" autowire="true" autoconfigure="true">
       <tag name="form.type" csrf_token_id="%.form.type_extension.csrf.token_id%"/>
-    </service>
-    <service id="App\Repository\AlerteiasRepository" class="App\Repository\AlerteiasRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\BilanRepository" class="App\Repository\BilanRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\Budget_previsionnelRepository" class="App\Repository\Budget_previsionnelRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\ChargeRepository" class="App\Repository\ChargeRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\CommandeRepository" class="App\Repository\CommandeRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\FournisseurRepository" class="App\Repository\FournisseurRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\FranchisesRepository" class="App\Repository\FranchisesRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\Ligne_commandeRepository" class="App\Repository\Ligne_commandeRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\MensualiteRepository" class="App\Repository\MensualiteRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\PretRepository" class="App\Repository\PretRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\ProduitRepository" class="App\Repository\ProduitRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\ReclamationsRepository" class="App\Repository\ReclamationsRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\TransactionRepository" class="App\Repository\TransactionRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
-    </service>
-    <service id="App\Repository\UtilisateurRepository" class="App\Repository\UtilisateurRepository" autowire="true" autoconfigure="true">
-      <tag name="doctrine.repository_service"/>
-      <argument type="service" id="doctrine"/>
     </service>
     <service id="argument_metadata_factory" class="Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadataFactory"/>
     <service id="argument_resolver.backed_enum_resolver" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\BackedEnumValueResolver">
@@ -394,7 +244,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver" priority="-50">controller.argument_value_resolver</tag>
-      <argument type="service" id=".service_locator.zIt2KZU"/>
+      <argument type="service" id=".service_locator.iR38Ba_"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver" priority="-100">controller.argument_value_resolver</tag>
@@ -998,7 +848,6 @@
       </argument>
       <argument type="collection">
         <argument>App\Form\FranchisesType</argument>
-        <argument>App\Form\ReclamationsType</argument>
         <argument>App\Form\UtilisateurType</argument>
         <argument>Symfony\Component\Form\Extension\Core\Type\FormType</argument>
         <argument>Symfony\Component\Form\Extension\Core\Type\ChoiceType</argument>
@@ -1408,14 +1257,6 @@
       <argument type="service" id="request_stack" on-invalid="null"/>
       <argument>null</argument>
       <call method="addListener">
-        <argument>kernel.response</argument>
-        <argument type="collection">
-          <argument type="service_closure" id="security.csrf.same_origin_token_manager"/>
-          <argument>onKernelResponse</argument>
-        </argument>
-        <argument>0</argument>
-      </call>
-      <call method="addListener">
         <argument>console.command</argument>
         <argument type="collection">
           <argument type="service_closure" id="doctrine_migrations.schema_filter_listener"/>
@@ -1765,7 +1606,7 @@
     </service>
     <service id="argument_resolver.not_tagged_controller" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
       <tag name="controller.argument_value_resolver" priority="-200"/>
-      <argument type="service" id=".service_locator.zIt2KZU"/>
+      <argument type="service" id=".service_locator.iR38Ba_"/>
     </service>
     <service id="routing.resolver" class="Symfony\Component\Config\Loader\LoaderResolver">
       <call method="addLoader">
@@ -1832,9 +1673,7 @@
       <tag name="routing.loader" priority="-10"/>
       <argument type="collection">
         <argument>App\Controller\AdminEntrepriseController</argument>
-        <argument>App\Controller\AdminReclamationController</argument>
         <argument>App\Controller\AdminUserController</argument>
-        <argument>App\Controller\ReclamationController</argument>
         <argument>App\Controller\SecurityController</argument>
       </argument>
     </service>
@@ -2099,28 +1938,17 @@
     <service id="security.csrf.token_storage" class="Symfony\Component\Security\Csrf\TokenStorage\SessionTokenStorage">
       <argument type="service" id="request_stack"/>
     </service>
+    <service id="security.csrf.token_manager" class="Symfony\Component\Security\Csrf\CsrfTokenManager">
+      <argument type="service" id="security.csrf.token_generator"/>
+      <argument type="service" id="security.csrf.token_storage"/>
+      <argument type="service" id="request_stack" on-invalid="ignore"/>
+    </service>
     <service id="twig.runtime.security_csrf" class="Symfony\Bridge\Twig\Extension\CsrfRuntime">
       <tag name="twig.runtime"/>
-      <argument type="service" id="security.csrf.same_origin_token_manager"/>
+      <argument type="service" id="security.csrf.token_manager"/>
     </service>
     <service id="twig.extension.security_csrf" class="Symfony\Bridge\Twig\Extension\CsrfExtension">
       <tag name="twig.extension"/>
-    </service>
-    <service id="security.csrf.same_origin_token_manager" class="Symfony\Component\Security\Csrf\SameOriginCsrfTokenManager">
-      <tag name="monolog.logger" channel="request"/>
-      <tag name="kernel.event_listener" event="kernel.response" method="onKernelResponse"/>
-      <tag name="container.decorator" id="security.csrf.token_manager" inner="security.csrf.same_origin_token_manager.inner"/>
-      <tag name="container.hot_path"/>
-      <argument type="service" id="request_stack"/>
-      <argument type="service" id="logger" on-invalid="null"/>
-      <argument type="service" id="security.csrf.same_origin_token_manager.inner"/>
-      <argument type="collection">
-        <argument>submit</argument>
-        <argument>authenticate</argument>
-        <argument>logout</argument>
-      </argument>
-      <argument>false</argument>
-      <argument>csrf-token</argument>
     </service>
     <service id="form.resolved_type_factory" class="Symfony\Component\Form\ResolvedFormTypeFactory"/>
     <service id="form.registry" class="Symfony\Component\Form\FormRegistry">
@@ -2133,7 +1961,7 @@
       <argument type="service" id="form.registry"/>
     </service>
     <service id="form.extension" class="Symfony\Component\Form\Extension\DependencyInjection\DependencyInjectionExtension">
-      <argument type="service" id=".service_locator.ascDEJ9"/>
+      <argument type="service" id=".service_locator.yVuA07S"/>
       <argument type="collection">
         <argument key="Symfony\Component\Form\Extension\Core\Type\FormType" type="iterator">
           <argument type="service" id="form.type_extension.form.transformation_failure_handling"/>
@@ -2214,7 +2042,7 @@
     </service>
     <service id="form.type_extension.csrf" class="Symfony\Component\Form\Extension\Csrf\Type\FormTypeCsrfExtension">
       <tag name="form.type_extension"/>
-      <argument type="service" id="security.csrf.same_origin_token_manager"/>
+      <argument type="service" id="security.csrf.token_manager"/>
       <argument>true</argument>
       <argument>_token</argument>
       <argument>null</argument>
@@ -2222,9 +2050,8 @@
       <argument type="service" id="form.server_params"/>
       <argument>%form.type_extension.csrf.field_attr%</argument>
       <argument type="collection">
-        <argument key="App\Form\FranchisesType">submit</argument>
-        <argument key="App\Form\ReclamationsType">submit</argument>
-        <argument key="App\Form\UtilisateurType">submit</argument>
+        <argument key="App\Form\FranchisesType">null</argument>
+        <argument key="App\Form\UtilisateurType">null</argument>
       </argument>
     </service>
     <service id="maker.file_manager" class="Symfony\Bundle\MakerBundle\FileManager">
@@ -2612,7 +2439,7 @@
     <service id="doctrine.orm.configuration" class="Doctrine\ORM\Configuration" abstract="true"/>
     <service id="doctrine.orm.entity_manager.abstract" class="Doctrine\ORM\EntityManager" lazy="true" abstract="true"/>
     <service id="doctrine.orm.container_repository_factory" class="Doctrine\Bundle\DoctrineBundle\Repository\ContainerRepositoryFactory">
-      <argument type="service" id=".service_locator.GxcCuVl"/>
+      <argument type="service" id=".service_locator.dpiLQ5O"/>
     </service>
     <service id="doctrine.orm.manager_configurator.abstract" class="Doctrine\Bundle\DoctrineBundle\ManagerConfigurator" abstract="true">
       <argument type="collection"/>
@@ -3338,7 +3165,7 @@
     <service id="twig.form.renderer" class="Symfony\Component\Form\FormRenderer">
       <tag name="twig.runtime"/>
       <argument type="service" id="twig.form.engine"/>
-      <argument type="service" id="security.csrf.same_origin_token_manager" on-invalid="null"/>
+      <argument type="service" id="security.csrf.token_manager" on-invalid="null"/>
     </service>
     <service id="twig.command.debug" class="Symfony\Bridge\Twig\Command\DebugCommand">
       <tag name="console.command"/>
@@ -4218,94 +4045,26 @@
         <argument>Dump the role hierarchy as a Mermaid flowchart</argument>
       </call>
     </service>
-    <service id=".instanceof.Symfony\Component\Console\Command\Command.0.App\Command\GenerateEntitiesCommand" class="App\Command\GenerateEntitiesCommand" autowire="true" abstract="true"/>
-    <service id=".instanceof.App\Command\GenerateEntitiesCommand.0.App\Command\GenerateEntitiesCommand" class="App\Command\GenerateEntitiesCommand" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Command\GenerateEntitiesCommand" class="App\Command\GenerateEntitiesCommand" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Symfony\Component\Console\Command\Command.0.App\Command\GenerateRepositoriesCommand" class="App\Command\GenerateRepositoriesCommand" autowire="true" abstract="true"/>
-    <service id=".instanceof.App\Command\GenerateRepositoriesCommand.0.App\Command\GenerateRepositoriesCommand" class="App\Command\GenerateRepositoriesCommand" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Command\GenerateRepositoriesCommand" class="App\Command\GenerateRepositoriesCommand" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\AdminEntrepriseController" class="App\Controller\AdminEntrepriseController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\AdminEntrepriseController" class="App\Controller\AdminEntrepriseController" autowire="true" abstract="true"/>
     <service id=".instanceof.App\Controller\AdminEntrepriseController.0.App\Controller\AdminEntrepriseController" class="App\Controller\AdminEntrepriseController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\AdminEntrepriseController" class="App\Controller\AdminEntrepriseController" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\AdminReclamationController" class="App\Controller\AdminReclamationController" autowire="true" abstract="true"/>
-    <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\AdminReclamationController" class="App\Controller\AdminReclamationController" autowire="true" abstract="true"/>
-    <service id=".instanceof.App\Controller\AdminReclamationController.0.App\Controller\AdminReclamationController" class="App\Controller\AdminReclamationController" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Controller\AdminReclamationController" class="App\Controller\AdminReclamationController" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\AdminUserController" class="App\Controller\AdminUserController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\AdminUserController" class="App\Controller\AdminUserController" autowire="true" abstract="true"/>
     <service id=".instanceof.App\Controller\AdminUserController.0.App\Controller\AdminUserController" class="App\Controller\AdminUserController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\AdminUserController" class="App\Controller\AdminUserController" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\ReclamationController" class="App\Controller\ReclamationController" autowire="true" abstract="true"/>
-    <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\ReclamationController" class="App\Controller\ReclamationController" autowire="true" abstract="true"/>
-    <service id=".instanceof.App\Controller\ReclamationController.0.App\Controller\ReclamationController" class="App\Controller\ReclamationController" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Controller\ReclamationController" class="App\Controller\ReclamationController" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\SecurityController" class="App\Controller\SecurityController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\SecurityController" class="App\Controller\SecurityController" autowire="true" abstract="true"/>
     <service id=".instanceof.App\Controller\SecurityController.0.App\Controller\SecurityController" class="App\Controller\SecurityController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\SecurityController" class="App\Controller\SecurityController" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.App\Entity\Alerteias.0.App\Entity\Alerteias" class="App\Entity\Alerteias" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Entity\Alerteias" class="App\Entity\Alerteias" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.App\Entity\Bilan.0.App\Entity\Bilan" class="App\Entity\Bilan" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Entity\Bilan" class="App\Entity\Bilan" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.App\Entity\Budget_previsionnel.0.App\Entity\Budget_previsionnel" class="App\Entity\Budget_previsionnel" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Entity\Budget_previsionnel" class="App\Entity\Budget_previsionnel" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.App\Entity\Charge.0.App\Entity\Charge" class="App\Entity\Charge" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Entity\Charge" class="App\Entity\Charge" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.App\Entity\Commande.0.App\Entity\Commande" class="App\Entity\Commande" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Entity\Commande" class="App\Entity\Commande" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.App\Entity\Fournisseur.0.App\Entity\Fournisseur" class="App\Entity\Fournisseur" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Entity\Fournisseur" class="App\Entity\Fournisseur" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.App\Entity\Franchises.0.App\Entity\Franchises" class="App\Entity\Franchises" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Entity\Franchises" class="App\Entity\Franchises" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.App\Entity\Ligne_commande.0.App\Entity\Ligne_commande" class="App\Entity\Ligne_commande" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Entity\Ligne_commande" class="App\Entity\Ligne_commande" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.App\Entity\Mensualite.0.App\Entity\Mensualite" class="App\Entity\Mensualite" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Entity\Mensualite" class="App\Entity\Mensualite" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.App\Entity\Pret.0.App\Entity\Pret" class="App\Entity\Pret" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Entity\Pret" class="App\Entity\Pret" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.App\Entity\Produit.0.App\Entity\Produit" class="App\Entity\Produit" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Entity\Produit" class="App\Entity\Produit" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.App\Entity\Reclamations.0.App\Entity\Reclamations" class="App\Entity\Reclamations" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Entity\Reclamations" class="App\Entity\Reclamations" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.App\Entity\Transaction.0.App\Entity\Transaction" class="App\Entity\Transaction" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Entity\Transaction" class="App\Entity\Transaction" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.App\Entity\Utilisateur.0.App\Entity\Utilisateur" class="App\Entity\Utilisateur" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Entity\Utilisateur" class="App\Entity\Utilisateur" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Component\Form\FormTypeInterface.0.App\Form\FranchisesType" class="App\Form\FranchisesType" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Form\FranchisesType" class="App\Form\FranchisesType" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Symfony\Component\Form\FormTypeInterface.0.App\Form\ReclamationsType" class="App\Form\ReclamationsType" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Form\ReclamationsType" class="App\Form\ReclamationsType" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Component\Form\FormTypeInterface.0.App\Form\UtilisateurType" class="App\Form\UtilisateurType" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Form\UtilisateurType" class="App\Form\UtilisateurType" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\AlerteiasRepository" class="App\Repository\AlerteiasRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\AlerteiasRepository" class="App\Repository\AlerteiasRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\BilanRepository" class="App\Repository\BilanRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\BilanRepository" class="App\Repository\BilanRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\Budget_previsionnelRepository" class="App\Repository\Budget_previsionnelRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\Budget_previsionnelRepository" class="App\Repository\Budget_previsionnelRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\ChargeRepository" class="App\Repository\ChargeRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\ChargeRepository" class="App\Repository\ChargeRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\CommandeRepository" class="App\Repository\CommandeRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\CommandeRepository" class="App\Repository\CommandeRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\FournisseurRepository" class="App\Repository\FournisseurRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\FournisseurRepository" class="App\Repository\FournisseurRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\FranchisesRepository" class="App\Repository\FranchisesRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\FranchisesRepository" class="App\Repository\FranchisesRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\Ligne_commandeRepository" class="App\Repository\Ligne_commandeRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\Ligne_commandeRepository" class="App\Repository\Ligne_commandeRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\MensualiteRepository" class="App\Repository\MensualiteRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\MensualiteRepository" class="App\Repository\MensualiteRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\PretRepository" class="App\Repository\PretRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\PretRepository" class="App\Repository\PretRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\ProduitRepository" class="App\Repository\ProduitRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\ProduitRepository" class="App\Repository\ProduitRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\ReclamationsRepository" class="App\Repository\ReclamationsRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\ReclamationsRepository" class="App\Repository\ReclamationsRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\TransactionRepository" class="App\Repository\TransactionRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\TransactionRepository" class="App\Repository\TransactionRepository" autowire="true" autoconfigure="true" abstract="true"/>
-    <service id=".instanceof.Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface.0.App\Repository\UtilisateurRepository" class="App\Repository\UtilisateurRepository" autowire="true" abstract="true"/>
-    <service id=".abstract.instanceof.App\Repository\UtilisateurRepository" class="App\Repository\UtilisateurRepository" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".service_locator.ryAvHi4" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -4853,18 +4612,6 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.4VCqJOp" method="withContext"/>
     </service>
-    <service id=".service_locator.IY8uJH." class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator"/>
-      <argument type="collection">
-        <argument key="reclamation" type="service_closure" id=".errored..service_locator.IY8uJH..App\Entity\Reclamations"/>
-      </argument>
-    </service>
-    <service id=".service_locator.IY8uJH..App\Controller\ReclamationController::delete()" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator_context" id="App\Controller\ReclamationController::delete()"/>
-      <argument>App\Controller\ReclamationController::delete()</argument>
-      <argument type="service" id="service_container"/>
-      <factory service=".service_locator.IY8uJH." method="withContext"/>
-    </service>
     <service id=".service_locator.0MQaTBY" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -4877,7 +4624,7 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.0MQaTBY" method="withContext"/>
     </service>
-    <service id=".service_locator.zIt2KZU" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.iR38Ba_" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
@@ -4885,12 +4632,10 @@
         <argument key="kernel::loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
         <argument key="App\Kernel::loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
         <argument key="App\Controller\AdminUserController::new" type="service_closure" id=".service_locator.4VCqJOp.App\Controller\AdminUserController::new()"/>
-        <argument key="App\Controller\ReclamationController::delete" type="service_closure" id=".service_locator.IY8uJH..App\Controller\ReclamationController::delete()"/>
         <argument key="App\Controller\SecurityController::login" type="service_closure" id=".service_locator.0MQaTBY.App\Controller\SecurityController::login()"/>
         <argument key="kernel:registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="kernel:loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
         <argument key="App\Controller\AdminUserController:new" type="service_closure" id=".service_locator.4VCqJOp.App\Controller\AdminUserController::new()"/>
-        <argument key="App\Controller\ReclamationController:delete" type="service_closure" id=".service_locator.IY8uJH..App\Controller\ReclamationController::delete()"/>
         <argument key="App\Controller\SecurityController:login" type="service_closure" id=".service_locator.0MQaTBY.App\Controller\SecurityController::login()"/>
       </argument>
     </service>
@@ -4956,11 +4701,10 @@
       <argument type="service" id="argument_resolver.query_parameter_value_resolver"/>
       <argument type="service" id="debug.stopwatch"/>
     </service>
-    <service id=".service_locator.ascDEJ9" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.yVuA07S" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="App\Form\FranchisesType" type="service_closure" id="App\Form\FranchisesType"/>
-        <argument key="App\Form\ReclamationsType" type="service_closure" id="App\Form\ReclamationsType"/>
         <argument key="App\Form\UtilisateurType" type="service_closure" id="App\Form\UtilisateurType"/>
         <argument key="Symfony\Component\Form\Extension\Core\Type\FormType" type="service_closure" id="form.type.form"/>
         <argument key="Symfony\Component\Form\Extension\Core\Type\ChoiceType" type="service_closure" id="form.type.choice"/>
@@ -4979,24 +4723,9 @@
         <argument key="doctrine.orm.default_listeners.attach_entity_listeners" type="service_closure" id="doctrine.orm.default_listeners.attach_entity_listeners"/>
       </argument>
     </service>
-    <service id=".service_locator.GxcCuVl" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.dpiLQ5O" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
-      <argument type="collection">
-        <argument key="App\Repository\AlerteiasRepository" type="service_closure" id="App\Repository\AlerteiasRepository"/>
-        <argument key="App\Repository\BilanRepository" type="service_closure" id="App\Repository\BilanRepository"/>
-        <argument key="App\Repository\Budget_previsionnelRepository" type="service_closure" id="App\Repository\Budget_previsionnelRepository"/>
-        <argument key="App\Repository\ChargeRepository" type="service_closure" id="App\Repository\ChargeRepository"/>
-        <argument key="App\Repository\CommandeRepository" type="service_closure" id="App\Repository\CommandeRepository"/>
-        <argument key="App\Repository\FournisseurRepository" type="service_closure" id="App\Repository\FournisseurRepository"/>
-        <argument key="App\Repository\FranchisesRepository" type="service_closure" id="App\Repository\FranchisesRepository"/>
-        <argument key="App\Repository\Ligne_commandeRepository" type="service_closure" id="App\Repository\Ligne_commandeRepository"/>
-        <argument key="App\Repository\MensualiteRepository" type="service_closure" id="App\Repository\MensualiteRepository"/>
-        <argument key="App\Repository\PretRepository" type="service_closure" id="App\Repository\PretRepository"/>
-        <argument key="App\Repository\ProduitRepository" type="service_closure" id="App\Repository\ProduitRepository"/>
-        <argument key="App\Repository\ReclamationsRepository" type="service_closure" id="App\Repository\ReclamationsRepository"/>
-        <argument key="App\Repository\TransactionRepository" type="service_closure" id="App\Repository\TransactionRepository"/>
-        <argument key="App\Repository\UtilisateurRepository" type="service_closure" id="App\Repository\UtilisateurRepository"/>
-      </argument>
+      <argument type="collection"/>
     </service>
     <service id=".service_locator.W55Po6X" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
@@ -5045,12 +4774,12 @@
     </service>
     <service id="security.listener.csrf_protection" class="Symfony\Component\Security\Http\EventListener\CsrfProtectionListener">
       <tag name="kernel.event_subscriber"/>
-      <argument type="service" id="security.csrf.same_origin_token_manager"/>
+      <argument type="service" id="security.csrf.token_manager"/>
     </service>
     <service id="controller.is_csrf_token_valid_attribute_listener" class="Symfony\Component\Security\Http\EventListener\IsCsrfTokenValidAttributeListener">
       <tag name="kernel.event_subscriber"/>
       <tag name="container.hot_path"/>
-      <argument type="service" id="security.csrf.same_origin_token_manager"/>
+      <argument type="service" id="security.csrf.token_manager"/>
       <argument>null</argument>
     </service>
     <service id="security.logout.listener.csrf_token_clearing" class="Symfony\Component\Security\Http\EventListener\CsrfTokenClearingLogoutListener">
@@ -5077,7 +4806,7 @@
         <argument key="twig" type="service_closure" id="twig" on-invalid="ignore"/>
         <argument key="form.factory" type="service_closure" id="form.factory" on-invalid="ignore"/>
         <argument key="security.token_storage" type="service_closure" id="security.token_storage" on-invalid="ignore"/>
-        <argument key="security.csrf.token_manager" type="service_closure" id="security.csrf.same_origin_token_manager" on-invalid="ignore"/>
+        <argument key="security.csrf.token_manager" type="service_closure" id="security.csrf.token_manager" on-invalid="ignore"/>
         <argument key="parameter_bag" type="service_closure" id="parameter_bag" on-invalid="ignore"/>
       </argument>
     </service>
@@ -5087,21 +4816,9 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.TJNRSaV" method="withContext"/>
     </service>
-    <service id=".service_locator.TJNRSaV.App\Controller\AdminReclamationController" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator_context" id="App\Controller\AdminReclamationController"/>
-      <argument>App\Controller\AdminReclamationController</argument>
-      <argument type="service" id="service_container"/>
-      <factory service=".service_locator.TJNRSaV" method="withContext"/>
-    </service>
     <service id=".service_locator.TJNRSaV.App\Controller\AdminUserController" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\AdminUserController"/>
       <argument>App\Controller\AdminUserController</argument>
-      <argument type="service" id="service_container"/>
-      <factory service=".service_locator.TJNRSaV" method="withContext"/>
-    </service>
-    <service id=".service_locator.TJNRSaV.App\Controller\ReclamationController" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator_context" id="App\Controller\ReclamationController"/>
-      <argument>App\Controller\ReclamationController</argument>
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.TJNRSaV" method="withContext"/>
     </service>
@@ -5178,10 +4895,6 @@
         <argument key="reverse_container" type="service_closure" id="reverse_container" on-invalid="ignore_uninitialized"/>
       </argument>
     </service>
-    <service id=".service_locator.dpiLQ5O" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator"/>
-      <argument type="collection"/>
-    </service>
     <service id=".service_locator.YDYHnos" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
@@ -5236,7 +4949,7 @@
         <argument key="security.firewall.map" type="service_closure" id="security.firewall.map"/>
         <argument key="security.user_checker_locator" type="service_closure" id="security.user_checker_locator"/>
         <argument key="security.firewall.event_dispatcher_locator" type="service_closure" id="security.firewall.event_dispatcher_locator"/>
-        <argument key="security.csrf.token_manager" type="service_closure" id="security.csrf.same_origin_token_manager" on-invalid="ignore"/>
+        <argument key="security.csrf.token_manager" type="service_closure" id="security.csrf.token_manager" on-invalid="ignore"/>
       </argument>
     </service>
     <service id="debug.event_dispatcher.inner" class="Symfony\Component\EventDispatcher\EventDispatcher"/>
@@ -5253,9 +4966,7 @@
         <argument type="collection">
           <argument>App\Kernel</argument>
           <argument>App\Controller\AdminEntrepriseController</argument>
-          <argument>App\Controller\AdminReclamationController</argument>
           <argument>App\Controller\AdminUserController</argument>
-          <argument>App\Controller\ReclamationController</argument>
           <argument>App\Controller\SecurityController</argument>
           <argument>Doctrine\Bundle\DoctrineBundle\Controller\ProfilerController</argument>
         </argument>
@@ -5278,11 +4989,6 @@
         <argument type="service" id=".debug.value_resolver.argument_resolver.not_tagged_controller"/>
       </argument>
       <argument type="service" id=".service_locator.1gw5tvd"/>
-    </service>
-    <service id="security.csrf.same_origin_token_manager.inner" class="Symfony\Component\Security\Csrf\CsrfTokenManager">
-      <argument type="service" id="security.csrf.token_generator"/>
-      <argument type="service" id="security.csrf.token_storage"/>
-      <argument type="service" id="request_stack" on-invalid="ignore"/>
     </service>
     <service id="debug.security.access.decision_manager.inner" class="Symfony\Component\Security\Core\Authorization\AccessDecisionManager">
       <argument type="iterator">
@@ -5308,23 +5014,6 @@
     </service>
     <service id=".errored..service_locator.1vYpZ1B.Symfony\Component\Config\Loader\LoaderInterface" class="Symfony\Component\Config\Loader\LoaderInterface">
       <tag name="container.error" message="Cannot autowire service &quot;.service_locator.1vYpZ1B&quot;: it needs an instance of &quot;Symfony\Component\Config\Loader\LoaderInterface&quot; but this type has been excluded from autowiring."/>
-    </service>
-    <service id=".errored..service_locator.IY8uJH..App\Entity\Reclamations" class="App\Entity\Reclamations">
-      <tag name="container.error" message="Cannot autowire service &quot;.service_locator.IY8uJH.&quot;: it needs an instance of &quot;App\Entity\Reclamations&quot; but this type has been excluded because it's a Doctrine entity."/>
-    </service>
-    <service id=".App\Command\GenerateEntitiesCommand.lazy" class="Symfony\Component\Console\Command\LazyCommand">
-      <argument>app:generate:entities</argument>
-      <argument type="collection"/>
-      <argument>Automatically generates entity classes from the database schema</argument>
-      <argument>false</argument>
-      <argument type="service_closure" id="App\Command\GenerateEntitiesCommand"/>
-    </service>
-    <service id=".App\Command\GenerateRepositoriesCommand.lazy" class="Symfony\Component\Console\Command\LazyCommand">
-      <argument>app:generate:repositories</argument>
-      <argument type="collection"/>
-      <argument>Generates repository classes for all entities.</argument>
-      <argument>false</argument>
-      <argument type="service_closure" id="App\Command\GenerateRepositoriesCommand"/>
     </service>
     <service id=".console.command.about.lazy" class="Symfony\Component\Console\Command\LazyCommand">
       <argument>about</argument>
@@ -5844,10 +5533,8 @@
     </service>
     <service id="console.command_loader" class="Symfony\Component\Console\CommandLoader\ContainerCommandLoader" public="true">
       <tag name="container.no_preload"/>
-      <argument type="service" id=".service_locator.Uyqbx1J"/>
+      <argument type="service" id=".service_locator.d9_AR3j"/>
       <argument type="collection">
-        <argument key="app:generate:entities">App\Command\GenerateEntitiesCommand</argument>
-        <argument key="app:generate:repositories">App\Command\GenerateRepositoriesCommand</argument>
         <argument key="about">console.command.about</argument>
         <argument key="assets:install">console.command.assets_install</argument>
         <argument key="cache:clear">console.command.cache_clear</argument>
@@ -5944,11 +5631,9 @@
         <argument key="make:webhook">maker.auto_command.make_webhook</argument>
       </argument>
     </service>
-    <service id=".service_locator.Uyqbx1J" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.d9_AR3j" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
-        <argument key="App\Command\GenerateEntitiesCommand" type="service_closure" id=".App\Command\GenerateEntitiesCommand.lazy"/>
-        <argument key="App\Command\GenerateRepositoriesCommand" type="service_closure" id=".App\Command\GenerateRepositoriesCommand.lazy"/>
         <argument key="console.command.about" type="service_closure" id=".console.command.about.lazy"/>
         <argument key="console.command.assets_install" type="service_closure" id=".console.command.assets_install.lazy"/>
         <argument key="console.command.cache_clear" type="service_closure" id=".console.command.cache_clear.lazy"/>
@@ -6112,7 +5797,7 @@
     <service id="session.handler" alias="session.handler.native"/>
     <service id="Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface" alias="security.csrf.token_generator"/>
     <service id="Symfony\Component\Security\Csrf\TokenStorage\TokenStorageInterface" alias="security.csrf.token_storage"/>
-    <service id="Symfony\Component\Security\Csrf\CsrfTokenManagerInterface" alias="security.csrf.same_origin_token_manager"/>
+    <service id="Symfony\Component\Security\Csrf\CsrfTokenManagerInterface" alias="security.csrf.token_manager"/>
     <service id="Symfony\Component\Form\ResolvedFormTypeFactoryInterface" alias="form.resolved_type_factory"/>
     <service id="Symfony\Component\Form\FormRegistryInterface" alias="form.registry"/>
     <service id="Symfony\Component\Form\FormFactoryInterface" alias="form.factory"/>
@@ -6158,14 +5843,13 @@
     <service id="Symfony\Component\Security\Core\User\UserCheckerInterface" alias="security.user_checker"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.ryAvHi4" public="true"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.zIt2KZU"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.iR38Ba_"/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.W55Po6X"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id="Psr\Log\LoggerInterface" alias="logger"/>
     <service id="event_dispatcher" alias="debug.event_dispatcher" public="true"/>
     <service id="controller_resolver" alias="debug.controller_resolver"/>
     <service id="argument_resolver" alias="debug.argument_resolver"/>
-    <service id="security.csrf.token_manager" alias="security.csrf.same_origin_token_manager"/>
     <service id="twig.error_renderer.html.inner" alias="error_handler.error_renderer.html"/>
     <service id="security.access.decision_manager" alias="debug.security.access.decision_manager"/>
     <service id="security.firewall.authenticator.main" alias="debug.security.firewall.authenticator.main"/>
@@ -6173,7 +5857,6 @@
     <service id="doctrine.orm.default_metadata_driver" alias=".doctrine.orm.default_metadata_driver"/>
     <service id=".service_locator.c0wzfI4" alias=".service_locator.1vYpZ1B"/>
     <service id=".service_locator.WXDZAJK" alias=".service_locator.4VCqJOp"/>
-    <service id=".service_locator.5fUL23v" alias=".service_locator.IY8uJH."/>
     <service id=".service_locator.uBwBrvQ" alias=".service_locator.0MQaTBY"/>
     <service id=".service_locator.FKG6F_t" alias=".service_locator.TJNRSaV"/>
   </services>
