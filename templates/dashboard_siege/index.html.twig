@@ -32,6 +32,11 @@
             <h2 class="mb-0 fw-bold" style="color: #00ff88;">
                 {{ revenus|number_format(2, ',', ' ') }} TND
             </h2>
+            <div class="mt-2">
+                <span class="badge bg-success bg-opacity-25 text-success border border-success" style="font-size: 0.8rem;">
+                    {{ taux_revenus|number_format(1, ',', ' ') }}% de l'objectif mensuel
+                </span>
+            </div>
         </div>
     </div>
 
@@ -42,6 +47,21 @@
             <h2 class="mb-0 fw-bold text-danger">
                 {{ depenses|number_format(2, ',', ' ') }} TND
             </h2>
+            <div class="mt-2">
+                {% if taux_depenses >= 90 %}
+                    <span class="badge bg-danger bg-opacity-25 text-danger border border-danger" style="font-size: 0.8rem;">
+                        {{ taux_depenses|number_format(1, ',', ' ') }}% de la limite consommée ⚠ Critique
+                    </span>
+                {% elseif taux_depenses >= 80 %}
+                    <span class="badge bg-danger bg-opacity-25 border border-danger" style="font-size: 0.8rem; color: #ff4d4d;">
+                        {{ taux_depenses|number_format(1, ',', ' ') }}% de la limite consommée ⚠ Attention
+                    </span>
+                {% else %}
+                    <span class="badge bg-danger bg-opacity-25 border border-danger" style="font-size: 0.8rem; color: #ff4d4d;">
+                        {{ taux_depenses|number_format(1, ',', ' ') }}% de la limite consommée
+                    </span>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
