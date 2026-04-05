@@ -1,0 +1,96 @@
+{% extends 'front_base.html.twig' %}
+
+{% block title %}Marketplace - Boussole{% endblock %}
+
+{% block body %}
+<section class="pt-4 pb-5">
+    <div class="container">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-5 fw-bold">Marketplace</h1>
+                <p class="lead">Découvrez notre catalogue de produits</p>
+                <hr class="w-25 mx-auto">
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="row mb-4">
+            <div class="col-md-6 mx-auto">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Rechercher un produit..." id="searchInput">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="row g-4" id="productsGrid">
+            {% for produit in produits %}
+            <div class="col-md-6 col-lg-4 col-xl-3 product-item">
+                <div class="card h-100 shadow-sm border-0 rounded-3">
+                    <!-- Product Image -->
+                    <div class="position-relative">
+                        {% if produit.image %}
+                            <img src="{{ asset(produit.image) }}" class="card-img-top rounded-top-3" alt="{{ produit.nom }}" style="height: 220px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-light d-flex align-items-center justify-content-center rounded-top-3" style="height: 220px;">
+                                <i class="fas fa-box fa-4x text-secondary"></i>
+                            </div>
+                        {% endif %}
+                        {% if produit.stockDispo <= 0 %}
+                            <span class="position-absolute top-0 end-0 badge bg-danger m-2">Rupture</span>
+                        {% elseif produit.stockDispo < 10 %}
+                            <span class="position-absolute top-0 end-0 badge bg-warning m-2">Stock faible</span>
+                        {% else %}
+                            <span class="position-absolute top-0 end-0 badge bg-success m-2">En stock</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Product Body -->
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold">{{ produit.nom }}</h5>
+                        <p class="card-text text-muted small">Réf: {{ produit.reference }}</p>
+                        <div class="d-flex justify-content-center align-items-baseline gap-2 mt-2">
+                            <span class="h4 text-primary fw-bold">{{ produit.prixAchat|number_format(2, ',', ' ') }} DT</span>
+                        </div>
+                    </div>
+
+                    <!-- Product Footer -->
+                    <div class="card-footer bg-transparent border-0 pb-3">
+                        <a href="{{ path('app_panier_ajouter', {'id': produit.id}) }}" class="btn btn-primary w-100 rounded-pill"
+                            {% if produit.stockDispo <= 0 %}style="pointer-events: none; opacity: 0.6;"{% endif %}>
+                            <i class="fas fa-shopping-cart me-2"></i>Ajouter au panier
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                <h4>Aucun produit disponible</h4>
+                <p class="text-muted">Revenez plus tard pour découvrir nos produits.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    let searchText = this.value.toLowerCase();
+    let products = document.querySelectorAll('.product-item');
+    
+    products.forEach(product => {
+        let title = product.querySelector('.card-title').innerText.toLowerCase();
+        if (title.includes(searchText)) {
+            product.style.display = '';
+        } else {
+            product.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'front_base.html.twig' %}
+
+{% block title %}Mes Commandes - Boussole{% endblock %}
+
+{% block body %}
+<section class="pt-4 pb-5">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h1 class="display-5 fw-bold">Mes Commandes</h1>
+                <hr class="w-25 mx-auto">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                {% if commandes is empty %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-shopping-bag fa-4x text-muted mb-3"></i>
+                        <h4>Aucune commande</h4>
+                        <p class="text-muted">Vous n'avez pas encore passé de commande.</p>
+                        <a href="{{ path('app_marketplace') }}" class="btn btn-primary mt-3">
+                            <i class="fas fa-shopping-cart me-2"></i>Commander maintenant
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="card shadow-sm border-0 rounded-4">
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0">
+                                    <thead class="bg-light">
+                                        <tr>
+                                            <th class="ps-3">N° Commande</th>
+                                            <th>Date</th>
+                                            <th>Total</th>
+                                            <th>Statut</th>
+                                            <th class="text-end pe-3">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for commande in commandes %}
+                                        <tr>
+                                            <td class="ps-3 fw-bold">#{{ commande.id }}</td>
+                                            <td>{{ commande.date_creation|date('d/m/Y H:i') }}</td>
+                                            <td class="fw-bold text-primary">{{ commande.montant_total|number_format(2, ',', ' ') }} DT</td>
+                                            <td>
+                                                {% if commande.statut == 'EN_ATTENTE' %}
+                                                    <span class="badge bg-warning text-dark">En attente</span>
+                                                {% elseif commande.statut == 'VALIDEE' %}
+                                                    <span class="badge bg-success">Validée</span>
+                                                {% elseif commande.statut == 'REFUSEE' %}
+                                                    <span class="badge bg-danger">Refusée</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">{{ commande.statut }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-end pe-3">
+                                                <a href="{{ path('app_mes_commandes_detail', {'id': commande.id}) }}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                                    <i class="fas fa-eye me-1"></i>Détails
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

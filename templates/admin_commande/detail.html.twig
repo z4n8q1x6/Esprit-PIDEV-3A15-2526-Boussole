@@ -1,0 +1,122 @@
+{% extends 'back_base.html.twig' %}
+
+{% block title %}Détail Commande #{{ commande.id }}{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-12 mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-2">Détail Commande #{{ commande.id }}</h1>
+            <a href="{{ path('app_admin_commandes') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Retour
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-body p-4">
+        <!-- Informations commande -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="bg-light p-3 rounded-3">
+                    <small class="text-muted">Date de commande</small>
+                    <p class="fw-bold mb-0">{{ commande.date_creation|date('d/m/Y H:i') }}</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="bg-light p-3 rounded-3">
+                    <small class="text-muted">Franchise</small>
+                    <p class="fw-bold mb-0">
+                        {% if commande.franchise_id %}
+                            {{ commande.franchise_id.nom }}
+                        {% else %}
+                            Non assignée
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="bg-light p-3 rounded-3">
+                    <small class="text-muted">Montant total</small>
+                    <p class="fw-bold mb-0 text-primary fs-4">{{ commande.montant_total|number_format(2, ',', ' ') }} DT</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="bg-light p-3 rounded-3">
+                    <small class="text-muted">Statut</small>
+                    <p class="mb-0">
+                        {% if commande.statut == 'EN_ATTENTE' %}
+                            <span class="badge bg-warning text-dark fs-6">En attente</span>
+                        {% elseif commande.statut == 'VALIDEE' %}
+                            <span class="badge bg-success fs-6">Validée</span>
+                        {% elseif commande.statut == 'REFUSEE' %}
+                            <span class="badge bg-danger fs-6">Refusée</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Liste des produits -->
+        <h5 class="mb-3">Produits commandés</h5>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Produit</th>
+                        <th>Référence</th>
+                        <th>Prix unitaire</th>
+                        <th>Quantité</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ligne in commande.ligne_commandes %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if ligne.produit_id.image %}
+                                    <img src="{{ asset(ligne.produit_id.image) }}" alt="{{ ligne.produit_id.nom }}" style="width: 50px; height: 50px; object-fit: cover;" class="rounded me-3">
+                                {% else %}
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                        <i class="fas fa-box text-secondary"></i>
+                                    </div>
+                                {% endif %}
+                                <div>
+                                    <h6 class="mb-0">{{ ligne.produit_id.nom }}</h6>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ ligne.produit_id.reference }}</td>
+                        <td>{{ ligne.prix_unitaire|number_format(2, ',', ' ') }} DT</td>
+                        <td>{{ ligne.quantite }}</td>
+                        <td class="fw-bold">{{ (ligne.prix_unitaire * ligne.quantite)|number_format(2, ',', ' ') }} DT</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <td colspan="4" class="text-end fw-bold">Total :</td>
+                        <td class="fw-bold fs-5 text-primary">{{ commande.montant_total|number_format(2, ',', ' ') }} DT</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-4">
+            {% if commande.statut == 'EN_ATTENTE' %}
+                <div class="btn-group">
+                    <a href="{{ path('app_admin_commande_valider', {'id': commande.id}) }}" class="btn btn-success" onclick="return confirm('Valider cette commande ?')">
+                        <i class="fas fa-check-circle me-2"></i>Valider la commande
+                    </a>
+                    <a href="{{ path('app_admin_commande_refuser', {'id': commande.id}) }}" class="btn btn-danger" onclick="return confirm('Refuser cette commande ?')">
+                        <i class="fas fa-times-circle me-2"></i>Refuser la commande
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'back_base.html.twig' %}
+
+{% block title %}Modifier Produit{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-12 mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-2">Modifier le produit</h1>
+            <a href="{{ path('app_produit_index') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Retour
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-header bg-transparent">
+        <h5 class="card-header-title">Informations produit</h5>
+    </div>
+    <div class="card-body p-4">
+        {{ form_start(form) }}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.nom, 'Nom', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.nom) }}
+                    {{ form_errors(form.nom) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.reference, 'Référence', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.reference) }}
+                    {{ form_errors(form.reference) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.prix_achat, 'Prix d\'achat (DT)', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.prix_achat) }}
+                    {{ form_errors(form.prix_achat) }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    {{ form_label(form.stock_dispo, 'Stock disponible', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.stock_dispo) }}
+                    {{ form_errors(form.stock_dispo) }}
+                </div>
+                <div class="col-md-12 mb-3">
+                    {% if produit.image %}
+                        <div class="mb-2">
+                            <label class="form-label">Image actuelle</label>
+                            <div>
+                                <img src="{{ asset(produit.image) }}" alt="{{ produit.nom }}" style="width: 100px; height: 100px; object-fit: cover;" class="rounded border">
+                            </div>
+                        </div>
+                    {% endif %}
+                    {{ form_label(form.imageFile, 'Changer d\'image (optionnel)', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.imageFile) }}
+                    {{ form_errors(form.imageFile) }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>Modifier
+            </button>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'back_base.html.twig' %}
+
+{% block title %}Gestion des Commandes{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-12 mb-3">
+        <h1 class="h3 mb-2">Gestion des Commandes</h1>
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-body p-4">
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>N° Commande</th>
+                        <th>Date</th>
+                        <th>Franchise</th>
+                        <th>Montant total</th>
+                        <th>Statut</th>
+                        <th class="text-end pe-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for commande in commandes %}
+                    <tr>
+                        <td class="fw-bold">#{{ commande.id }}</td>
+                        <td>{{ commande.date_creation|date('d/m/Y H:i') }}</td>
+                        <td>
+                            {% if commande.franchise_id %}
+                                {{ commande.franchise_id.nom }}
+                            {% else %}
+                                <span class="text-muted">Non assignée</span>
+                            {% endif %}
+                        </td>
+                        <td class="fw-bold">{{ commande.montant_total|number_format(2, ',', ' ') }} DT</td>
+                        <td>
+                            {% if commande.statut == 'EN_ATTENTE' %}
+                                <span class="badge bg-warning text-dark">En attente</span>
+                            {% elseif commande.statut == 'VALIDEE' %}
+                                <span class="badge bg-success">Validée</span>
+                            {% elseif commande.statut == 'REFUSEE' %}
+                                <span class="badge bg-danger">Refusée</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end pe-3">
+                            <div class="btn-group" role="group">
+                                <a href="{{ path('app_admin_commande_detail', {'id': commande.id}) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye me-1"></i>Détails
+                                </a>
+                                {% if commande.statut == 'EN_ATTENTE' %}
+                                    <a href="{{ path('app_admin_commande_valider', {'id': commande.id}) }}" class="btn btn-sm btn-success" onclick="return confirm('Valider cette commande ?')">
+                                        <i class="fas fa-check-circle me-1"></i>Valider
+                                    </a>
+                                    <a href="{{ path('app_admin_commande_refuser', {'id': commande.id}) }}" class="btn btn-sm btn-danger" onclick="return confirm('Refuser cette commande ?')">
+                                        <i class="fas fa-times-circle me-1"></i>Refuser
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">Aucune commande trouvée</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

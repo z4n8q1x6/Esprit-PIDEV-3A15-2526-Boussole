@@ -1,0 +1,61 @@
+{% extends 'back_base.html.twig' %}
+
+{% block title %}Dashboard Admin{% endblock %}
+
+{% block admin_content %}
+<div class="row">
+    <div class="col-12 mb-3">
+        <h1 class="h3 mb-2">Dashboard Administrateur</h1>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card card-body bg-primary bg-opacity-10 p-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-0 fw-bold">{{ nbUtilisateurs }}</h2>
+                    <span>Utilisateurs</span>
+                </div>
+                <i class="fas fa-users fa-2x text-primary"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card card-body bg-success bg-opacity-10 p-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-0 fw-bold">{{ nbFranchises }}</h2>
+                    <span>Franchises</span>
+                </div>
+                <i class="fas fa-store fa-2x text-success"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card card-body bg-warning bg-opacity-10 p-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-0 fw-bold">{{ nbProduits }}</h2>
+                    <span>Produits</span>
+                </div>
+                <i class="fas fa-box fa-2x text-warning"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card card-body bg-info bg-opacity-10 p-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="mb-0 fw-bold">{{ nbCommandes }}</h2>
+                    <span>Commandes</span>
+                </div>
+                <i class="fas fa-shopping-cart fa-2x text-info"></i>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
