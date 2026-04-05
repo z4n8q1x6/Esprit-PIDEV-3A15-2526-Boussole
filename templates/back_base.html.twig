@@ -88,6 +88,42 @@
 	<!-- Theme CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
+
+<style>
+    /* ===== Sidebar scrollable ===== */
+    @media (min-width: 1200px) {
+        /* The sidebar nav is fixed, 100vh tall */
+        .navbar.sidebar.navbar-expand-xl {
+            height: 100vh;
+            overflow: hidden;
+        }
+        /* The offcanvas becomes relative at xl — make it fill remaining height and scroll */
+        .navbar.sidebar.navbar-expand-xl .offcanvas {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+        .navbar.sidebar.navbar-expand-xl .offcanvas-body.sidebar-content {
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            max-height: calc(100vh - 80px); /* 80px = logo header height */
+            /* Thin scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 229, 255, 0.3) transparent;
+        }
+        .navbar.sidebar.navbar-expand-xl .offcanvas-body.sidebar-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .navbar.sidebar.navbar-expand-xl .offcanvas-body.sidebar-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .navbar.sidebar.navbar-expand-xl .offcanvas-body.sidebar-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 229, 255, 0.4);
+            border-radius: 4px;
+        }
+    }
+</style>
+
 {% block stylesheets %}{% endblock %}
 </head>
 
@@ -115,10 +151,10 @@
 <!-- Navbar brand for xl END -->
 
 	<div class="offcanvas offcanvas-start flex-row custom-scrollbar h-100" data-bs-backdrop="true" tabindex="-1" id="offcanvasSidebar">
-		<div class="offcanvas-body sidebar-content d-flex flex-column bg-dark">
+		<div class="offcanvas-body sidebar-content d-flex flex-column bg-dark" style="overflow-y: auto; overflow-x: hidden;">
 
 			<!-- Sidebar menu START -->
-			<ul class="navbar-nav flex-column mt-3" id="navbar-sidebar">
+			<ul class="navbar-nav flex-column mt-3" id="navbar-sidebar" style="flex: 1; overflow-y: auto; overflow-x: hidden;">
 
 				<!-- Title -->
 				<li class="nav-item ms-3 my-2" style="font-size: 0.75rem; letter-spacing: 1px; color: #6c757d; font-weight: bold; text-transform: uppercase;">Principal</li>
