@@ -128,6 +128,15 @@ final class TransactionController extends AbstractController
         $dateStart = $request->query->get('date_start', '');
         $dateEnd = $request->query->get('date_end', '');
 
+        $sort = $request->query->get('sort', 'date');
+        $direction = $request->query->get('direction', 'DESC');
+
+        $allowedSorts = ['date', 'type', 'description', 'montant'];
+        if (!in_array($sort, $allowedSorts)) {
+            $sort = 'date';
+        }
+        $direction = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
+
         // --- LECTURE DES DONNEES ---
         $transactions = [];
         $totalRecettes = 0;
@@ -140,7 +149,9 @@ final class TransactionController extends AbstractController
                 $searchQuery,
                 $periode,
                 $dateStart,
-                $dateEnd
+                $dateEnd,
+                $sort,
+                $direction
             );
 
             foreach ($transactions as $t) {
@@ -164,7 +175,9 @@ final class TransactionController extends AbstractController
             'currentSearch' => $searchQuery,
             'currentPeriode' => $periode,
             'currentStart' => $dateStart,
-            'currentEnd' => $dateEnd
+            'currentEnd' => $dateEnd,
+            'currentSort' => $sort,
+            'currentDirection' => $direction
         ]);
     }
     // =========================================================================

@@ -80,11 +80,32 @@
         <div class="table-responsive" style="background-color: #12141d !important; border-radius: 12px; padding: 1rem;">
             <table class="table table-dark table-hover table-borderless align-middle mb-0" style="background-color: #12141d !important;">
                 <thead class="border-bottom border-secondary">
+                    {% set qs = app.request.query.all %}
+                    {% set dirDate = (currentSort == 'date' and currentDirection == 'ASC') ? 'DESC' : 'ASC' %}
+                    {% set dirType = (currentSort == 'type' and currentDirection == 'ASC') ? 'DESC' : 'ASC' %}
+                    {% set dirDesc = (currentSort == 'description' and currentDirection == 'ASC') ? 'DESC' : 'ASC' %}
+                    {% set dirMontant = (currentSort == 'montant' and currentDirection == 'ASC') ? 'DESC' : 'ASC' %}
                     <tr>
-                        <th class="text-muted">DATE</th>
-                        <th class="text-muted">TYPE</th>
-                        <th class="text-muted">DESCRIPTION</th>
-                        <th class="text-muted">MONTANT (TND)</th>
+                        <th>
+                            <a href="{{ path(app.request.attributes.get('_route'), qs|merge({'sort': 'date', 'direction': dirDate})) }}" class="text-muted text-decoration-none">
+                                DATE {% if currentSort == 'date' %}<i class="bi bi-caret-{{ currentDirection == 'ASC' ? 'up' : 'down' }}-fill text-info"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path(app.request.attributes.get('_route'), qs|merge({'sort': 'type', 'direction': dirType})) }}" class="text-muted text-decoration-none">
+                                TYPE {% if currentSort == 'type' %}<i class="bi bi-caret-{{ currentDirection == 'ASC' ? 'up' : 'down' }}-fill text-info"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path(app.request.attributes.get('_route'), qs|merge({'sort': 'description', 'direction': dirDesc})) }}" class="text-muted text-decoration-none">
+                                DESCRIPTION {% if currentSort == 'description' %}<i class="bi bi-caret-{{ currentDirection == 'ASC' ? 'up' : 'down' }}-fill text-info"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path(app.request.attributes.get('_route'), qs|merge({'sort': 'montant', 'direction': dirMontant})) }}" class="text-muted text-decoration-none">
+                                MONTANT (TND) {% if currentSort == 'montant' %}<i class="bi bi-caret-{{ currentDirection == 'ASC' ? 'up' : 'down' }}-fill text-info"></i>{% endif %}
+                            </a>
+                        </th>
                         <th class="text-muted" style="width: 50px;"></th>     
                     </tr>
                 </thead>
