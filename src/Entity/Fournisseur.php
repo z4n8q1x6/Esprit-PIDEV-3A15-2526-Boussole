@@ -2,78 +2,85 @@
 
 namespace App\Entity;
 
+use App\Repository\FournisseurRepository; // Optionnel si tu as un repo
 use Doctrine\ORM\Mapping as ORM;
-
 use App\Entity\Franchises;
 
 #[ORM\Entity]
 class Fournisseur
 {
-
     #[ORM\Id]
+    // Pas de GeneratedValue ici pour permettre l'ID manuel (comme pour Charge)
     #[ORM\Column(type: "integer")]
     private int $id;
 
     #[ORM\Column(type: "string", length: 255)]
     private string $nom;
 
-    #[ORM\Column(type: "string", length: 100)]
-    private string $matricule_fiscal;
+    #[ORM\Column(type: "string", length: 100, nullable: true)]
+    private ?string $matricule_fiscal = null;
 
-    #[ORM\Column(type: "string", length: 20)]
-    private string $telephone;
+    #[ORM\Column(type: "string", length: 20, nullable: true)]
+    private ?string $telephone = null;
 
-        #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "fournisseurs")]
-    #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "fournisseurs")]
+    #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: false)]
     private Franchises $franchise_id;
 
-    public function getId()
+    // --- GETTERS & SETTERS ---
+
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId($value)
+    public function setId(int $id): self
     {
-        $this->id = $value;
+        $this->id = $id;
+        return $this;
     }
 
-    public function getNom()
+    public function getNom(): string
     {
         return $this->nom;
     }
 
-    public function setNom($value)
+    public function setNom(string $nom): self
     {
-        $this->nom = $value;
+        $this->nom = $nom;
+        return $this;
     }
 
-    public function getMatricule_fiscal()
+    public function getMatriculeFiscal(): ?string
     {
         return $this->matricule_fiscal;
     }
 
-    public function setMatricule_fiscal($value)
+    public function setMatriculeFiscal(?string $matricule_fiscal): self
     {
-        $this->matricule_fiscal = $value;
+        $this->matricule_fiscal = $matricule_fiscal;
+        return $this;
     }
 
-    public function getTelephone()
+    public function getTelephone(): ?string
     {
         return $this->telephone;
     }
 
-    public function setTelephone($value)
+    public function setTelephone(?string $telephone): self
     {
-        $this->telephone = $value;
+        $this->telephone = $telephone;
+        return $this;
     }
 
-    public function getFranchise_id()
+    public function getFranchiseId(): Franchises
     {
         return $this->franchise_id;
     }
 
-    public function setFranchise_id($value)
+    public function setFranchiseId(Franchises $franchise_id): self
     {
-        $this->franchise_id = $value;
+        $this->franchise_id = $franchise_id;
+        return $this;
     }
 }
