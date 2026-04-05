@@ -3,35 +3,45 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use App\Entity\Franchises;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class Bilan
 {
 
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
     private int $id;
 
     #[ORM\Column(type: "integer")]
+    #[Assert\NotBlank(message: "Le mois est obligatoire.")]
+    #[Assert\Range(min: 1, max: 12, notInRangeMessage: "Le mois doit ÃƒÆ’Ã‚Âªtre compris entre {{ min }} et {{ max }}")]
     private int $mois;
 
     #[ORM\Column(type: "integer")]
+    #[Assert\NotBlank(message: "L'annÃƒÆ’Ã‚Â©e est obligatoire.")]
+    #[Assert\GreaterThanOrEqual(value: 2024, message: "L'annÃƒÆ’Ã‚Â©e doit ÃƒÆ’Ã‚Âªtre supÃƒÆ’Ã‚Â©rieure ou ÃƒÆ’Ã‚Â©gale ÃƒÆ’Ã‚Â  2024")]
     private int $annee;
 
     #[ORM\Column(type: "float")]
+    #[Assert\NotBlank(message: "Le total des recettes est obligatoire.")]
+    #[Assert\PositiveOrZero(message: "Le total des recettes doit ÃƒÆ’Ã‚Âªtre positif ou nul.")]
     private float $total_recettes;
 
     #[ORM\Column(type: "float")]
+    #[Assert\NotBlank(message: "Le total des charges est obligatoire.")]
+    #[Assert\PositiveOrZero(message: "Le total des charges doit ÃƒÆ’Ã‚Âªtre positif ou nul.")]
     private float $total_charges;
 
     #[ORM\Column(type: "float")]
+    #[Assert\Type(type: "numeric", message: "Le rÃƒÆ’Ã‚Â©sultat net doit ÃƒÆ’Ã‚Âªtre un nombre.")]
     private float $resultat_net;
 
         #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "bilans")]
-    #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Franchises $franchise_id;
+    #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    private ?Franchises $franchise_id = null;
 
     public function getId()
     {
@@ -102,4 +112,14 @@ class Bilan
     {
         $this->franchise_id = $value;
     }
+
+    // Alias pour la logique de formulaires Symfony (camelCase)
+    public function getTotalRecettes() { return $this->total_recettes; }
+    public function setTotalRecettes($value) { $this->total_recettes = $value; }
+    public function getTotalCharges() { return $this->total_charges; }
+    public function setTotalCharges($value) { $this->total_charges = $value; }
+    public function getResultatNet() { return $this->resultat_net; }
+    public function setResultatNet($value) { $this->resultat_net = $value; }
+    public function getFranchiseId() { return $this->franchise_id; }
+    public function setFranchiseId($value) { $this->franchise_id = $value; }
 }

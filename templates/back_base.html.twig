@@ -3,13 +3,13 @@
 
 <!-- Mirrored from eduport.webestica.com/admin-dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 07 Nov 2023 13:15:29 GMT -->
 <head>
-	<title>Boussole</title>
+	<title>Boussole - Dashboard Management</title>
 
 	<!-- Meta Tags -->
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<meta name="author" content="Webestica.com">
-	<meta name="description" content="Eduport- LMS, Education and Course Theme">
+	<meta name="description" content="Boussole - Gestion Opérationnelle et Tableau de bord">
 
 	<!-- Dark mode -->
 	<script>
@@ -19,7 +19,7 @@
 			if (storedTheme) {
 				return storedTheme
 			}
-			return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'light'
+			return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 		}
 
 		const setTheme = function (theme) {
@@ -88,6 +88,43 @@
 	<!-- Theme CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
+
+<style>
+    /* ===== Sidebar scrollable ===== */
+    @media (min-width: 1200px) {
+        /* The sidebar nav is fixed, 100vh tall */
+        .navbar.sidebar.navbar-expand-xl {
+            height: 100vh;
+            overflow: hidden;
+        }
+        /* The offcanvas becomes relative at xl — make it fill remaining height and scroll */
+        .navbar.sidebar.navbar-expand-xl .offcanvas {
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+        .navbar.sidebar.navbar-expand-xl .offcanvas-body.sidebar-content {
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            max-height: calc(100vh - 80px); /* 80px = logo header height */
+            /* Thin scrollbar */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 229, 255, 0.3) transparent;
+        }
+        .navbar.sidebar.navbar-expand-xl .offcanvas-body.sidebar-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .navbar.sidebar.navbar-expand-xl .offcanvas-body.sidebar-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .navbar.sidebar.navbar-expand-xl .offcanvas-body.sidebar-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 229, 255, 0.4);
+            border-radius: 4px;
+        }
+    }
+</style>
+
+{% block stylesheets %}{% endblock %}
 </head>
 
 <body>
@@ -100,105 +137,73 @@
 <nav class="navbar sidebar navbar-expand-xl navbar-dark bg-dark">
 
 	<!-- Navbar brand for xl START -->
-	<div class="d-flex align-items-center">
-		<a class="navbar-brand" href="index.html">
-			<img class="navbar-brand-item" src="{{ asset('assets/images/logo-light.svg') }}" alt="">
-		</a>
-	</div>
-	<!-- Navbar brand for xl END -->
+<div class="d-flex align-items-center mt-2 px-3 pb-2 pt-2 border-bottom border-secondary border-opacity-25" style="background-color: #1a1b24;">
+<a class="navbar-brand d-flex align-items-center" href="{{ path('app_siege_dashboard') }}">
+<div class="header-logo-icon rounded me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border: 2px solid #00e5ff !important; box-shadow: 0 0 12px rgba(0, 229, 255, 0.4); background-color: transparent;">
+                <i class="bi bi-display text-white fs-4"></i>
+            </div>
+            <div>
+                <h4 class="text-white mb-0 fw-bold" style="letter-spacing: 0.5px;">Boussole</h4>
+                <small class="mb-0 fw-bold" style="color: #00e5ff; font-size: 0.65rem; letter-spacing: 1.5px;">MANAGEMENT</small>
+            </div>
+</a>
+</div>
+<!-- Navbar brand for xl END -->
 
 	<div class="offcanvas offcanvas-start flex-row custom-scrollbar h-100" data-bs-backdrop="true" tabindex="-1" id="offcanvasSidebar">
-		<div class="offcanvas-body sidebar-content d-flex flex-column bg-dark">
+		<div class="offcanvas-body sidebar-content d-flex flex-column bg-dark" style="overflow-y: auto; overflow-x: hidden;">
 
 			<!-- Sidebar menu START -->
-			<ul class="navbar-nav flex-column" id="navbar-sidebar">
-
-				<!-- Menu item 1 -->
-				<li class="nav-item"><a href="admin-dashboard.html" class="nav-link active"><i class="bi bi-house fa-fw me-2"></i>Dashboard</a></li>
+			<ul class="navbar-nav flex-column mt-3" id="navbar-sidebar" style="flex: 1; overflow-y: auto; overflow-x: hidden;">
 
 				<!-- Title -->
-				<li class="nav-item ms-2 my-2">Pages</li>
+				<li class="nav-item ms-3 my-2" style="font-size: 0.75rem; letter-spacing: 1px; color: #6c757d; font-weight: bold; text-transform: uppercase;">Principal</li>
 
-				<!-- menu item 2 -->
-				<li class="nav-item">
-					<a class="nav-link" data-bs-toggle="collapse" href="#collapsepage" role="button" aria-expanded="false" aria-controls="collapsepage">
-						<i class="bi bi-basket fa-fw me-2"></i>Courses
-					</a>
-					<!-- Submenu -->
-					<ul class="nav collapse flex-column" id="collapsepage" data-bs-parent="#navbar-sidebar">
-						<li class="nav-item"> <a class="nav-link" href="admin-course-list.html">All Courses</a></li>
-						<li class="nav-item"> <a class="nav-link" href="admin-course-category.html">Course Category</a></li>
-						<li class="nav-item"> <a class="nav-link" href="admin-course-detail.html">Course Detail</a></li>
-					</ul>
-				</li>
+				<!-- Menu item -->
+				<li class="nav-item mb-1">
+                    <a href="{{ path('app_siege_dashboard') }}" class="nav-link active d-flex align-items-center py-2 px-3" style="background-color: rgba(0, 229, 255, 0.08); color: #00e5ff; border-radius: 8px; margin-left: 10px; margin-right: 10px; border-left: 3px solid #00e5ff;">
+                        <i class="bi bi-grid fa-fw me-3"></i>Vue d'ensemble
+                    </a>
+                </li>
 
-				<!-- Menu item 3 -->
-				<li class="nav-item"> <a class="nav-link" href="admin-student-list.html"><i class="fas fa-user-graduate fa-fw me-2"></i>Students</a></li>
-
-				<!-- Menu item 4 -->
-				<li class="nav-item">
-					<a class="nav-link" data-bs-toggle="collapse" href="#collapseinstructors" role="button" aria-expanded="false" aria-controls="collapseinstructors">
-						<i class="fas fa-user-tie fa-fw me-2"></i>Instructors
-					</a>
-					<!-- Submenu -->
-					<ul class="nav collapse flex-column" id="collapseinstructors" data-bs-parent="#navbar-sidebar">
-						<li class="nav-item"> <a class="nav-link" href="admin-instructor-list.html">Instructors</a></li>
-						<li class="nav-item"> <a class="nav-link" href="admin-instructor-detail.html">Instructor Detail</a></li>
-						<li class="nav-item">
-							<a class="nav-link" href="admin-instructor-request.html">Instructor requests
-								<span class="badge text-bg-success rounded-circle ms-2">2</span>
-							</a>
-						</li>
-					</ul>
-				</li>
-
-				<!-- Menu item 5 -->
-				<li class="nav-item"> <a class="nav-link" href="admin-review.html"><i class="far fa-comment-dots fa-fw me-2"></i>Reviews</a></li>
-
-				<!-- Menu item 6 -->
-				<li class="nav-item"> <a class="nav-link" href="admin-earning.html"><i class="far fa-chart-bar fa-fw me-2"></i>Earnings</a></li>
-
-				<!-- Menu item 7 -->
-				<li class="nav-item"> <a class="nav-link" href="admin-setting.html"><i class="fas fa-user-cog fa-fw me-2"></i>Admin Settings</a></li>
-
-				<!-- Menu item 8 -->
-				<li class="nav-item">
-					<a class="nav-link" data-bs-toggle="collapse" href="#collapseauthentication" role="button" aria-expanded="false" aria-controls="collapseauthentication">
-						<i class="bi bi-lock fa-fw me-2"></i>Authentication
-					</a>
-					<!-- Submenu -->
-					<ul class="nav collapse flex-column" id="collapseauthentication" data-bs-parent="#navbar-sidebar">
-						<li class="nav-item"> <a class="nav-link" href="sign-up.html">Sign Up</a></li>
-						<li class="nav-item"> <a class="nav-link" href="sign-in.html">Sign In</a></li>
-						<li class="nav-item"> <a class="nav-link" href="forgot-password.html">Forgot Password</a></li>
-						<li class="nav-item"> <a class="nav-link" href="admin-error-404.html">Error 404</a></li>
-					</ul>
-				</li>
+				
+                <li class="nav-item mt-1"><a class="nav-link text-body py-2 px-4" href="#"><i class="bi bi-people fa-fw me-3 fs-6"></i>Utilisateurs</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="#"><i class="bi bi-building fa-fw me-3 fs-6"></i>Entreprises</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="#"><i class="bi bi-bag fa-fw me-3 fs-6"></i>Gestion catalogue</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="#"><i class="bi bi-download fa-fw me-3 fs-6"></i>Commandes reçues</a></li>
 
 				<!-- Title -->
-				<li class="nav-item ms-2 my-2">Documentation</li>
+				<li class="nav-item ms-3 mt-4 mb-2" style="font-size: 0.75rem; letter-spacing: 1px; color: #6c757d; font-weight: bold; text-transform: uppercase;">Outils</li>
 
-				<!-- Menu item 9 -->
-				<li class="nav-item"> <a class="nav-link" href="docs/index.html"><i class="far fa-clipboard fa-fw me-2"></i>Documentation</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="#"><i class="bi bi-cash fa-fw me-3 fs-6"></i>Charges</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="#"><i class="bi bi-truck fa-fw me-3 fs-6"></i>Fournisseurs</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('admin_reclamation_index') }}"><i class="bi bi-megaphone fa-fw me-3 fs-6"></i>Réclamations</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('admin_alerte_index') }}"><i class="bi bi-robot fa-fw me-3 fs-6"></i>Alertes IA</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="#"><i class="bi bi-globe fa-fw me-3 fs-6"></i>Carte franchises</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('app_bilan_index') }}"><i class="bi bi-bar-chart-line fa-fw me-3 fs-6"></i>Bilans</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('app_budget_index') }}"><i class="bi bi-piggy-bank fa-fw me-3 fs-6"></i>Budgets</a></li>
 
-				<!-- Menu item 10 -->
-				<li class="nav-item"> <a class="nav-link" href="docs/changelog.html"><i class="fas fa-sitemap fa-fw me-2"></i>Changelog</a></li>
 			</ul>
 			<!-- Sidebar menu end -->
 
 			<!-- Sidebar footer START -->
-			<div class="px-3 mt-auto pt-3">
-				<div class="d-flex align-items-center justify-content-between text-primary-hover">
-						<a class="h5 mb-0 text-body" href="admin-setting.html" data-bs-toggle="tooltip" data-bs-placement="top" title="Settings">
-							<i class="bi bi-gear-fill"></i>
-						</a>
-						<a class="h5 mb-0 text-body" href="index.html" data-bs-toggle="tooltip" data-bs-placement="top" title="Home">
-							<i class="bi bi-globe"></i>
-						</a>
-						<a class="h5 mb-0 text-body" href="sign-in.html" data-bs-toggle="tooltip" data-bs-placement="top" title="Sign out">
-							<i class="bi bi-power"></i>
-						</a>
+			<div class="px-3 mt-auto pt-3 pb-4">
+                <!-- User profile box -->
+				<div class="d-flex align-items-center p-3 mb-3 rounded shadow" style="background-color: #2b2b36;">
+                    <div class="avatar avatar-sm me-3 d-flex align-items-center justify-content-center fw-bold" style="background-color: #00e5ff; color: #1a1a24; border-radius: 8px;">
+                        AD
+                    </div>
+                    <div>
+                        <h6 class="mb-0 text-white fw-bold" style="font-size: 0.85rem;">admin@boussole.tn</h6>
+                        <small class="mb-0" style="color: #00ff88; font-size: 0.75rem;"><i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>En ligne</small>
+                    </div>
 				</div>
+
+                
+                <!-- Logout -->
+                <a class="h6 mb-0 text-danger d-flex align-items-center ms-1 d-inline-block" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Déconnexion" style="transition: all 0.3s;">
+                    <i class="bi bi-power me-2 text-danger"></i> Déconnexion
+                </a>
 			</div>
 			<!-- Sidebar footer END -->
 
@@ -217,9 +222,11 @@
 
 				<!-- Logo START -->
 				<div class="d-flex align-items-center d-xl-none">
-					<a class="navbar-brand" href="index.html">
-						<img class="light-mode-item navbar-brand-item h-30px" src="{{ asset('assets/images/logo-mobile.svg') }}" alt="">
-						<img class="dark-mode-item navbar-brand-item h-30px" src="{{ asset('assets/images/logo-mobile-light.svg') }}" alt="">
+					<a class="navbar-brand d-flex align-items-center" href="{{ path('app_siege_dashboard') }}">
+						<div class="header-logo-icon rounded me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; border: 2px solid #00e5ff !important; box-shadow: 0 0 10px rgba(0, 229, 255, 0.5); background-color: transparent;">
+                            <i class="bi bi-display text-white" style="font-size: 0.8rem;"></i>
+                        </div>
+                        <h5 class="text-white mb-0 fw-bold ms-2">Boussole</h5>
 					</a>
 				</div>
 				<!-- Logo END -->
@@ -251,8 +258,8 @@
 						<div class="nav my-3 my-xl-0 flex-nowrap align-items-center">
 							<div class="nav-item w-100">
 								<form class="position-relative">
-									<input class="form-control pe-5 bg-secondary bg-opacity-10 border-0" type="search" placeholder="Search" aria-label="Search">
-									<button class="bg-transparent px-2 py-0 border-0 position-absolute top-50 end-0 translate-middle-y" type="submit"><i class="fas fa-search fs-6 text-primary"></i></button>
+									<input class="form-control pe-5 bg-secondary bg-opacity-10 border-0" id="back-search-input" type="search" placeholder="Rechercher..." aria-label="Search">
+									<button class="bg-transparent px-2 py-0 border-0 position-absolute top-50 end-0 translate-middle-y" type="submit" onclick="event.preventDefault();"><i class="fas fa-search fs-6 text-primary"></i></button>
 								</form>
 							</div>
 						</div>
@@ -356,6 +363,32 @@
 							<!-- Notification dropdown menu END -->
 						</li>
 						<!-- Notification dropdown END -->
+						<!-- Dark mode options START -->
+						<li class="nav-item ms-2 ms-md-3">
+							<div class="bg-light dark-mode-switch theme-icon-active d-flex align-items-center p-1 rounded">
+								<!-- <span>Mode:</span> -->
+								<button type="button" class="btn btn-sm mb-0" data-bs-theme-value="light">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sun fa-fw mode-switch" viewBox="0 0 16 16">
+										<path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+										<use href="#"></use>
+									</svg> Light
+								</button>
+								<button type="button" class="btn btn-sm mb-0" data-bs-theme-value="dark">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon-stars fa-fw mode-switch" viewBox="0 0 16 16">
+										<path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278zM4.858 1.311A7.269 7.269 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.316 7.316 0 0 0 5.205-2.162c-.337.042-.68.063-1.029.063-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286z"/>
+										<path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
+										<use href="#"></use>
+									</svg> Dark
+								</button>
+								<button type="button" class="btn btn-sm mb-0 active" data-bs-theme-value="auto">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle-half fa-fw mode-switch" viewBox="0 0 16 16">
+										<path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
+										<use href="#"></use>
+									</svg> Auto
+								</button>
+							</div>
+						</li>
+						<!-- Dark mode options END-->
 
 						<!-- Profile dropdown START -->
 						<li class="nav-item ms-2 ms-md-3 dropdown">
@@ -388,32 +421,6 @@
 								<li> <hr class="dropdown-divider"></li>
 
 								<!-- Dark mode options START -->
-								<li>
-									<div class="bg-light dark-mode-switch theme-icon-active d-flex align-items-center p-1 rounded mt-2">
-										<!-- <span>Mode:</span> -->
-										<button type="button" class="btn btn-sm mb-0" data-bs-theme-value="light">
-											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sun fa-fw mode-switch" viewBox="0 0 16 16">
-												<path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
-												<use href="#"></use>
-											</svg> Light
-										</button>
-										<button type="button" class="btn btn-sm mb-0" data-bs-theme-value="dark">
-											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-moon-stars fa-fw mode-switch" viewBox="0 0 16 16">
-												<path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278zM4.858 1.311A7.269 7.269 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.316 7.316 0 0 0 5.205-2.162c-.337.042-.68.063-1.029.063-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286z"/>
-												<path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
-												<use href="#"></use>
-											</svg> Dark
-										</button>
-										<button type="button" class="btn btn-sm mb-0 active" data-bs-theme-value="auto">
-											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle-half fa-fw mode-switch" viewBox="0 0 16 16">
-												<path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
-												<use href="#"></use>
-											</svg> Auto
-										</button>
-									</div>
-								</li>
-								<!-- Dark mode options END-->
-							</ul>
 							<!-- Profile dropdown END -->
 						</li>
 						<!-- Profile dropdown END -->
@@ -426,10 +433,10 @@
 	<!-- Top bar END -->
 
 	<!-- Page main content START -->
-    {% block content %}
-    {# el page mte3ek fel block hedha #}
-    {% endblock %}
-	<!-- Page main content END -->
+			<div class="page-content-wrapper border">
+				{% block body %}{% endblock %}
+			</div>
+		<!-- Page main content END -->
 </div>
 <!-- Page content END -->
 
@@ -452,9 +459,70 @@
 <!-- Template Functions -->
 <script src="{{ asset('assets/js/functions.js') }}"></script>
 
+{% block javascripts %}{% endblock %}
 
+<!-- SweetAlert2 pour Notifications Dynamiques et Script de Recherche -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. Système de Notifications (Toasts SweetAlert2 via app.flashes Symfony)
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            let iconType = '{{ label }}';
+            if (iconType === 'danger') iconType = 'error';
+
+            Toast.fire({
+                icon: iconType,
+                title: '{{ message | escape('js') }}'
+            });
+        {% endfor %}
+    {% endfor %}
+
+    // 2. Système de Recherche (Filtrage du menu latéral en direct)
+    const searchInput = document.getElementById('back-search-input');
+    const menuItems = document.querySelectorAll('#navbar-sidebar .nav-item');
+
+    
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function(e) {
+            e.preventDefault();
+            const filter = searchInput.value.toLowerCase().trim();
+
+            menuItems.forEach(function(item) {
+                // Ignore les titres de section (qui on un style différent, souvent contenant 'ms-3')
+                if(item.textContent.trim() === 'Principal' || item.textContent.trim() === 'Outils') {
+                    return; // ne pas cacher systématiquement les entêtes, bien qu'on puisse les gérer après
+                }
+                const linkLabel = item.textContent.toLowerCase();
+                if(linkLabel.includes(filter)) {
+                    item.style.setProperty("display", "block", "important"); // Afficher
+                } else {
+                    item.style.setProperty("display", "none", "important"); // Cacher
+                }
+            });
+        });
+    }
+});
+</script>
 
 </body>
 
 <!-- Mirrored from eduport.webestica.com/admin-dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 07 Nov 2023 13:15:39 GMT -->
 </html>
+
+
+
+
+
