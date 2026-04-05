@@ -31,14 +31,14 @@ class __TwigTemplate_0513ce23aac46381a534f79ae4d93200 extends Template
 
         $this->blocks = [
             'title' => [$this, 'block_title'],
-            'content' => [$this, 'block_content'],
+            'body' => [$this, 'block_body'],
         ];
     }
 
     protected function doGetParent(array $context): bool|string|Template|TemplateWrapper
     {
         // line 1
-        return "front_base.html.twig";
+        return "back_base.html.twig";
     }
 
     protected function doDisplay(array $context, array $blocks = []): iterable
@@ -47,7 +47,7 @@ class __TwigTemplate_0513ce23aac46381a534f79ae4d93200 extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "template", "afficher_back_charge/index.html.twig"));
 
-        $this->parent = $this->load("front_base.html.twig", 1);
+        $this->parent = $this->load("back_base.html.twig", 1);
         yield from $this->parent->unwrap()->yield($context, array_merge($this->blocks, $blocks));
         
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
@@ -75,23 +75,23 @@ class __TwigTemplate_0513ce23aac46381a534f79ae4d93200 extends Template
     /**
      * @return iterable<null|scalar|\Stringable>
      */
-    public function block_content(array $context, array $blocks = []): iterable
+    public function block_body(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
-        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "content"));
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "body"));
 
         // line 6
         yield "<div class=\"container mt-4\">
     ";
         // line 8
         yield "    <div class=\"d-flex justify-content-between align-items-center mb-4\">
-        <h2 class=\"mb-0\">Gestion des Charges</h2>
+        <h2 class=\"mb-0 fw-bold text-dark\">Gestion des Charges</h2>
         <a href=\"";
         // line 10
         yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_ajouter_charge");
-        yield "\" class=\"btn btn-success\">
-            <i class=\"fas fa-plus me-1\"></i> Ajouter une charge
+        yield "\" class=\"btn btn-add-modern\">
+            <i class=\"fas fa-plus-circle me-2\"></i> Ajouter une charge
         </a>
     </div>
 
@@ -248,8 +248,8 @@ class __TwigTemplate_0513ce23aac46381a534f79ae4d93200 extends Template
             // line 86
             yield "                                </select>
                             </td>
-                            <td class=\"text-center\">
-                                <button class=\"btn btn-sm btn-danger btn-delete\" data-id=\"";
+                             <td class=\"text-center\">
+                                <button class=\"btn btn-delete-modern btn-sm\" data-id=\"";
             // line 89
             yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["charge"], "id", [], "any", false, false, false, 89), "html", null, true);
             yield "\" title=\"Supprimer cette charge\">
@@ -281,21 +281,22 @@ class __TwigTemplate_0513ce23aac46381a534f79ae4d93200 extends Template
 
         ";
         // line 107
-        yield "        <div class=\"card-footer bg-light border-top\">
-            <div class=\"d-flex justify-content-end py-1\">
-                <span class=\"badge bg-primary fs-6\">
-                    Total des charges : <span id=\"totalDisplay\">";
-        // line 110
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatNumber((isset($context["total_charges"]) || array_key_exists("total_charges", $context) ? $context["total_charges"] : (function () { throw new RuntimeError('Variable "total_charges" does not exist.', 110, $this->source); })()), 2, ",", " "), "html", null, true);
-        yield "</span> TND
-                </span>
+        yield "        <div class=\"card-footer bg-white border-top-0 py-3\">
+            <div class=\"d-flex justify-content-end\">
+                <div class=\"total-badge-modern\">
+                    <span class=\"label\">Total Charges</span>
+                    <span class=\"count\"><span id=\"totalDisplay\">";
+        // line 111
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatNumber((isset($context["total_charges"]) || array_key_exists("total_charges", $context) ? $context["total_charges"] : (function () { throw new RuntimeError('Variable "total_charges" does not exist.', 111, $this->source); })()), 2, ",", " "), "html", null, true);
+        yield "</span> TND</span>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 ";
-        // line 118
+        // line 119
         yield "<div id=\"toast\" style=\"
     position: fixed;
     bottom: 30px;
@@ -352,6 +353,71 @@ class __TwigTemplate_0513ce23aac46381a534f79ae4d93200 extends Template
 }
 th[data-sort]:hover {
     background-color: #e9ecef !important;
+}
+
+/* Nouveaux Styles Modernes */
+.btn-add-modern {
+    background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+    color: white !important;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.2);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-add-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(25, 135, 84, 0.3);
+    filter: brightness(1.1);
+}
+
+.btn-delete-modern {
+    color: #dc3545;
+    background: transparent;
+    border: 1.5px solid #dc3545;
+    border-radius: 8px;
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+.btn-delete-modern:hover {
+    background-color: #dc3545;
+    color: white;
+    transform: scale(1.1);
+}
+
+.total-badge-modern {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 8px 16px;
+    gap: 12px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+.total-badge-modern .label {
+    color: #6c757d;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.total-badge-modern .count {
+    background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+    color: white;
+    padding: 2px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3);
 }
 </style>
 
@@ -443,6 +509,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else if (field === 'date_charge' && isNaN(Date.parse(value))) {
                 errorMsg = 'Format de date invalide';
+            } else if (field === 'preuve_image' && value === '') {
+                errorMsg = 'Le justificatif est obligatoire';
             }
 
             if (errorMsg) {
@@ -507,7 +575,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     /* ===== 6. SUPPRESSION AJAX ===== */
-    document.querySelectorAll('.btn-delete').forEach(function(btn) {
+    document.querySelectorAll('.btn-delete-modern').forEach(function(btn) {
         btn.addEventListener('click', function() {
             if (!confirm('Voulez-vous vraiment supprimer cette charge ?')) return;
 
@@ -601,22 +669,22 @@ document.addEventListener('DOMContentLoaded', function() {
      */
     public function getDebugInfo(): array
     {
-        return array (  299 => 118,  289 => 110,  284 => 107,  277 => 101,  266 => 95,  264 => 94,  254 => 89,  249 => 86,  240 => 83,  231 => 82,  227 => 81,  221 => 77,  206 => 75,  202 => 74,  195 => 70,  190 => 67,  175 => 65,  171 => 64,  164 => 60,  158 => 57,  152 => 54,  147 => 52,  142 => 51,  137 => 50,  117 => 32,  100 => 16,  92 => 10,  88 => 8,  85 => 6,  75 => 5,  58 => 3,  41 => 1,);
+        return array (  300 => 119,  290 => 111,  284 => 107,  277 => 101,  266 => 95,  264 => 94,  254 => 89,  249 => 86,  240 => 83,  231 => 82,  227 => 81,  221 => 77,  206 => 75,  202 => 74,  195 => 70,  190 => 67,  175 => 65,  171 => 64,  164 => 60,  158 => 57,  152 => 54,  147 => 52,  142 => 51,  137 => 50,  117 => 32,  100 => 16,  92 => 10,  88 => 8,  85 => 6,  75 => 5,  58 => 3,  41 => 1,);
     }
 
     public function getSourceContext(): Source
     {
-        return new Source("{% extends 'front_base.html.twig' %}
+        return new Source("{% extends 'back_base.html.twig' %}
 
 {% block title %}Boussole - Administration des Charges{% endblock %}
 
-{% block content %}
+{% block body %}
 <div class=\"container mt-4\">
     {# En-tête avec titre + bouton Ajouter #}
     <div class=\"d-flex justify-content-between align-items-center mb-4\">
-        <h2 class=\"mb-0\">Gestion des Charges</h2>
-        <a href=\"{{ path('app_ajouter_charge') }}\" class=\"btn btn-success\">
-            <i class=\"fas fa-plus me-1\"></i> Ajouter une charge
+        <h2 class=\"mb-0 fw-bold text-dark\">Gestion des Charges</h2>
+        <a href=\"{{ path('app_ajouter_charge') }}\" class=\"btn btn-add-modern\">
+            <i class=\"fas fa-plus-circle me-2\"></i> Ajouter une charge
         </a>
     </div>
 
@@ -693,8 +761,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                     {% endfor %}
                                 </select>
                             </td>
-                            <td class=\"text-center\">
-                                <button class=\"btn btn-sm btn-danger btn-delete\" data-id=\"{{ charge.id }}\" title=\"Supprimer cette charge\">
+                             <td class=\"text-center\">
+                                <button class=\"btn btn-delete-modern btn-sm\" data-id=\"{{ charge.id }}\" title=\"Supprimer cette charge\">
                                     <i class=\"fas fa-trash-alt\"></i>
                                 </button>
                             </td>
@@ -712,11 +780,12 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
 
         {# Footer : Total des charges #}
-        <div class=\"card-footer bg-light border-top\">
-            <div class=\"d-flex justify-content-end py-1\">
-                <span class=\"badge bg-primary fs-6\">
-                    Total des charges : <span id=\"totalDisplay\">{{ total_charges|number_format(2, ',', ' ') }}</span> TND
-                </span>
+        <div class=\"card-footer bg-white border-top-0 py-3\">
+            <div class=\"d-flex justify-content-end\">
+                <div class=\"total-badge-modern\">
+                    <span class=\"label\">Total Charges</span>
+                    <span class=\"count\"><span id=\"totalDisplay\">{{ total_charges|number_format(2, ',', ' ') }}</span> TND</span>
+                </div>
             </div>
         </div>
     </div>
@@ -779,6 +848,71 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 th[data-sort]:hover {
     background-color: #e9ecef !important;
+}
+
+/* Nouveaux Styles Modernes */
+.btn-add-modern {
+    background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+    color: white !important;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.2);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-add-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(25, 135, 84, 0.3);
+    filter: brightness(1.1);
+}
+
+.btn-delete-modern {
+    color: #dc3545;
+    background: transparent;
+    border: 1.5px solid #dc3545;
+    border-radius: 8px;
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+.btn-delete-modern:hover {
+    background-color: #dc3545;
+    color: white;
+    transform: scale(1.1);
+}
+
+.total-badge-modern {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 8px 16px;
+    gap: 12px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+.total-badge-modern .label {
+    color: #6c757d;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.total-badge-modern .count {
+    background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+    color: white;
+    padding: 2px 14px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3);
 }
 </style>
 
@@ -870,6 +1004,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else if (field === 'date_charge' && isNaN(Date.parse(value))) {
                 errorMsg = 'Format de date invalide';
+            } else if (field === 'preuve_image' && value === '') {
+                errorMsg = 'Le justificatif est obligatoire';
             }
 
             if (errorMsg) {
@@ -934,7 +1070,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     /* ===== 6. SUPPRESSION AJAX ===== */
-    document.querySelectorAll('.btn-delete').forEach(function(btn) {
+    document.querySelectorAll('.btn-delete-modern').forEach(function(btn) {
         btn.addEventListener('click', function() {
             if (!confirm('Voulez-vous vraiment supprimer cette charge ?')) return;
 
