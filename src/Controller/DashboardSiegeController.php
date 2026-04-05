@@ -28,37 +28,21 @@ class DashboardSiegeController extends AbstractController
         }
         $solde = $revenus - $depenses;
 
-        // Calcul des taux pour le mois en cours
-        $currentMonth = (int) (new \DateTime())->format('n');
-        $currentYear = (int) (new \DateTime())->format('Y');
-
-        $revenusMois = 0;
-        $depensesMois = 0;
-        foreach ($transactions as $t) {
-            if ((int)$t->getDate()->format('n') === $currentMonth && (int)$t->getDate()->format('Y') === $currentYear) {
-                if ($t->getType() === 'RECETTE') {
-                    $revenusMois += $t->getMontant();
-                } elseif ($t->getType() === 'DEPENSE') {
-                    $depensesMois += $t->getMontant();
-                }
-            }
-        }
-
-        // Taux de revenus (Objectif)
+        // Calcul du taux global (Total Revenus / Tous les Objectifs définis)
         $budgetsRevenus = $em->getRepository(Budget_previsionnel::class)->findBy([
-            'mois' => $currentMonth, 'annee' => $currentYear, 'type_budget' => 'OBJECTIF_REVENU'
+            'type_budget' => 'OBJECTIF_REVENU'
         ]);
         $totalObjectif = 0;
         foreach ($budgetsRevenus as $b) { $totalObjectif += $b->getMontantCible(); }
-        $tauxRevenus = $totalObjectif > 0 ? ($revenusMois / $totalObjectif) * 100 : 0;
+        $tauxRevenus = $totalObjectif > 0 ? ($revenus / $totalObjectif) * 100 : 0;
 
-        // Taux de dépenses (Limite)
+        // Calcul du taux global (Total Dépenses / Toutes les Limites définies)
         $budgetsDepenses = $em->getRepository(Budget_previsionnel::class)->findBy([
-            'mois' => $currentMonth, 'annee' => $currentYear, 'type_budget' => 'LIMITE_DEPENSE'
+            'type_budget' => 'LIMITE_DEPENSE'
         ]);
         $totalLimite = 0;
         foreach ($budgetsDepenses as $b) { $totalLimite += $b->getMontantCible(); }
-        $tauxDepenses = $totalLimite > 0 ? ($depensesMois / $totalLimite) * 100 : 0;
+        $tauxDepenses = $totalLimite > 0 ? ($depenses / $totalLimite) * 100 : 0;
 
         // Préparation des données du graphique (3 derniers mois)
         // Par simplicité, on structure un tableau des 3 derniers mois
