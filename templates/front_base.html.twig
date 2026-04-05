@@ -3,7 +3,7 @@
 
 <!-- Mirrored from eduport.webestica.com/instructor-dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 07 Nov 2023 13:09:24 GMT -->
 <head>
-	<title>Eduport - LMS, Education and Course Theme</title>
+	<title>Boussole - Dashboard Management</title>
 
 	<!-- Meta Tags -->
 	<meta charset="utf-8">
@@ -126,7 +126,7 @@
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="demoMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Principale</a>
 						<ul class="dropdown-menu" aria-labelledby="demoMenu">
-							<li> <a class="dropdown-item" href="#"><i class="bi bi-bar-chart fa-fw me-2"></i>Tableau de bord</a></li>
+							<li> <a class="dropdown-item" href="{{ path('app_transaction_index') }}"><i class="bi bi-bar-chart fa-fw me-2"></i>Tableau de bord</a></li>
 							<li> <a class="dropdown-item" href="#"><i class="bi bi-shop fa-fw me-2"></i>Marketplace</a></li>
 							<li> <a class="dropdown-item" href="#"><i class="bi bi-cart3 fa-fw me-2"></i>Mon panier</a></li>
 							<li> <a class="dropdown-item" href="#"><i class="bi bi-box-seam fa-fw me-2"></i>Mes commandes</a></li>
@@ -137,9 +137,9 @@
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="pagesMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Gestion</a>
 						<ul class="dropdown-menu" aria-labelledby="pagesMenu">
-							<li> <a class="dropdown-item" href="{{ path('app_afficher_front_fournisseur') }}"><i class="fas fa-truck fa-fw me-2"></i>Fournisseurs</a> </li>
-							<li> <a class="dropdown-item" href="#"><i class="bi bi-exclamation-triangle fa-fw me-2"></i>Alertes</a> </li>
-							<li> <a class="dropdown-item" href="#"><i class="fas fa-volume-up fa-fw me-2"></i>Réclamations</a> </li>
+							<li> <a class="dropdown-item" href="#"><i class="fas fa-truck fa-fw me-2"></i>Fournisseur</a> </li>
+							<li> <a class="dropdown-item" href="{{ path('alerte_index') }}"><i class="bi bi-exclamation-triangle fa-fw me-2"></i>Alertes</a> </li>
+							<li> <a class="dropdown-item" href="{{ path('reclamation_index') }}"><i class="fas fa-volume-up fa-fw me-2"></i>Réclamations</a> </li>
 						</ul>
 					</li>
 
@@ -147,10 +147,10 @@
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="accounntMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Finances</a>
 						<ul class="dropdown-menu" aria-labelledby="accounntMenu">
-							<li> <a class="dropdown-item" href="{{ path('app_afficher_front_charge') }}"><i class="fas fa-money-bill-wave fa-fw me-2"></i>Charges</a> </li>
+							<li> <a class="dropdown-item" href="#"><i class="fas fa-money-bill-wave fa-fw me-2"></i>Charge</a> </li>
 							<li> <a class="dropdown-item" href="#"><i class="bi bi-calendar3 fa-fw me-2"></i>Mensualité</a> </li>
 							<li> <a class="dropdown-item" href="#"><i class="fas fa-university fa-fw me-2"></i>Prêt</a> </li>
-							<li> <a class="dropdown-item" href="#"><i class="bi bi-credit-card fa-fw me-2"></i>Historique des transactions</a> </li>
+							<li> <a class="dropdown-item" href="{{ path('app_transaction_historique') }}"><i class="bi bi-credit-card fa-fw me-2"></i>Historique des transactions</a> </li>
 						</ul>
 					</li>
 
@@ -317,16 +317,16 @@ document.addEventListener("DOMContentLoaded", function() {
     // 2. Système de Recherche (Affichage en direct sous la barre de recherche)
     const searchInput = document.getElementById('front-search-input');
     const resultsBox = document.getElementById('search-results-box');
-    const menuItems = document.querySelectorAll('.navbar-nav .dropdown-menu li:not(:has(.dropdown-divider))'); 
-    
+    const menuItems = document.querySelectorAll('.navbar-nav .dropdown-menu li:not(:has(.dropdown-divider))');
+
     if (searchInput && resultsBox) {
         searchInput.addEventListener('input', function(e) {
             const filter = searchInput.value.toLowerCase().trim();
-            resultsBox.innerHTML = ''; 
-            
+            resultsBox.innerHTML = '';
+
             if (filter.length > 0) {
                 let hasMatches = false;
-                
+
                 menuItems.forEach(function(item) {
                     const linkLabel = item.textContent.trim();
                     const linkA = item.querySelector('a');
@@ -337,11 +337,11 @@ document.addEventListener("DOMContentLoaded", function() {
                         hasMatches = true;
                         const li = document.createElement('li');
                         li.innerHTML = item.innerHTML; // Copie conforme du lien avec son icone
-                        
+
                         // Ajustement de style
                         const aTag = li.querySelector('a');
                         if(aTag) aTag.classList.add('py-2');
-                        
+
                         resultsBox.appendChild(li);
                     }
                 });
@@ -351,6 +351,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     li.innerHTML = '<span class="dropdown-item py-2 text-muted" style="cursor: default;"><i class="fas fa-search fs-6 me-2"></i>Aucun résultat trouvé</span>';
                     resultsBox.appendChild(li);
                 }
+
                 
                 resultsBox.style.display = 'block';
             } else {
@@ -364,6 +365,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 resultsBox.style.display = 'none';
             }
         });
+
         
         // Show results if clicking on input and there is text
         searchInput.addEventListener('click', function() {
