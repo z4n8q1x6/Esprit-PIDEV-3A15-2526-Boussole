@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use DateTime;
 
-#[Route('/bilan')]
+#[Route('/admin/bilan')]
 final class BilanController extends AbstractController
 {
     #[Route('', name: 'app_bilan_index', methods: ['GET'])]
@@ -40,24 +40,32 @@ final class BilanController extends AbstractController
 
         if (isset($data['total_recettes'])) {
             $val = floatval($data['total_recettes']);
-            if ($val < 0) return $this->json(['success' => false, 'message' => 'Le montant doit être positif.']);
+            if ($val < 0) {
+                return $this->json(['success' => false, 'message' => 'Le montant doit être positif.']);
+            }
             $bilan->setTotalRecettes($val);
         }
-        
+
         if (isset($data['total_charges'])) {
             $val = floatval($data['total_charges']);
-            if ($val < 0) return $this->json(['success' => false, 'message' => 'Le montant doit être positif.']);
+            if ($val < 0) {
+                return $this->json(['success' => false, 'message' => 'Le montant doit être positif.']);
+            }
             $bilan->setTotalCharges($val);
         }
-        
+
         if (isset($data['mois'])) {
             $val = intval($data['mois']);
-            if ($val >= 1 && $val <= 12) $bilan->setMois($val);
+            if ($val >= 1 && $val <= 12) {
+                $bilan->setMois($val);
+            }
         }
-        
+
         if (isset($data['annee'])) {
             $val = intval($data['annee']);
-            if ($val >= 2024 && $val <= 2030) $bilan->setAnnee($val);
+            if ($val >= 2024 && $val <= 2030) {
+                $bilan->setAnnee($val);
+            }
         }
 
         // Recalcul manuel
@@ -68,7 +76,7 @@ final class BilanController extends AbstractController
 
         return $this->json([
             'success' => true,
-            'resultat_net' => $resultatNet
+            'resultat_net' => $resultatNet,
         ]);
     }
 
@@ -115,7 +123,7 @@ final class BilanController extends AbstractController
             ->setParameter('type', 'RECETTE')
             ->setParameter('start', $startDate)
             ->setParameter('end', $endDate);
-            
+
         if ($franchise) {
             $qbRecettes->andWhere('t.franchise_id = :franchise')->setParameter('franchise', $franchise);
         }
@@ -129,7 +137,7 @@ final class BilanController extends AbstractController
             ->where('c.date_charge >= :start AND c.date_charge <= :end')
             ->setParameter('start', $startDate)
             ->setParameter('end', $endDate);
-            
+
         if ($franchise) {
             $qbCharges->andWhere('c.franchise_id = :franchise')->setParameter('franchise', $franchise);
         }
@@ -144,12 +152,12 @@ final class BilanController extends AbstractController
             ->setParameter('type', 'DEPENSE')
             ->setParameter('start', $startDate)
             ->setParameter('end', $endDate);
-            
+
         if ($franchise) {
             $qbDepenses->andWhere('t.franchise_id = :franchise')->setParameter('franchise', $franchise);
         }
         $totalDepenses = (float) $qbDepenses->getQuery()->getSingleScalarResult();
-        
+
         // Total global des charges = Charges + Depenses de la table Transaction
         $totalChargesGlobal = $totalChargesBase + $totalDepenses;
 
@@ -179,7 +187,7 @@ final class BilanController extends AbstractController
         return $this->json([
             'success' => true,
             'message' => $msg,
-            'reload' => true
+            'reload' => true,
         ]);
     }
 }

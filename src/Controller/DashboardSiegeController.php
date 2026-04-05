@@ -11,11 +11,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class DashboardSiegeController extends AbstractController
 {
-    #[Route('/siege/dashboard', name: 'app_siege_dashboard')]
+    #[Route('/admin/dashboard', name: 'app_siege_dashboard')]
     public function index(EntityManagerInterface $em): Response
     {
         $transactions = $em->getRepository(Transaction::class)->findAll();
-        
+
         $revenus = 0;
         $depenses = 0;
 
@@ -30,36 +30,40 @@ class DashboardSiegeController extends AbstractController
 
         // Calcul du taux global (Total Revenus / Tous les Objectifs définis)
         $budgetsRevenus = $em->getRepository(Budget_previsionnel::class)->findBy([
-            'type_budget' => 'OBJECTIF_REVENU'
+            'type_budget' => 'OBJECTIF_REVENU',
         ]);
         $totalObjectif = 0;
-        foreach ($budgetsRevenus as $b) { $totalObjectif += $b->getMontantCible(); }
+        foreach ($budgetsRevenus as $b) {
+            $totalObjectif += $b->getMontantCible();
+        }
         $tauxRevenus = $totalObjectif > 0 ? ($revenus / $totalObjectif) * 100 : 0;
 
         // Calcul du taux global (Total Dépenses / Toutes les Limites définies)
         $budgetsDepenses = $em->getRepository(Budget_previsionnel::class)->findBy([
-            'type_budget' => 'LIMITE_DEPENSE'
+            'type_budget' => 'LIMITE_DEPENSE',
         ]);
         $totalLimite = 0;
-        foreach ($budgetsDepenses as $b) { $totalLimite += $b->getMontantCible(); }
+        foreach ($budgetsDepenses as $b) {
+            $totalLimite += $b->getMontantCible();
+        }
         $tauxDepenses = $totalLimite > 0 ? ($depenses / $totalLimite) * 100 : 0;
 
         // Préparation des données du graphique (3 derniers mois)
         // Par simplicité, on structure un tableau des 3 derniers mois
         $chartData = [];
         for ($i = 2; $i >= 0; $i--) {
-            $date = (new \DateTime())->modify("-$i month");
+            $date = new \DateTime()->modify("-$i month");
             $month = (int) $date->format('n');
             $year = (int) $date->format('Y');
-            
+
             $label = $this->getFrenchMonth($month) . ' ' . $date->format('y');
-            
+
             // Calculer Réel (Revenus du mois)
             $reel = 0;
             foreach ($transactions as $t) {
-                if ($t->getType() === 'RECETTE' && 
-                    (int)$t->getDate()->format('n') === $month && 
-                    (int)$t->getDate()->format('Y') === $year) {
+                if ($t->getType() === 'RECETTE'
+                    && (int) $t->getDate()->format('n') === $month
+                    && (int) $t->getDate()->format('Y') === $year) {
                     $reel += $t->getMontant();
                 }
             }
@@ -69,7 +73,7 @@ class DashboardSiegeController extends AbstractController
                 'mois' => $month,
                 'annee' => $year,
                 'type_budget' => 'OBJECTIF_REVENU',
-                'franchise_id' => null // Bugdet réseau global
+                'franchise_id' => null, // Bugdet réseau global
             ]);
             $budget = 0;
             foreach ($budgets as $b) {
@@ -81,7 +85,7 @@ class DashboardSiegeController extends AbstractController
                 $allBudgets = $em->getRepository(Budget_previsionnel::class)->findBy([
                     'mois' => $month,
                     'annee' => $year,
-                    'type_budget' => 'OBJECTIF_REVENU'
+                    'type_budget' => 'OBJECTIF_REVENU',
                 ]);
                 foreach ($allBudgets as $b) {
                     $budget += $b->getMontantCible();
@@ -108,7 +112,7 @@ class DashboardSiegeController extends AbstractController
         $months = [
             1 => 'Jan', 2 => 'Fév', 3 => 'Mar', 4 => 'Avr',
             5 => 'Mai', 6 => 'Juin', 7 => 'Juil', 8 => 'Aoû',
-            9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Déc'
+            9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Déc',
         ];
         return $months[$month] ?? '';
     }
