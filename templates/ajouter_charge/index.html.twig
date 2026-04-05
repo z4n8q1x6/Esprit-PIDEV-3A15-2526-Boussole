@@ -1,0 +1,81 @@
+{% extends 'front_base.html.twig' %}
+{% block title %}Boussole - {{ is_edit ? 'Modifier' : 'Ajouter' }} une Charge{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border rounded-3 mt-4">
+            <div class="card-header border-bottom">
+                <h3 class="mb-0"><i class="fas fa-file-invoice-dollar me-2"></i>{{ is_edit ? 'Modifier la Charge' : 'Nouvelle Charge' }}</h3>
+            </div>
+
+            <div class="card-body">
+                {# Alertes de succès #}
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+
+                {# Alertes d'erreurs globales #}
+                {% if not form.vars.valid %}
+                    <div class="alert alert-danger">
+                        Il y a des erreurs dans votre formulaire. Veuillez vérifier les champs ci-dessous.
+                    </div>
+                {% endif %}
+
+                {{ form_start(form, {'attr': {'class': 'row g-4', 'novalidate': 'novalidate'}}) }}
+                    <div class="col-12">
+                        <label class="form-label">Titre *</label>
+                        {{ form_widget(form.titre, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Facture Internet'}}) }}
+                        <div class="text-danger small">{{ form_errors(form.titre) }}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Montant (TND) *</label>
+                        {{ form_widget(form.montant, {'attr': {'class': 'form-control'}}) }}
+                        <div class="text-danger small">{{ form_errors(form.montant) }}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Date *</label>
+                        {{ form_widget(form.date_charge, {'attr': {'class': 'form-control'}}) }}
+                        <div class="text-danger small">{{ form_errors(form.date_charge) }}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Catégorie</label>
+                        {{ form_widget(form.type, {'attr': {'class': 'form-select'}}) }}
+                        <div class="text-danger small">{{ form_errors(form.type) }}</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label">Franchise concernée *</label>
+                        {{ form_widget(form.franchise_id, {'attr': {'class': 'form-select js-choice'}}) }}
+                        <div class="text-danger small">{{ form_errors(form.franchise_id) }}</div>
+                    </div>
+
+                    {# AJOUT DU CHAMP STATUT #}
+                    <div class="col-md-12">
+                        <label class="form-label">Statut de Validation *</label>
+                        {{ form_widget(form.status_validation, {'attr': {'class': 'form-select'}}) }}
+                        <div class="text-danger small">{{ form_errors(form.status_validation) }}</div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label">Justificatif (Image)</label>
+                        {{ form_widget(form.preuve_image, {'attr': {'class': 'form-control'}}) }}
+                        <div class="text-danger small">{{ form_errors(form.preuve_image) }}</div>
+                    </div>
+
+                    <div class="col-12 d-sm-flex justify-content-between">
+                        <a href="{{ path('app_afficher_front_charge') }}" class="btn btn-light mb-0">Retour à la liste</a>
+                        <button type="submit" class="btn btn-primary mb-0">{{ is_edit ? 'Enregistrer les modifications' : 'Enregistrer la charge' }}</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
