@@ -1,0 +1,23 @@
+# --- Local Project Files ---
+.php-cs-fixer.cache
+.php-cs-fixer.dist.php
+.phpunit.result.cache
+
+# --- Docker Local Overrides ---
+# Keep compose.yaml, but ignore the local overrides
+compose.override.yaml
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> doctrine/doctrine-bundle ###
+/var/data.db
+/var/data.db.sql
+###< doctrine/doctrine-bundle ###

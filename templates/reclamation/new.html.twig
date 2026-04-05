@@ -1,0 +1,111 @@
+{% extends 'front_base.html.twig' %}
+{% block title %}Ajouter une Réclamation{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border rounded-3">
+            <div class="card-header border-bottom bg-transparent">
+                <h3 class="card-header-title mb-0">Ajouter une Réclamation</h3>
+            </div>
+            <div class="card-body">
+                {# Added 'id': 'reclamation-form' #}
+                {{ form_start(form, {'attr': {'class': 'row g-4', 'id': 'reclamation-form', 'novalidate': 'novalidate'}}) }}
+                    <div class="col-12">
+                        {{ form_label(form.sujet, "Sujet de la réclamation", {label_attr: {class: 'form-label'}}) }}
+                        {{ form_widget(form.sujet, {attr: {
+                            class: 'form-control',
+                            placeholder: 'Ex: Problème de paiement'
+                        }}) }}
+                        <div class="text-danger small error-message">
+                            {{ form_errors(form.sujet) }}
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        {{ form_label(form.description, "Description détaillée", {label_attr: {class: 'form-label'}}) }}
+                        {{ form_widget(form.description, {attr: {
+                            class: 'form-control',
+                            rows: 6,
+                            placeholder: 'Décrivez votre problème en détail ici...'
+                        }}) }}
+                        <div class="text-danger small error-message">
+                            {{ form_errors(form.description) }}
+                        </div>
+                    </div>
+
+                    <div class="col-12 d-sm-flex justify-content-between align-items-center">
+                        <a href="{{ path('reclamation_index') }}" class="btn btn-sm btn-light mb-0">Retour à la liste</a>
+                        <button type="submit" class="btn btn-primary mb-0">Envoyer la Réclamation</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Target the specific form ID
+    const form = document.getElementById('reclamation-form');
+    if (!form) return;
+
+    // 2. Select inputs more precisely
+    const sujetInput = form.querySelector('[id$="_sujet"]'); // Ends with _sujet
+    const descInput = form.querySelector('[id$="_description"]'); // Ends with _description
+
+    const validateField = (input, fieldName, minLength) => {
+        const value = input.value;
+        const trimmedValue = value.trim();
+
+        // Check 1: Empty or only spaces
+        if (trimmedValue.length === 0) {
+            return setInvalid(input, `${fieldName} ne peut pas être vide ou contenir uniquement des espaces.`);
+        }
+
+        // Check 2: Minimum length (after trimming)
+        if (trimmedValue.length < minLength) {
+            return setInvalid(input, `${fieldName} doit contenir au moins ${minLength} caractères.`);
+        }
+
+        // Check 3: Starts with a number
+        if (/^\d/.test(trimmedValue)) {
+            return setInvalid(input, `${fieldName} ne peut pas commencer par un chiffre.`);
+        }
+
+        // Success
+        return setValid(input);
+    };
+
+    const setInvalid = (input, message) => {
+        input.classList.add('is-invalid');
+        const container = input.closest('.col-12');
+        const errorDiv = container.querySelector('.error-message');
+        if (errorDiv) errorDiv.textContent = message;
+        return false;
+    };
+
+    const setValid = (input) => {
+        input.classList.remove('is-invalid');
+        const container = input.closest('.col-12');
+        const errorDiv = container.querySelector('.error-message');
+        if (errorDiv) errorDiv.textContent = '';
+        return true;
+    };
+
+    form.addEventListener('submit', (e) => {
+        const isSujetValid = validateField(sujetInput, 'Le sujet', 3);
+        const isDescValid = validateField(descInput, 'La description', 5);
+
+        if (!isSujetValid || !isDescValid) {
+            e.preventDefault(); // Stop submission
+            console.log("Validation failed - Form blocked.");
+        }
+    });
+
+    // Clear errors on typing
+    [sujetInput, descInput].forEach(input => {
+        input.addEventListener('input', () => setValid(input));
+    });
+});
+</script>
+{% endblock %}
