@@ -10,19 +10,27 @@
         "doctrine/doctrine-bundle": "^3.2",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6",
+        "dompdf/dompdf": "^3.1",
+        "google-gemini-php/client": "^2.7",
+        "nyholm/psr7": "^1.8",
+        "psr/http-client": "^1.0",
         "symfony/asset": "8.0.*",
         "symfony/console": "8.0.*",
         "symfony/dotenv": "8.0.*",
         "symfony/flex": "^2",
         "symfony/form": "8.0.*",
         "symfony/framework-bundle": "8.0.*",
+        "symfony/http-client": "^8.0",
         "symfony/runtime": "8.0.*",
         "symfony/security-csrf": "8.0.*",
+        "symfony/serializer": "8.0.*",
         "symfony/twig-bundle": "8.0.*",
         "symfony/yaml": "8.0.*"
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.67"
+        "symfony/maker-bundle": "^1.67",
+        "symfony/stopwatch": "8.0.*",
+        "symfony/web-profiler-bundle": "8.0.*"
     },
     "config": {
         "allow-plugins": {

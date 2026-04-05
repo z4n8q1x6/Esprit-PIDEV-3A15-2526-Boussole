@@ -8,10 +8,15 @@ use App\Entity\Franchises;
 #[ORM\Entity]
 class Reclamations
 {
+    public function __construct()
+    {
+        $this->statut = 'EN_ATTENTE';
+        $this->date_creation = new \DateTime();
+    }
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: "integer")]
-    private int $id;
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
     #[ORM\Column(type: "string", length: 255)]
     private string $sujet;

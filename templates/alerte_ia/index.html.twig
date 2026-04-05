@@ -1,0 +1,126 @@
+{% extends 'front_base.html.twig' %}
+
+{% block title %}Liste des Alertes{% endblock %}
+
+{% block content %}
+<div class="page-content-wrapper border">
+
+    <div class="row mb-3">
+        <div class="col-12 d-sm-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-2 mb-sm-0">Liste des Alertes</h1>
+            <a href="{{ path('alerte_new') }}" class="btn btn-sm btn-primary mb-0">
+                <i class="bi bi-megaphone me-2"></i>Générer une alerte
+            </a>
+        </div>
+    </div>
+
+    <div class="card bg-transparent border">
+
+        {% if app.flashes %}
+            <div class="px-4 pt-4">
+                {% for type, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="card-body">
+            <div class="mb-3">
+                <input 
+                    type="text" 
+                    id="search-alerte-ia-user" 
+                    class="form-control form-control-sm" 
+                    placeholder="Rechercher par type d'alerte..."
+                    aria-label="Rechercher dans la table"
+                >
+            </div>
+            <div class="table-responsive border-0">
+                <table id="table-alerte-ia-user" class="table table-dark-gray align-middle p-4 mb-0 table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="border-0 rounded-start" style="cursor: pointer;">Type</th>
+                            <th scope="col" class="border-0" style="cursor: pointer;">Message</th>
+                            <th scope="col" class="border-0 text-center" style="cursor: pointer;">Gravité</th>
+                            <th scope="col" class="border-0 text-center" style="cursor: pointer;">Date de détection</th>
+                            <th scope="col" class="border-0 rounded-end text-center">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for alerte in alertes %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-sm bg-primary bg-opacity-10 text-primary rounded-circle me-2">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                        </div>
+                                        <h6 class="mb-0 ms-1">{{ alerte.type_alerte }}</h6>
+                                    </div>
+                                </td>
+
+                                <td class="text-muted small">
+                                    <div class="text-wrap" style="max-width: 300px;">
+                                        {{ alerte.message }}
+                                    </div>
+                                </td>
+
+                                <td class="text-center">
+                                    {# FIXED: Changed scoreGravite to score_gravite in the condition #}
+                                    {% if alerte.score_gravite >= 8 %}
+                                        <span class="badge bg-danger">Critique ({{ alerte.score_gravite }})</span>
+                                    {% elseif alerte.score_gravite >= 5 %}
+                                        <span class="badge bg-warning text-dark">Moyenne ({{ alerte.score_gravite }})</span>
+                                    {% else %}
+                                        <span class="badge bg-info">Faible ({{ alerte.score_gravite }})</span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="text-center small">
+                                    {# FIXED: Changed dateDetection to date_detection #}
+                                    <span class="fw-bold">{{ alerte.date_detection|date('d/m/Y') }}</span>
+                                    <span class="text-muted d-block" style="font-size: 0.75rem;">{{ alerte.date_detection|date('H:i') }}</span>
+                                </td>
+
+                                <td class="text-center">
+                                    <form method="post" action="{{ path('alerte_delete', {'id': alerte.id}) }}" onsubmit="return confirm('Supprimer cette alerte ?');">
+                                        <input type="hidden" name="token" value="{{ csrf_token('delete-item') }}">
+                                        <button type="submit" class="btn btn-sm btn-danger-soft mb-0">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="text-muted">Aucune alerte trouvée dans le système.</div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-transparent border-top">
+            <small class="text-muted">Total: {{ alertes|length }} alertes détectées.</small>
+        </div>
+    </div>
+</div>
+
+<script src="{{ asset('assets/js/table-search-sort.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        new TableSearchSort({
+            tableId: 'table-alerte-ia-user',
+            searchInputSelector: '#search-alerte-ia-user',
+            searchColumnIndex: 0,
+            sortableColumns: [0, 1, 2, 3]
+        });
+    });
+</script>
+{% endblock %}
