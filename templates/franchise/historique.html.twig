@@ -22,7 +22,7 @@
     <div class="card-body p-4">
         <!-- Filtres -->
         <form id="filterForm" method="get" action="{{ path('app_transaction_historique') }}"> 
-            <div class="row align-items-center g-3 mb-4">
+            <div class="row align-items-end g-3 mb-4">
                 <div class="col-md-3">
                     <label class="text-muted small mb-1">Période</label>   
                     <div class="dropdown">
@@ -62,13 +62,13 @@
                         <option value="DEPENSE" {% if currentType is defined and currentType == 'DEPENSE' %}selected{% endif %}>DÉPENSE</option>        
                     </select>
                 </div>
-                <div class="col-md-3 mt-4">
+                <div class="col-md-3">
                     <div class="input-group">
                         <span class="input-group-text bg-transparent border-0 text-muted ps-0"><i class="bi bi-search"></i></span>
                         <input type="text" name="search" value="{{ currentSearch|default('') }}" class="form-control bg-dark text-light border-secondary rounded-pill" placeholder="Rechercher..." style="background-color: #12141d !important;">
                     </div>
                 </div>
-                <div class="col-md-3 mt-4 d-flex justify-content-end align-items-center">
+                <div class="col-md-3 d-flex justify-content-end align-items-center">
                     <a href="#" id="resetFiltersBtn" class="text-muted me-3 text-decoration-none small">Réinitialiser</a>
                     <button type="submit" class="d-none"></button>
                     <a href="#" class="btn btn-primary rounded-pill fw-bold px-4" style="background-color: #0d6efd; color: white; border: none;">Exporter...</a>
@@ -110,10 +110,13 @@
                         </td>
                     </tr>
                 {% else %}
-                    <tr>
+                    <tr id="emptyDefaultRow">
                         <td colspan="5" class="text-center text-muted py-4">Aucune transaction trouvée</td>
                     </tr>
                 {% endfor %}
+                    <tr id="emptySearchRow" style="display: none;">
+                        <td colspan="5" class="text-center text-muted py-4">Aucun résultat pour cette recherche.</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -125,19 +128,19 @@
     <div class="col-md-3">
         <div class="card card-body bg-dark border border-secondary p-3 text-center h-100 shadow" style="background-color: #12141d !important; border-radius: 12px;">
             <h6 class="text-muted mb-2">Nombre Transactions</h6>
-            <h3 class="text-info mb-0 fw-bold">{{ nombreTransactions }}</h3>  
+            <h3 id="kpi-nb" class="text-info mb-0 fw-bold">{{ nombreTransactions }}</h3>  
         </div>
     </div>
     <div class="col-md-3">
         <div class="card card-body bg-dark border border-secondary p-3 text-center h-100 shadow" style="background-color: #12141d !important; border-radius: 12px;">
             <h6 class="text-muted mb-2">Total Recettes</h6>
-            <h3 class="text-success mb-0 fw-bold">{{ totalRecettes|number_format(2, ',', ' ') }} TND</h3>
+            <h3 id="kpi-recettes" class="text-success mb-0 fw-bold">{{ totalRecettes|number_format(2, ',', ' ') }} TND</h3>
         </div>
     </div>
     <div class="col-md-3">
         <div class="card card-body bg-dark border border-secondary p-3 text-center h-100 shadow" style="background-color: #12141d !important; border-radius: 12px;">
             <h6 class="text-muted mb-2">Total Charges</h6>
-            <h3 class="text-danger mb-0 fw-bold">{{ totalCharges|number_format(2, ',', ' ') }} TND</h3>
+            <h3 id="kpi-charges" class="text-danger mb-0 fw-bold">{{ totalCharges|number_format(2, ',', ' ') }} TND</h3>
         </div>
     </div>
     <div class="col-md-3">
@@ -314,6 +317,65 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.submit();
             });
         }
+    }
+
+    // ===== GESTION RECHERCHE INSTANTANÉE FRONTEND =====
+    const searchHistoryInput = document.querySelector('input[name="search"]');
+    if (searchHistoryInput) {
+        searchHistoryInput.addEventListener('input', function() {
+            const filter = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('.tx-row');
+            
+            let nb = 0;
+            let recettes = 0;
+            let charges = 0;
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.setProperty('display', 'table-row', 'important');
+                    nb++;
+                    
+                    const montantStr = row.querySelector('[data-field="montant"]').dataset.value;
+                    const typeIsRecette = row.querySelector('span.text-success') !== null;
+                    const montant = parseFloat(montantStr);
+                    
+                    if (typeIsRecette) {
+                        recettes += montant;
+                    } else {
+                        charges += montant;
+                    }
+                } else {
+                    row.style.setProperty('display', 'none', 'important');
+                }
+            });
+
+            // Mise à jour des KPIs animée (instantanée)
+            const solde = recettes - charges;
+            
+            document.getElementById('kpi-nb').textContent = nb;
+            document.getElementById('kpi-recettes').textContent = formatNumber(recettes);
+            document.getElementById('kpi-charges').textContent = formatNumber(charges);
+            
+            updateSolde(solde);
+            
+            // Masquer la ligne "Aucune transaction" par défaut si nb > 0
+            const emptySearchRow = document.getElementById('emptySearchRow');
+            const emptyDefaultRow = document.getElementById('emptyDefaultRow');
+            if(emptyDefaultRow) emptyDefaultRow.style.display = 'none';
+
+            if(emptySearchRow) {
+                 if(nb === 0) emptySearchRow.style.display = 'table-row';
+                 else emptySearchRow.style.display = 'none';
+            }
+        });
+        
+        // Empêcher la soumission du formulaire par touche entrée si on est sur la recherche (car elle est dynamique mtn)
+        searchHistoryInput.addEventListener('keydown', function(e) {
+            if(e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
     }
 
     // ===== GESTION TOAST & UPDATE SOLDE =====
