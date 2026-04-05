@@ -46,8 +46,11 @@ class FournisseurType extends AbstractType
             ])
             ->add('franchise_id', EntityType::class, [
                 'class' => Franchises::class,
-                'choice_label' => 'nom', // Corrigé : le champ s'appelle 'nom' dans l'entité Franchises
+                'choice_label' => 'nom',
                 'placeholder' => 'Choisir une franchise',
+                'constraints' => [
+                    new NotBlank(message: 'Veuillez sélectionner une franchise'),
+                ]
             ]);
     }
 

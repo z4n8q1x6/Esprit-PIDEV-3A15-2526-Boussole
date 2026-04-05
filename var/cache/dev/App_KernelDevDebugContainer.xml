@@ -194,6 +194,14 @@
         <argument type="service" id=".service_locator.TJNRSaV.App\Controller\AfficherBackChargeController"/>
       </call>
     </service>
+    <service id="App\Controller\AfficherBackFournisseurController" class="App\Controller\AfficherBackFournisseurController" public="true" autowire="true" autoconfigure="true">
+      <tag name="controller.service_arguments"/>
+      <tag name="routing.controller"/>
+      <tag name="container.service_subscriber"/>
+      <call method="setContainer">
+        <argument type="service" id=".service_locator.TJNRSaV.App\Controller\AfficherBackFournisseurController"/>
+      </call>
+    </service>
     <service id="App\Controller\AfficherFrontChargeController" class="App\Controller\AfficherFrontChargeController" public="true" autowire="true" autoconfigure="true">
       <tag name="controller.service_arguments"/>
       <tag name="routing.controller"/>
@@ -380,7 +388,7 @@
     </service>
     <service id="argument_resolver.service" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\ServiceValueResolver" priority="-50">controller.argument_value_resolver</tag>
-      <argument type="service" id=".service_locator.PjLyCdD"/>
+      <argument type="service" id=".service_locator.1qTUfAL"/>
     </service>
     <service id="argument_resolver.default" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver">
       <tag name="Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver" priority="-100">controller.argument_value_resolver</tag>
@@ -1626,7 +1634,7 @@
     </service>
     <service id="argument_resolver.not_tagged_controller" class="Symfony\Component\HttpKernel\Controller\ArgumentResolver\NotTaggedControllerValueResolver">
       <tag name="controller.argument_value_resolver" priority="-200"/>
-      <argument type="service" id=".service_locator.PjLyCdD"/>
+      <argument type="service" id=".service_locator.1qTUfAL"/>
     </service>
     <service id="routing.resolver" class="Symfony\Component\Config\Loader\LoaderResolver">
       <call method="addLoader">
@@ -1694,6 +1702,7 @@
       <argument type="collection">
         <argument>App\Controller\AdminReclamationController</argument>
         <argument>App\Controller\AfficherBackChargeController</argument>
+        <argument>App\Controller\AfficherBackFournisseurController</argument>
         <argument>App\Controller\AfficherFrontChargeController</argument>
         <argument>App\Controller\AfficherFrontFournisseurController</argument>
         <argument>App\Controller\AjouterChargeController</argument>
@@ -3613,6 +3622,10 @@
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\AfficherBackChargeController" class="App\Controller\AfficherBackChargeController" autowire="true" abstract="true"/>
     <service id=".instanceof.App\Controller\AfficherBackChargeController.0.App\Controller\AfficherBackChargeController" class="App\Controller\AfficherBackChargeController" autowire="true" abstract="true"/>
     <service id=".abstract.instanceof.App\Controller\AfficherBackChargeController" class="App\Controller\AfficherBackChargeController" autowire="true" autoconfigure="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\AfficherBackFournisseurController" class="App\Controller\AfficherBackFournisseurController" autowire="true" abstract="true"/>
+    <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\AfficherBackFournisseurController" class="App\Controller\AfficherBackFournisseurController" autowire="true" abstract="true"/>
+    <service id=".instanceof.App\Controller\AfficherBackFournisseurController.0.App\Controller\AfficherBackFournisseurController" class="App\Controller\AfficherBackFournisseurController" autowire="true" abstract="true"/>
+    <service id=".abstract.instanceof.App\Controller\AfficherBackFournisseurController" class="App\Controller\AfficherBackFournisseurController" autowire="true" autoconfigure="true" abstract="true"/>
     <service id=".instanceof.Symfony\Contracts\Service\ServiceSubscriberInterface.0.App\Controller\AfficherFrontChargeController" class="App\Controller\AfficherFrontChargeController" autowire="true" abstract="true"/>
     <service id=".instanceof.Symfony\Bundle\FrameworkBundle\Controller\AbstractController.0.App\Controller\AfficherFrontChargeController" class="App\Controller\AfficherFrontChargeController" autowire="true" abstract="true"/>
     <service id=".instanceof.App\Controller\AfficherFrontChargeController.0.App\Controller\AfficherFrontChargeController" class="App\Controller\AfficherFrontChargeController" autowire="true" abstract="true"/>
@@ -4131,30 +4144,81 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.1vYpZ1B" method="withContext"/>
     </service>
-    <service id=".service_locator.KX5OHPH" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.3BoFVFw" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
-        <argument key="chargeRepository" type="service_closure" id="App\Repository\ChargeRepository"/>
-      </argument>
-    </service>
-    <service id=".service_locator.KX5OHPH.App\Controller\AfficherBackChargeController::index()" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator_context" id="App\Controller\AfficherBackChargeController::index()"/>
-      <argument>App\Controller\AfficherBackChargeController::index()</argument>
-      <argument type="service" id="service_container"/>
-      <factory service=".service_locator.KX5OHPH" method="withContext"/>
-    </service>
-    <service id=".service_locator.SedKTZ2" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator"/>
-      <argument type="collection">
-        <argument key="chargeRepository" type="service_closure" id="App\Repository\ChargeRepository"/>
         <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
       </argument>
     </service>
-    <service id=".service_locator.SedKTZ2.App\Controller\AfficherBackChargeController::delete()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.3BoFVFw.App\Controller\AfficherBackChargeController::index()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\AfficherBackChargeController::index()"/>
+      <argument>App\Controller\AfficherBackChargeController::index()</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.3BoFVFw" method="withContext"/>
+    </service>
+    <service id=".service_locator.mQkJDzl" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="charge" type="service_closure" id=".errored..service_locator.mQkJDzl.App\Entity\Charge"/>
+        <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
+      </argument>
+    </service>
+    <service id=".service_locator.mQkJDzl.App\Controller\AfficherBackChargeController::delete()" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\AfficherBackChargeController::delete()"/>
       <argument>App\Controller\AfficherBackChargeController::delete()</argument>
       <argument type="service" id="service_container"/>
-      <factory service=".service_locator.SedKTZ2" method="withContext"/>
+      <factory service=".service_locator.mQkJDzl" method="withContext"/>
+    </service>
+    <service id=".service_locator.nzqdLkv" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="charge" type="service_closure" id=".errored..service_locator.nzqdLkv.App\Entity\Charge"/>
+        <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
+        <argument key="chargeRepository" type="service_closure" id="App\Repository\ChargeRepository"/>
+      </argument>
+    </service>
+    <service id=".service_locator.nzqdLkv.App\Controller\AfficherBackChargeController::inlineEdit()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\AfficherBackChargeController::inlineEdit()"/>
+      <argument>App\Controller\AfficherBackChargeController::inlineEdit()</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.nzqdLkv" method="withContext"/>
+    </service>
+    <service id=".service_locator.z0A7H.F" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="em" type="service_closure" id="doctrine.orm.default_entity_manager"/>
+      </argument>
+    </service>
+    <service id=".service_locator.z0A7H.F.App\Controller\AfficherBackFournisseurController::index()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\AfficherBackFournisseurController::index()"/>
+      <argument>App\Controller\AfficherBackFournisseurController::index()</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.z0A7H.F" method="withContext"/>
+    </service>
+    <service id=".service_locator.jzbSndG" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator"/>
+      <argument type="collection">
+        <argument key="fournisseur" type="service_closure" id=".errored..service_locator.jzbSndG.App\Entity\Fournisseur"/>
+        <argument key="em" type="service_closure" id="doctrine.orm.default_entity_manager"/>
+      </argument>
+    </service>
+    <service id=".service_locator.jzbSndG.App\Controller\AfficherBackFournisseurController::edit()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\AfficherBackFournisseurController::edit()"/>
+      <argument>App\Controller\AfficherBackFournisseurController::edit()</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.jzbSndG" method="withContext"/>
+    </service>
+    <service id=".service_locator.jzbSndG.App\Controller\AfficherBackFournisseurController::delete()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\AfficherBackFournisseurController::delete()"/>
+      <argument>App\Controller\AfficherBackFournisseurController::delete()</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.jzbSndG" method="withContext"/>
+    </service>
+    <service id=".service_locator.mQkJDzl.App\Controller\AfficherFrontChargeController::delete()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\AfficherFrontChargeController::delete()"/>
+      <argument>App\Controller\AfficherFrontChargeController::delete()</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.mQkJDzl" method="withContext"/>
     </service>
     <service id=".service_locator._b_k9zL" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
@@ -4180,24 +4244,11 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.vfxFV.2" method="withContext"/>
     </service>
-    <service id=".service_locator.jzbSndG" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator"/>
-      <argument type="collection">
-        <argument key="fournisseur" type="service_closure" id=".errored..service_locator.jzbSndG.App\Entity\Fournisseur"/>
-        <argument key="em" type="service_closure" id="doctrine.orm.default_entity_manager"/>
-      </argument>
-    </service>
     <service id=".service_locator.jzbSndG.App\Controller\AfficherFrontFournisseurController::delete()" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\AfficherFrontFournisseurController::delete()"/>
       <argument>App\Controller\AfficherFrontFournisseurController::delete()</argument>
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.jzbSndG" method="withContext"/>
-    </service>
-    <service id=".service_locator.3BoFVFw" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator"/>
-      <argument type="collection">
-        <argument key="entityManager" type="service_closure" id="doctrine.orm.default_entity_manager"/>
-      </argument>
     </service>
     <service id=".service_locator.3BoFVFw.App\Controller\AjouterChargeController::index()" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\AjouterChargeController::index()"/>
@@ -4205,11 +4256,11 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.3BoFVFw" method="withContext"/>
     </service>
-    <service id=".service_locator.z0A7H.F" class="Symfony\Component\DependencyInjection\ServiceLocator">
-      <tag name="container.service_locator"/>
-      <argument type="collection">
-        <argument key="em" type="service_closure" id="doctrine.orm.default_entity_manager"/>
-      </argument>
+    <service id=".service_locator.mQkJDzl.App\Controller\AjouterChargeController::modifier()" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\AjouterChargeController::modifier()"/>
+      <argument>App\Controller\AjouterChargeController::modifier()</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.mQkJDzl" method="withContext"/>
     </service>
     <service id=".service_locator.z0A7H.F.App\Controller\AjouterFournisseurController::index()" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\AjouterFournisseurController::index()"/>
@@ -4235,30 +4286,42 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.IY8uJH." method="withContext"/>
     </service>
-    <service id=".service_locator.PjLyCdD" class="Symfony\Component\DependencyInjection\ServiceLocator">
+    <service id=".service_locator.1qTUfAL" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator"/>
       <argument type="collection">
         <argument key="kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="App\Kernel::registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="kernel::loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
         <argument key="App\Kernel::loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
-        <argument key="App\Controller\AfficherBackChargeController::index" type="service_closure" id=".service_locator.KX5OHPH.App\Controller\AfficherBackChargeController::index()"/>
-        <argument key="App\Controller\AfficherBackChargeController::delete" type="service_closure" id=".service_locator.SedKTZ2.App\Controller\AfficherBackChargeController::delete()"/>
+        <argument key="App\Controller\AfficherBackChargeController::index" type="service_closure" id=".service_locator.3BoFVFw.App\Controller\AfficherBackChargeController::index()"/>
+        <argument key="App\Controller\AfficherBackChargeController::delete" type="service_closure" id=".service_locator.mQkJDzl.App\Controller\AfficherBackChargeController::delete()"/>
+        <argument key="App\Controller\AfficherBackChargeController::inlineEdit" type="service_closure" id=".service_locator.nzqdLkv.App\Controller\AfficherBackChargeController::inlineEdit()"/>
+        <argument key="App\Controller\AfficherBackFournisseurController::index" type="service_closure" id=".service_locator.z0A7H.F.App\Controller\AfficherBackFournisseurController::index()"/>
+        <argument key="App\Controller\AfficherBackFournisseurController::edit" type="service_closure" id=".service_locator.jzbSndG.App\Controller\AfficherBackFournisseurController::edit()"/>
+        <argument key="App\Controller\AfficherBackFournisseurController::delete" type="service_closure" id=".service_locator.jzbSndG.App\Controller\AfficherBackFournisseurController::delete()"/>
+        <argument key="App\Controller\AfficherFrontChargeController::delete" type="service_closure" id=".service_locator.mQkJDzl.App\Controller\AfficherFrontChargeController::delete()"/>
         <argument key="App\Controller\AfficherFrontChargeController::index" type="service_closure" id=".service_locator._b_k9zL.App\Controller\AfficherFrontChargeController::index()"/>
         <argument key="App\Controller\AfficherFrontFournisseurController::index" type="service_closure" id=".service_locator.vfxFV.2.App\Controller\AfficherFrontFournisseurController::index()"/>
         <argument key="App\Controller\AfficherFrontFournisseurController::delete" type="service_closure" id=".service_locator.jzbSndG.App\Controller\AfficherFrontFournisseurController::delete()"/>
         <argument key="App\Controller\AjouterChargeController::index" type="service_closure" id=".service_locator.3BoFVFw.App\Controller\AjouterChargeController::index()"/>
+        <argument key="App\Controller\AjouterChargeController::modifier" type="service_closure" id=".service_locator.mQkJDzl.App\Controller\AjouterChargeController::modifier()"/>
         <argument key="App\Controller\AjouterFournisseurController::index" type="service_closure" id=".service_locator.z0A7H.F.App\Controller\AjouterFournisseurController::index()"/>
         <argument key="App\Controller\AjouterFournisseurController::modifier" type="service_closure" id=".service_locator.jzbSndG.App\Controller\AjouterFournisseurController::modifier()"/>
         <argument key="App\Controller\ReclamationController::delete" type="service_closure" id=".service_locator.IY8uJH..App\Controller\ReclamationController::delete()"/>
         <argument key="kernel:registerContainerConfiguration" type="service_closure" id=".service_locator.1vYpZ1B.kernel::registerContainerConfiguration()"/>
         <argument key="kernel:loadRoutes" type="service_closure" id=".service_locator.1vYpZ1B.kernel::loadRoutes()"/>
-        <argument key="App\Controller\AfficherBackChargeController:index" type="service_closure" id=".service_locator.KX5OHPH.App\Controller\AfficherBackChargeController::index()"/>
-        <argument key="App\Controller\AfficherBackChargeController:delete" type="service_closure" id=".service_locator.SedKTZ2.App\Controller\AfficherBackChargeController::delete()"/>
+        <argument key="App\Controller\AfficherBackChargeController:index" type="service_closure" id=".service_locator.3BoFVFw.App\Controller\AfficherBackChargeController::index()"/>
+        <argument key="App\Controller\AfficherBackChargeController:delete" type="service_closure" id=".service_locator.mQkJDzl.App\Controller\AfficherBackChargeController::delete()"/>
+        <argument key="App\Controller\AfficherBackChargeController:inlineEdit" type="service_closure" id=".service_locator.nzqdLkv.App\Controller\AfficherBackChargeController::inlineEdit()"/>
+        <argument key="App\Controller\AfficherBackFournisseurController:index" type="service_closure" id=".service_locator.z0A7H.F.App\Controller\AfficherBackFournisseurController::index()"/>
+        <argument key="App\Controller\AfficherBackFournisseurController:edit" type="service_closure" id=".service_locator.jzbSndG.App\Controller\AfficherBackFournisseurController::edit()"/>
+        <argument key="App\Controller\AfficherBackFournisseurController:delete" type="service_closure" id=".service_locator.jzbSndG.App\Controller\AfficherBackFournisseurController::delete()"/>
+        <argument key="App\Controller\AfficherFrontChargeController:delete" type="service_closure" id=".service_locator.mQkJDzl.App\Controller\AfficherFrontChargeController::delete()"/>
         <argument key="App\Controller\AfficherFrontChargeController:index" type="service_closure" id=".service_locator._b_k9zL.App\Controller\AfficherFrontChargeController::index()"/>
         <argument key="App\Controller\AfficherFrontFournisseurController:index" type="service_closure" id=".service_locator.vfxFV.2.App\Controller\AfficherFrontFournisseurController::index()"/>
         <argument key="App\Controller\AfficherFrontFournisseurController:delete" type="service_closure" id=".service_locator.jzbSndG.App\Controller\AfficherFrontFournisseurController::delete()"/>
         <argument key="App\Controller\AjouterChargeController:index" type="service_closure" id=".service_locator.3BoFVFw.App\Controller\AjouterChargeController::index()"/>
+        <argument key="App\Controller\AjouterChargeController:modifier" type="service_closure" id=".service_locator.mQkJDzl.App\Controller\AjouterChargeController::modifier()"/>
         <argument key="App\Controller\AjouterFournisseurController:index" type="service_closure" id=".service_locator.z0A7H.F.App\Controller\AjouterFournisseurController::index()"/>
         <argument key="App\Controller\AjouterFournisseurController:modifier" type="service_closure" id=".service_locator.jzbSndG.App\Controller\AjouterFournisseurController::modifier()"/>
         <argument key="App\Controller\ReclamationController:delete" type="service_closure" id=".service_locator.IY8uJH..App\Controller\ReclamationController::delete()"/>
@@ -4438,6 +4501,12 @@
       <argument type="service" id="service_container"/>
       <factory service=".service_locator.TJNRSaV" method="withContext"/>
     </service>
+    <service id=".service_locator.TJNRSaV.App\Controller\AfficherBackFournisseurController" class="Symfony\Component\DependencyInjection\ServiceLocator">
+      <tag name="container.service_locator_context" id="App\Controller\AfficherBackFournisseurController"/>
+      <argument>App\Controller\AfficherBackFournisseurController</argument>
+      <argument type="service" id="service_container"/>
+      <factory service=".service_locator.TJNRSaV" method="withContext"/>
+    </service>
     <service id=".service_locator.TJNRSaV.App\Controller\AfficherFrontChargeController" class="Symfony\Component\DependencyInjection\ServiceLocator">
       <tag name="container.service_locator_context" id="App\Controller\AfficherFrontChargeController"/>
       <argument>App\Controller\AfficherFrontChargeController</argument>
@@ -4587,6 +4656,7 @@
           <argument>App\Kernel</argument>
           <argument>App\Controller\AdminReclamationController</argument>
           <argument>App\Controller\AfficherBackChargeController</argument>
+          <argument>App\Controller\AfficherBackFournisseurController</argument>
           <argument>App\Controller\AfficherFrontChargeController</argument>
           <argument>App\Controller\AfficherFrontFournisseurController</argument>
           <argument>App\Controller\AjouterChargeController</argument>
@@ -4625,6 +4695,12 @@
     </service>
     <service id=".errored..service_locator.1vYpZ1B.Symfony\Component\Config\Loader\LoaderInterface" class="Symfony\Component\Config\Loader\LoaderInterface">
       <tag name="container.error" message="Cannot autowire service &quot;.service_locator.1vYpZ1B&quot;: it needs an instance of &quot;Symfony\Component\Config\Loader\LoaderInterface&quot; but this type has been excluded from autowiring."/>
+    </service>
+    <service id=".errored..service_locator.mQkJDzl.App\Entity\Charge" class="App\Entity\Charge">
+      <tag name="container.error" message="Cannot autowire service &quot;.service_locator.mQkJDzl&quot;: it needs an instance of &quot;App\Entity\Charge&quot; but this type has been excluded because it's a Doctrine entity."/>
+    </service>
+    <service id=".errored..service_locator.nzqdLkv.App\Entity\Charge" class="App\Entity\Charge">
+      <tag name="container.error" message="Cannot autowire service &quot;.service_locator.nzqdLkv&quot;: it needs an instance of &quot;App\Entity\Charge&quot; but this type has been excluded because it's a Doctrine entity."/>
     </service>
     <service id=".errored..service_locator.jzbSndG.App\Entity\Fournisseur" class="App\Entity\Fournisseur">
       <tag name="container.error" message="Cannot autowire service &quot;.service_locator.jzbSndG&quot;: it needs an instance of &quot;App\Entity\Fournisseur&quot; but this type has been excluded because it's a Doctrine entity."/>
@@ -5438,7 +5514,7 @@
     <service id="Twig\Environment" alias="twig"/>
     <service id="container.env_var_processors_locator" alias=".service_locator.ryAvHi4" public="true"/>
     <service id="twig.loader.filesystem" alias="twig.loader.native_filesystem"/>
-    <service id="argument_resolver.controller_locator" alias=".service_locator.PjLyCdD"/>
+    <service id="argument_resolver.controller_locator" alias=".service_locator.1qTUfAL"/>
     <service id="doctrine.id_generator_locator" alias=".service_locator.W55Po6X"/>
     <service id="twig.loader" alias="twig.loader.native_filesystem"/>
     <service id="Psr\Log\LoggerInterface" alias="logger"/>
@@ -5449,13 +5525,13 @@
     <service id="twig.error_renderer.html.inner" alias="error_handler.error_renderer.html"/>
     <service id="doctrine.orm.default_metadata_driver" alias=".doctrine.orm.default_metadata_driver"/>
     <service id=".service_locator.c0wzfI4" alias=".service_locator.1vYpZ1B"/>
-    <service id=".service_locator.qbX91ie" alias=".service_locator.KX5OHPH"/>
-    <service id=".service_locator.E4fCb3V" alias=".service_locator.SedKTZ2"/>
+    <service id=".service_locator.UOV1jy9" alias=".service_locator.3BoFVFw"/>
+    <service id=".service_locator.LlKRZP1" alias=".service_locator.mQkJDzl"/>
+    <service id=".service_locator.EHrOsY_" alias=".service_locator.nzqdLkv"/>
+    <service id=".service_locator.0ekWYPZ" alias=".service_locator.z0A7H.F"/>
+    <service id=".service_locator.l9vy2oi" alias=".service_locator.jzbSndG"/>
     <service id=".service_locator.EhyD5Sq" alias=".service_locator._b_k9zL"/>
     <service id=".service_locator.xrzsZF9" alias=".service_locator.vfxFV.2"/>
-    <service id=".service_locator.l9vy2oi" alias=".service_locator.jzbSndG"/>
-    <service id=".service_locator.UOV1jy9" alias=".service_locator.3BoFVFw"/>
-    <service id=".service_locator.0ekWYPZ" alias=".service_locator.z0A7H.F"/>
     <service id=".service_locator.5fUL23v" alias=".service_locator.IY8uJH."/>
     <service id=".service_locator.U2Ue1Fv" alias=".service_locator.TJNRSaV"/>
   </services>

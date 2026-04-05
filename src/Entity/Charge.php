@@ -15,26 +15,26 @@ class Charge
     private int $id;
 
     #[ORM\Column(type: "string", length: 255)]
-    private string $titre;
+    private ?string $titre = null;
 
     #[ORM\Column(type: "float")]
-    private float $montant;
+    private ?float $montant = null;
 
     #[ORM\Column(type: "date")]
     private ?\DateTimeInterface $date_charge = null;
 
     #[ORM\Column(type: "string")]
-    private string $type;
+    private ?string $type = null;
 
     #[ORM\Column(type: "string", length: 255)]
-    private string $preuve_image;
+    private ?string $preuve_image = null;
 
     #[ORM\Column(type: "string")]
-    private string $status_validation;
+    private ?string $status_validation = null;
 
     #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "charges")]
-    #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Franchises $franchise_id;
+    #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: true)]
+    private ?Franchises $franchise_id = null;
 
     // --- GETTERS & SETTERS ---
 
@@ -50,23 +50,23 @@ class Charge
         return $this; 
     }
 
-    public function getTitre(): string 
+    public function getTitre(): ?string 
     { 
         return $this->titre; 
     }
 
-    public function setTitre(string $titre): self 
+    public function setTitre(?string $titre): self 
     { 
         $this->titre = $titre; 
         return $this; 
     }
 
-    public function getMontant(): float 
+    public function getMontant(): ?float 
     { 
         return $this->montant; 
     }
 
-    public function setMontant(float $montant): self 
+    public function setMontant(?float $montant): self 
     { 
         $this->montant = $montant; 
         return $this; 
@@ -83,45 +83,45 @@ class Charge
         return $this; 
     }
 
-    public function getType(): string 
+    public function getType(): ?string 
     { 
         return $this->type; 
     }
 
-    public function setType(string $type): self 
+    public function setType(?string $type): self 
     { 
         $this->type = $type; 
         return $this; 
     }
 
-    public function getPreuveImage(): string 
+    public function getPreuveImage(): ?string 
     { 
         return $this->preuve_image; 
     }
 
-    public function setPreuveImage(string $preuve_image): self 
+    public function setPreuveImage(?string $preuve_image): self 
     { 
         $this->preuve_image = $preuve_image; 
         return $this; 
     }
 
-    public function getStatusValidation(): string 
+    public function getStatusValidation(): ?string 
     { 
         return $this->status_validation; 
     }
 
-    public function setStatusValidation(string $status_validation): self 
+    public function setStatusValidation(?string $status_validation): self 
     { 
         $this->status_validation = $status_validation; 
         return $this; 
     }
 
-    public function getFranchiseId(): Franchises 
+    public function getFranchiseId(): ?Franchises 
     { 
         return $this->franchise_id; 
     }
 
-    public function setFranchiseId(Franchises $franchise_id): self 
+    public function setFranchiseId(?Franchises $franchise_id): self 
     { 
         $this->franchise_id = $franchise_id; 
         return $this; 
