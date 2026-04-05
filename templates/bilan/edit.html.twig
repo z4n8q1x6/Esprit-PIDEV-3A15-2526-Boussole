@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+
+<title>Edit Bilan</title>
+
+{% block body %}
+    <h1>Edit Bilan</h1>
+
+    {{ include('bilan/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_bilan_index') }}">back to list</a>
+
+    {{ include('bilan/_delete_form.html.twig') }}
+{% endblock %}
