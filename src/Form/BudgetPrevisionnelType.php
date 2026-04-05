@@ -49,7 +49,7 @@ class BudgetPrevisionnelType extends AbstractType
             ])
             ->add('franchise_id', EntityType::class, [
                 'class' => Franchises::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nom',
                 'label' => 'Franchise',
                 'placeholder' => 'Tout le réseau',
                 'required' => false,
