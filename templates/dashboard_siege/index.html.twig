@@ -5,7 +5,7 @@
 {% block body %}
 <div class="row mb-4 align-items-center">
     <div class="col-md-6">
-        <h1 class="h3 mb-0 text-white fw-bold">Vue d'ensemble</h1>
+        <h1 class="h3 mb-0 fw-bold">Vue d'ensemble</h1>
         <p class="text-muted">Bienvenue sur votre espace d'administration</p>
     </div>
     <div class="col-md-6 text-md-end">
@@ -17,7 +17,7 @@
 <div class="row g-4 mb-4">
     <!-- CARTE SOLDE TOTAL -->
     <div class="col-md-4">
-        <div class="card card-body bg-dark border border-secondary p-4 h-100 shadow" style="border-radius: 12px;">
+        <div class="card card-body border p-4 h-100 shadow" style="border-radius: 12px;">
             <h6 class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">SOLDE TOTAL</h6>
             <h2 class="mb-0 fw-bold" style="color: #00e5ff;">
                 {{ solde|number_format(2, ',', ' ') }} TND
@@ -27,7 +27,7 @@
     
     <!-- CARTE REVENUS -->
     <div class="col-md-4">
-        <div class="card card-body bg-dark border border-secondary p-4 h-100 shadow" style="border-radius: 12px;">
+        <div class="card card-body border p-4 h-100 shadow" style="border-radius: 12px;">
             <h6 class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">REVENUS</h6>
             <h2 class="mb-0 fw-bold" style="color: #00ff88;">
                 {{ revenus|number_format(2, ',', ' ') }} TND
@@ -42,7 +42,7 @@
 
     <!-- CARTE DÉPENSES -->
     <div class="col-md-4">
-        <div class="card card-body bg-dark border border-secondary p-4 h-100 shadow" style="border-radius: 12px;">
+        <div class="card card-body border p-4 h-100 shadow" style="border-radius: 12px;">
             <h6 class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">DÉPENSES</h6>
             <h2 class="mb-0 fw-bold text-danger">
                 {{ depenses|number_format(2, ',', ' ') }} TND
@@ -83,9 +83,9 @@
 <!-- Cible pour le contenu des onglets -->
 <div class="tab-content">
     <div class="tab-pane fade show active" id="tab-stats" role="tabpanel">
-        <div class="card bg-dark border border-secondary shadow" style="border-radius: 12px;">
+        <div class="card border shadow" style="border-radius: 12px;">
             <div class="card-body p-4">
-                <h5 class="text-white mb-1">Réel vs Budget – Réseau Global (3 derniers mois)</h5>
+                <h5 class="mb-1">Réel vs Budget – Réseau Global (3 derniers mois)</h5>
                 <p class="text-muted small mb-4">Comparaison entre les montants réels (transactions) et les budgets prévisionnels de toutes les franchises</p>
                 
                 <div style="height: 350px;">
@@ -96,7 +96,7 @@
     </div>
     
     <div class="tab-pane fade" id="tab-radar" role="tabpanel">
-        <div class="card bg-dark border border-secondary shadow" style="border-radius: 12px;">
+        <div class="card border shadow" style="border-radius: 12px;">
             <div class="card-body p-4 text-center">
                 <p class="text-muted mb-0 py-5">Radar de performance en cours de développement...</p>
             </div>
