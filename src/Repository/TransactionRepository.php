@@ -16,7 +16,7 @@ class TransactionRepository extends ServiceEntityRepository
     /**
      * Recherche avancée pour l'historique des transactions
      */
-    public function findFilteredTransactions($franchise, ?string $type = null, ?string $search = null, ?string $periode = null, ?string $dateStart = null, ?string $dateEnd = null)
+    public function findFilteredTransactions($franchise, ?string $type = null, ?string $search = null, ?string $periode = null, ?string $dateStart = null, ?string $dateEnd = null, string $sort = 'date', string $direction = 'DESC')
     {
         $qb = $this->createQueryBuilder('t')
             ->andWhere('t.franchise_id = :franchise')
@@ -74,7 +74,7 @@ class TransactionRepository extends ServiceEntityRepository
             }
         }
 
-        $qb->orderBy('t.date', 'DESC');
+        $qb->orderBy('t.' . $sort, $direction);
 
         return $qb->getQuery()->getResult();
     }
