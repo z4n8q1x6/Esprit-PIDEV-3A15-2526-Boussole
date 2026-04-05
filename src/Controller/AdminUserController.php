@@ -15,11 +15,62 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 final class AdminUserController extends AbstractController
 {
     #[Route('/admin/user', name: 'app_admin_user')]
-    public function index(): Response
+    public function index(EntityManagerInterface $entityManager): Response
     {
+        $users = $entityManager->getRepository(Utilisateur::class)->findAll();
+
         return $this->render('admin_user/index.html.twig', [
-            'controller_name' => 'AdminUserController',
+            'users' => $users,
         ]);
+    }
+
+    #[Route('/admin/user/{id}/edit-inline', name: 'app_admin_user_edit_inline', methods: ['POST'])]
+    public function editInline(Request $request, Utilisateur $utilisateur, EntityManagerInterface $entityManager): \Symfony\Component\HttpFoundation\JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (isset($data['field']) && isset($data['value'])) {
+            $field = $data['field'];
+            $value = $data['value'];
+
+            switch ($field) {
+                case 'nom':
+                    $utilisateur->setNom($value);
+                    break;
+                case 'prenom':
+                    $utilisateur->setPrenom($value);
+                    break;
+                case 'email':
+                    $utilisateur->setEmail($value);
+                    break;
+                case 'actif':
+                    $utilisateur->setActif(filter_var($value, FILTER_VALIDATE_BOOLEAN));
+                    if ($utilisateur->getIdFranchise()) {
+                        $utilisateur->getIdFranchise()->setActif($utilisateur->getActif());
+                    }
+                    break;
+            }
+
+            $entityManager->flush();
+
+            return $this->json(['success' => true, 'message' => 'Mise à jour réussie']);
+        }
+
+        return $this->json(['success' => false, 'message' => 'Données invalides'], 400);
+    }
+
+    #[Route('/admin/user/{id}/delete', name: 'app_admin_user_delete', methods: ['DELETE'])]
+    public function delete(Utilisateur $utilisateur, EntityManagerInterface $entityManager): \Symfony\Component\HttpFoundation\JsonResponse
+    {
+        $franchise = $utilisateur->getIdFranchise();
+        if ($franchise) {
+            $entityManager->remove($franchise);
+        }
+        
+        $entityManager->remove($utilisateur);
+        $entityManager->flush();
+
+        return $this->json(['success' => true]);
     }
 
     #[Route('/admin/user/new', name: 'app_admin_user_new')]

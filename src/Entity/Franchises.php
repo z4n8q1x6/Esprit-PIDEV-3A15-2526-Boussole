@@ -132,59 +132,7 @@ class Franchises
         $this->solde_actuel = $value;
     }
 
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Alerteias::class)]
-    private Collection $alerteiass;
-
-        public function getAlerteiass(): Collection
-        {
-            return $this->alerteiass;
-        }
-
-        public function addAlerteias(Alerteias $alerteias): self
-        {
-            if (!$this->alerteiass->contains($alerteias)) {
-                $this->alerteiass[] = $alerteias;
-                $alerteias->setFranchise_id($this);
-            }
-
-            return $this;
-        }
-
-        public function removeAlerteias(Alerteias $alerteias): self
-        {
-            if ($this->alerteiass->removeElement($alerteias)) {
-                // set the owning side to null (unless already changed)
-                if ($alerteias->getFranchise_id() === $this) {
-                    $alerteias->setFranchise_id(null);
-                }
-            }
-
-            return $this;
-        }
-
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Bilan::class)]
-    private Collection $bilans;
-
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Budget_previsionnel::class)]
-    private Collection $budget_previsionnels;
-
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Charge::class)]
-    private Collection $charges;
-
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Commande::class)]
-    private Collection $commandes;
-
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Fournisseur::class)]
-    private Collection $fournisseurs;
-
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Pret::class)]
-    private Collection $prets;
-
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Reclamations::class)]
-    private Collection $reclamationss;
-
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Transaction::class)]
-    private Collection $transactions;
+    // Removed missing target entity relationships
 
     #[ORM\OneToMany(mappedBy: "id_franchise", targetEntity: Utilisateur::class)]
     private Collection $utilisateurs;

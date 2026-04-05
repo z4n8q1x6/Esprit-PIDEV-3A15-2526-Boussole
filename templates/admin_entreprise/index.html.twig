@@ -2,178 +2,717 @@
 
 {% block title %}Gestion des Entreprises{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
 <style>
-    /* Dark Theme Customization based on JavaFX properties */
+    /* CSS - Modern Dark SaaS Theme */
     .admin-container {
-        background-color: #06080F;
-        padding: 30px;
-        min-height: 100vh;
+        padding: 20px 30px;
         font-family: 'Inter', sans-serif;
-        color: white;
+        color: #e2e8f0;
     }
     
     .admin-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 30px;
+        margin-bottom: 35px;
     }
     .admin-header h1 {
-        color: #E8EDF5;
-        font-size: 26px;
+        color: #ffffff;
+        font-size: 28px;
         font-weight: 700;
-        margin: 0;
+        margin: 0 0 8px 0;
+        letter-spacing: -0.5px;
     }
     .admin-header p {
-        color: #8892A4;
-        font-size: 13px;
-        margin-top: 5px;
-        margin-bottom: 0;
+        color: #94a3b8;
+        font-size: 14px;
+        margin: 0;
+    }
+    .btn-new-user {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 24px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    }
+    .btn-new-user:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+        color: #ffffff;
     }
 
-    /* Filters & Search */
-    .filter-section {
+    /* Stats Cards */
+    .stats-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-bottom: 35px;
+    }
+    .stat-card {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 16px;
+        padding: 24px;
         display: flex;
-        gap: 15px;
-        margin-bottom: 25px;
+        align-items: center;
+        gap: 20px;
+        transition: transform 0.2s;
     }
-    .filter-select, .search-input {
-        background-color: #0C0F1A;
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        height: 42px;
-        padding: 0 15px;
+    .stat-card:hover { transform: translateY(-3px); }
+    
+    .stat-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
     }
-    .filter-select:focus, .search-input:focus {
-        outline: none;
-        border-color: #3b82f6;
-    }
-    .filter-select { width: 180px; }
-    .search-input { width: 380px; }
+    .icon-blue { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+    .icon-green { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+    .icon-red { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
-    /* Table */
-    .users-table-container {
-        border-radius: 10px;
-        overflow: hidden;
-        background-color: transparent;
-    }
-    .users-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    .users-table th {
-        background-color: rgba(255, 255, 255, 0.03);
-        color: #94A3B8;
+    .stat-details h3 {
         font-size: 13px;
         font-weight: 600;
+        color: #94a3b8;
         text-transform: uppercase;
-        padding: 15px;
-        text-align: left;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
     }
-    .users-table td {
-        padding: 15px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        color: #E2E8F0;
-        font-size: 14px;
-        vertical-align: middle;
+    .stat-details .stat-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: #ffffff;
     }
-    .users-table tr:hover {
-        background-color: rgba(255, 255, 255, 0.02);
+
+    /* Table Container */
+    .users-table-container {
+        background: #1e293b;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.05);
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
     
-    /* Actions */
-    .action-btn {
-        background: none;
-        border: none;
-        color: #3B82F6;
+    .table-toolbar {
+        padding: 20px 24px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .search-wrapper {
+        position: relative;
+        width: 300px;
+    }
+    .search-wrapper i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+    }
+    .search-input {
+        width: 100%;
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        color: #fff;
+        padding: 10px 15px 10px 40px;
+        transition: all 0.2s;
+    }
+    .search-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        background: rgba(15, 23, 42, 0.8);
+    }
+
+    .users-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .users-table th {
+        background: rgba(15, 23, 42, 0.4);
+        padding: 15px 24px;
+        color: #94a3b8;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .users-table td {
+        padding: 18px 24px;
+        border-bottom: 1px solid rgba(255,255,255,0.03);
+        font-size: 14px;
+        color: #e2e8f0;
+        transition: background 0.2s;
+    }
+    
+    /* Editable Cells */
+    .editable-cell, .editable-status {
         cursor: pointer;
-        padding: 5px;
-        transition: color 0.2s;
+        position: relative;
+        padding: 8px 12px !important; 
+        border-radius: 6px;
+        border: 1px solid transparent;
+        transition: all 0.2s;
     }
-    .action-btn:hover { color: #60A5FA; }
-    .action-delete { color: #EF4444; }
-    .action-delete:hover { color: #F87171; }
+    .editable-cell:hover, .editable-status:hover {
+        background: rgba(255,255,255,0.05);
+        border-color: rgba(255,255,255,0.1);
+    }
+    .editable-cell::after, .editable-status::after {
+        content: '✎';
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 12px;
+        color: #94a3b8;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    .editable-cell:hover::after, .editable-status:hover::after {
+        opacity: 1;
+    }
 
-    /* Pagination */
-    .pagination-container {
-        margin-top: 20px;
-        color: #3A4258;
-        font-size: 11px;
-        font-weight: 700;
+    .inline-edit-input {
+        width: 100%;
+        background: #0f172a;
+        border: 1px solid #3b82f6;
+        color: #fff;
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 14px;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
     }
+
+    /* Badges */
+    .role-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        display: inline-block;
+    }
+    .badge-admin { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .badge-franchise { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .badge-user { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }
+    .badge-inactive { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+    /* Actions */
+    .btn-action {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: none;
+        height: 34px;
+        width: 34px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-action:hover {
+        background: #ef4444;
+        color: #fff;
+    }
+
+    /* Toast Notification */
+    #toast-notification {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #10b981;
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 500;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        z-index: 9999;
+    }
+    #toast-notification.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    /* Delete Modal */
+    .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 0.3s;
+    }
+    .modal-overlay.show { display: flex; opacity: 1; }
+    .custom-modal {
+        background: #1e293b; border-radius: 16px; padding: 30px; width: 400px; max-width: 90%; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transform: translateY(-20px); transition: transform 0.3s;
+    }
+    .modal-overlay.show .custom-modal { transform: translateY(0); }
+    .modal-icon { width: 60px; height: 60px; border-radius: 50%; background: rgba(239, 68, 68, 0.1); color: #ef4444; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 20px; }
+    .modal-title { color: #fff; font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 10px; }
+    .modal-text { color: #94a3b8; font-size: 14px; text-align: center; margin-bottom: 30px; line-height: 1.6; }
+    .modal-actions { display: flex; gap: 15px; }
+    .btn-cancel { flex: 1; padding: 12px; border-radius: 10px; background: rgba(255,255,255,0.05); color: #e2e8f0; font-weight: 600; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.2s; }
+    .btn-cancel:hover { background: rgba(255,255,255,0.1); }
+    .btn-confirm-delete { flex: 1; padding: 12px; border-radius: 10px; background: #ef4444; color: #fff; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3); }
+    .btn-confirm-delete:hover { background: #dc2626; transform: translateY(-2px); }
+
 </style>
+{% endblock %}
 
+{% block body %}
 <div class="admin-container">
     
     <!-- HEADER -->
     <div class="admin-header">
         <div>
-            <h1>Gestion des Entreprises</h1>
-            <p>Visualisation et gestion des partenaires enregistrés</p>
+            <h1>Entreprises / Franchises</h1>
+            <p>Gérez vos entreprises. <b class="text-primary">Double-cliquez</b> sur un champ ou un état pour le modifier.</p>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <button id="btn-export-pdf" class="btn-new-user" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                <i class="fas fa-file-pdf"></i> Exporter PDF
+            </button>
+            <a href="{{ path('app_admin_user_new') }}" class="btn-new-user">
+                <i class="fas fa-plus"></i> Ajouter une entreprise
+            </a>
         </div>
     </div>
 
-    <!-- SEARCH & FILTER -->
-    <div class="filter-section">
-        <select class="filter-select">
-            <option value="">Tous les statuts</option>
-            <option value="actifs">Actifs</option>
-            <option value="inactifs">Inactifs</option>
-        </select>
-        <input type="text" class="search-input" placeholder="🔍 Rechercher une entreprise (nom, email...)">
+    <!-- STATS -->
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon icon-blue">
+                <i class="fas fa-building"></i>
+            </div>
+            <div class="stat-details">
+                <h3>Total Entreprises</h3>
+                <div class="stat-value" id="stat-total">{{ entreprises|length }}</div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon icon-green">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-details">
+                <h3>Actives</h3>
+                <div class="stat-value" id="stat-active">
+                    {{ entreprises|filter(e => e.actif)|length }}
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon icon-red">
+                <i class="fas fa-ban"></i>
+            </div>
+            <div class="stat-details">
+                <h3>Inactives</h3>
+                <div class="stat-value" id="stat-inactive">
+                    {{ entreprises|filter(e => not e.actif)|length }}
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- TABLE -->
+    <!-- TABLE AREA -->
     <div class="users-table-container">
+        <div class="table-toolbar">
+            <div style="display: flex; gap: 15px;">
+                <select id="status-filter" class="search-input" style="width: 180px; padding: 10px 15px;">
+                    <option value="all">Tous les états</option>
+                    <option value="1">Actives</option>
+                    <option value="0">Inactives</option>
+                </select>
+            </div>
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" class="search-input" placeholder="Rechercher une entreprise...">
+            </div>
+        </div>
+
         <table class="users-table">
             <thead>
                 <tr>
-                    <th>NOM</th>
-                    <th>EMAIL</th>
-                    <th>TÉLÉPHONE</th>
-                    <th>ADRESSE</th>
-                    <th>STATUT</th>
-                    <th>SOLDE</th>
-                    <th>ACTIONS</th>
+                    <th width="15%">Nom</th>
+                    <th width="20%">Email</th>
+                    <th width="15%">Téléphone</th>
+                    <th width="20%">Adresse</th>
+                    <th width="10%">Solde (TND)</th>
+                    <th width="10%">État</th>
+                    <th width="10%">Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {# Exemple de données : La boucle twig (for entreprise in entreprises) viendra ici #}
-                <tr>
-                    <td>Tech Solutions</td>
-                    <td>contact@techsolutions.com</td>
-                    <td>+33 1 23 45 67 89</td>
-                    <td>10 Rue de la Paix, Paris</td>
-                    <td><span class="badge" style="background-color: #065f46; padding: 5px 10px; border-radius: 5px;">Actif</span></td>
-                    <td>15,000 €</td>
+                {% for entreprise in entreprises %}
+                <tr data-entreprise-id="{{ entreprise.id }}">
+                    <td class="editable-cell" data-field="nom" title="Double-cliquez pour modifier">
+                        <div class="cell-content">{{ entreprise.nom }}</div>
+                    </td>
+                    <td class="editable-cell" data-field="email" title="Double-cliquez pour modifier">
+                        <div class="cell-content">{{ entreprise.email }}</div>
+                    </td>
+                    <td class="editable-cell" data-field="telephone" title="Double-cliquez pour modifier">
+                        <div class="cell-content">{{ entreprise.telephone }}</div>
+                    </td>
+                    <td class="editable-cell" data-field="adresse" title="Double-cliquez pour modifier">
+                        <div class="cell-content">{{ entreprise.adresse }}</div>
+                    </td>
+                    <td class="editable-cell" data-field="solde_actuel" title="Double-cliquez pour modifier">
+                        <div class="cell-content">{{ entreprise.solde_actuel }}</div>
+                    </td>
+                    <td class="editable-status" data-field="actif" data-status="{{ entreprise.actif ? '1' : '0' }}" title="Double-cliquez pour basculer l'état">
+                        <div class="cell-content">
+                            <span class="role-badge {{ entreprise.actif ? 'badge-admin' : 'badge-inactive' }}">
+                                {{ entreprise.actif ? 'Actif' : 'Inactif' }}
+                            </span>
+                        </div>
+                    </td>
                     <td>
-                        <button class="action-btn">👁️ Voir</button>
-                        <button class="action-btn action-delete">🗑️ Suppr</button>
+                        <!-- Le bouton Voir a été supprimé comme demandé -->
+                        <button class="btn-action btn-delete-entreprise" data-id="{{ entreprise.id }}" title="Supprimer">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
                     </td>
                 </tr>
+                {% else %}
                 <tr>
-                    <td>Global Industries</td>
-                    <td>info@globalind.com</td>
-                    <td>+33 4 56 78 90 12</td>
-                    <td>45 Avenue Jean Jaurès, Lyon</td>
-                    <td><span class="badge" style="background-color: #7f1d1d; padding: 5px 10px; border-radius: 5px;">Inactif</span></td>
-                    <td>0 €</td>
-                    <td>
-                        <button class="action-btn">👁️ Voir</button>
-                        <button class="action-btn action-delete">🗑️ Suppr</button>
+                    <td colspan="7" style="text-align: center; padding: 40px; color: #64748b;">
+                        Aucune entreprise trouvée.
                     </td>
                 </tr>
-                {# fin de boucle twig #}
+                {% endfor %}
             </tbody>
         </table>
     </div>
+</div>
 
-    <!-- PAGINATION -->
-    <div class="pagination-container">
-        Page 1 sur 1
+<!-- TOAST -->
+<div id="toast-notification">
+    <i class="fas fa-check-circle me-2"></i> Modification enregistrée
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="delete-modal">
+    <div class="custom-modal">
+        <div class="modal-icon"><i class="fas fa-exclamation-triangle"></i></div>
+        <h3 class="modal-title">Confirmer la suppression</h3>
+        <p class="modal-text">Êtes-vous sûr de vouloir supprimer cette entreprise ? Cette action est irréversible et toutes les données associées seront perdues.</p>
+        <div class="modal-actions">
+            <button class="btn-cancel" id="btn-cancel-delete">Annuler</button>
+            <button class="btn-confirm-delete" id="btn-confirm-delete">Oui, supprimer</button>
+        </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const editableCells = document.querySelectorAll('.editable-cell');
+    const editableStatuses = document.querySelectorAll('.editable-status');
+
+    // 1. TEXT EDITING
+    editableCells.forEach(cell => {
+        // Double-click to edit text
+        cell.addEventListener('dblclick', function() {
+            if (this.querySelector('input')) return; // Already editing
+            
+            const contentDiv = this.querySelector('.cell-content');
+            const originalValue = contentDiv.innerText.trim();
+            const tdElement = this;
+
+            // Hide content, show input
+            contentDiv.style.display = 'none';
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'inline-edit-input';
+            input.value = originalValue;
+            
+            tdElement.appendChild(input);
+            input.focus();
+            
+            // Move cursor to end
+            input.setSelectionRange(input.value.length, input.value.length);
+
+            // Handle Save
+            const saveEdit = async () => {
+                const newValue = input.value.trim();
+                
+                // Remove input, show content
+                input.remove();
+                contentDiv.style.display = 'block';
+
+                if (newValue !== originalValue && newValue !== '') {
+                    contentDiv.innerText = newValue; // Optimistic UI update
+                    
+                    const entrepriseId = tdElement.closest('tr').getAttribute('data-entreprise-id');
+                    const field = tdElement.getAttribute('data-field');
+                    
+                    try {
+                        const response = await fetch(`/admin/entreprise/${entrepriseId}/edit-inline`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({ field: field, value: newValue })
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            showToast('Modification enregistrée avec succès');
+                        } else {
+                            // Revert on failure
+                            contentDiv.innerText = originalValue;
+                            showToast('Erreur lors de la modification', true);
+                        }
+                    } catch (error) {
+                        contentDiv.innerText = originalValue;
+                        showToast('Erreur serveur', true);
+                    }
+                } else {
+                    // Revert if empty or no change
+                    contentDiv.innerText = originalValue;
+                }
+            };
+
+            // Commit on Enter, Cancel on Escape, Commit on Blur
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    saveEdit();
+                } else if (e.key === 'Escape') {
+                    input.remove();
+                    contentDiv.style.display = 'block';
+                }
+            });
+            
+            input.addEventListener('blur', saveEdit);
+        });
+    });
+
+    // 2. STATUS TOGGLE
+    editableStatuses.forEach(cell => {
+        cell.addEventListener('dblclick', async function() {
+            const tdElement = this;
+            const contentDiv = tdElement.querySelector('.cell-content');
+            const entrepriseId = tdElement.closest('tr').getAttribute('data-entreprise-id');
+            const field = 'actif'; 
+            
+            const currentStatus = tdElement.getAttribute('data-status') === '1';
+            const newStatus = !currentStatus; // Toggle
+            
+            tdElement.style.opacity = '0.5';
+
+            try {
+                const response = await fetch(`/admin/entreprise/${entrepriseId}/edit-inline`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    body: JSON.stringify({ field: field, value: newStatus })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    tdElement.setAttribute('data-status', newStatus ? '1' : '0');
+                    if (newStatus) {
+                        contentDiv.innerHTML = '<span class="role-badge badge-admin">Actif</span>';
+                        document.getElementById('stat-active').innerText = parseInt(document.getElementById('stat-active').innerText) + 1;
+                        document.getElementById('stat-inactive').innerText = parseInt(document.getElementById('stat-inactive').innerText) - 1;
+                    } else {
+                        contentDiv.innerHTML = '<span class="role-badge badge-inactive">Inactif</span>';
+                        document.getElementById('stat-active').innerText = parseInt(document.getElementById('stat-active').innerText) - 1;
+                        document.getElementById('stat-inactive').innerText = parseInt(document.getElementById('stat-inactive').innerText) + 1;
+                    }
+                    showToast('Statut mis à jour avec succès');
+                    filterTable(); 
+                } else {
+                    showToast('Erreur lors de la mise à jour', true);
+                }
+            } catch (error) {
+                showToast('Erreur serveur', true);
+            } finally {
+                tdElement.style.opacity = '1';
+            }
+        });
+    });
+
+    // 3. SEARCH AND FILTER
+    const searchInput = document.getElementById('search-input');
+    const statusFilter = document.getElementById('status-filter');
+    const tableRows = document.querySelectorAll('.users-table tbody tr[data-entreprise-id]');
+
+    function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+
+        tableRows.forEach(row => {
+            const textContent = row.innerText.toLowerCase();
+            const statusCell = row.querySelector('.editable-status');
+            const rowStatus = statusCell ? statusCell.getAttribute('data-status') : null;
+            
+            const matchesSearch = textContent.includes(searchTerm);
+            const matchesStatus = statusValue === 'all' || rowStatus === statusValue;
+            
+            if (matchesSearch && matchesStatus) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    searchInput.addEventListener('input', filterTable);
+    statusFilter.addEventListener('change', filterTable);
+
+    // 4. DELETE LOGIC & MODAL
+    const deleteModal = document.getElementById('delete-modal');
+    const deleteButtons = document.querySelectorAll('.btn-delete-entreprise');
+    const btnCancelDelete = document.getElementById('btn-cancel-delete');
+    const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+    let entrepriseToDeleteId = null;
+    let rowToDelete = null;
+
+    deleteButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            entrepriseToDeleteId = this.getAttribute('data-id');
+            rowToDelete = this.closest('tr');
+            
+            deleteModal.style.display = 'flex';
+            setTimeout(() => { deleteModal.classList.add('show'); }, 10);
+        });
+    });
+
+    const closeModal = () => {
+        deleteModal.classList.remove('show');
+        setTimeout(() => { deleteModal.style.display = 'none'; }, 300);
+        entrepriseToDeleteId = null;
+        rowToDelete = null;
+    };
+
+    btnCancelDelete.addEventListener('click', closeModal);
+    
+    deleteModal.addEventListener('click', function(e) {
+        if (e.target === deleteModal) closeModal();
+    });
+
+    btnConfirmDelete.addEventListener('click', async function() {
+        if (!entrepriseToDeleteId) return;
+        
+        btnConfirmDelete.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Suppression...';
+        btnConfirmDelete.disabled = true;
+
+        try {
+            const response = await fetch(`/admin/entreprise/${entrepriseToDeleteId}/delete`, {
+                method: 'DELETE',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Update stats
+                const statusCell = rowToDelete.querySelector('.editable-status');
+                if (statusCell) {
+                    if (statusCell.getAttribute('data-status') === '1') {
+                        document.getElementById('stat-active').innerText = parseInt(document.getElementById('stat-active').innerText) - 1;
+                    } else {
+                        document.getElementById('stat-inactive').innerText = parseInt(document.getElementById('stat-inactive').innerText) - 1;
+                    }
+                }
+                document.getElementById('stat-total').innerText = parseInt(document.getElementById('stat-total').innerText) - 1;
+
+                rowToDelete.remove();
+                
+                const tbody = document.querySelector('.users-table tbody');
+                if (tbody.querySelectorAll('tr[data-entreprise-id]').length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px; color: #64748b;">Aucune entreprise trouvée.</td></tr>';
+                }
+
+                showToast('Entreprise supprimée avec succès');
+                closeModal();
+            } else {
+                showToast('Erreur lors de la suppression', true);
+            }
+        } catch (error) {
+            showToast('Erreur serveur', true);
+        } finally {
+            btnConfirmDelete.innerHTML = 'Oui, supprimer';
+            btnConfirmDelete.disabled = false;
+        }
+    });
+
+    // 5. PDF EXPORT
+    document.getElementById('btn-export-pdf').addEventListener('click', function() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('landscape'); // landscape to fit all columns
+        
+        doc.setFontSize(18);
+        doc.text("Rapport des Entreprises - Boussole", 14, 20);
+        
+        const rows = [];
+        const displayedRows = document.querySelectorAll('.users-table tbody tr[data-entreprise-id]');
+        
+        displayedRows.forEach(row => {
+            if (row.style.display !== 'none') {
+                const nom = row.cells[0].innerText.trim();
+                const email = row.cells[1].innerText.trim();
+                const telephone = row.cells[2].innerText.trim();
+                const adresse = row.cells[3].innerText.trim();
+                const solde = row.cells[4].innerText.trim();
+                const status = row.cells[5].innerText.trim();
+                rows.push([nom, email, telephone, adresse, solde, status]);
+            }
+        });
+
+        doc.autoTable({
+            head: [['Nom', 'Email', 'Téléphone', 'Adresse', 'Solde (TND)', 'État']],
+            body: rows,
+            startY: 30,
+            styles: { font: 'helvetica', fontSize: 10 },
+            headStyles: { fillColor: [59, 130, 246] }
+        });
+
+        doc.save('Entreprises_Boussole.pdf');
+    });
+
+    // Toast logic
+    function showToast(message, isError = false) {
+        const toast = document.getElementById('toast-notification');
+        toast.innerHTML = isError ? `<i class="fas fa-exclamation-circle me-2"></i> ${message}` : `<i class="fas fa-check-circle me-2"></i> ${message}`;
+        toast.style.background = isError ? '#ef4444' : '#10b981';
+        
+        toast.classList.add('show');
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 3000);
+    }
+});
+</script>
 {% endblock %}

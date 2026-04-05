@@ -36,8 +36,8 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private \DateTimeInterface $date_creation;
 
     #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "utilisateurs")]
-    #[ORM\JoinColumn(name: 'id_franchise', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    private Franchises $id_franchise;
+    #[ORM\JoinColumn(name: 'id_franchise', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    private ?Franchises $id_franchise = null;
 
     #[ORM\Column(type: "text", nullable: true)]
     private string $face_token;
@@ -122,22 +122,24 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->date_creation = $value;
     }
 
-    public function getId_franchise()
+    public function getId_franchise(): ?Franchises
     {
         return $this->id_franchise;
     }
-    public function getIdFranchise() // Alias for Symfony Form PropertyAccessor
+    public function getIdFranchise(): ?Franchises // Alias for Symfony Form PropertyAccessor
     {
         return $this->id_franchise;
     }
 
-    public function setId_franchise($value)
+    public function setId_franchise(?Franchises $value): self
     {
         $this->id_franchise = $value;
+        return $this;
     }
-    public function setIdFranchise($value) // Alias for Symfony Form PropertyAccessor
+    public function setIdFranchise(?Franchises $value): self // Alias for Symfony Form PropertyAccessor
     {
         $this->id_franchise = $value;
+        return $this;
     }
 
     public function getFace_token()
