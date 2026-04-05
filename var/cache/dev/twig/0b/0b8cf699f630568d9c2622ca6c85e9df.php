@@ -1,0 +1,1109 @@
+<?php
+
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Extension\CoreExtension;
+use Twig\Extension\SandboxExtension;
+use Twig\Markup;
+use Twig\Sandbox\SecurityError;
+use Twig\Sandbox\SecurityNotAllowedTagError;
+use Twig\Sandbox\SecurityNotAllowedFilterError;
+use Twig\Sandbox\SecurityNotAllowedFunctionError;
+use Twig\Source;
+use Twig\Template;
+use Twig\TemplateWrapper;
+
+/* afficher_back_fournisseur/index.html.twig */
+class __TwigTemplate_7bff19d14ea1af9843c7714862d925c4 extends Template
+{
+    private Source $source;
+    /**
+     * @var array<string, Template>
+     */
+    private array $macros = [];
+
+    public function __construct(Environment $env)
+    {
+        parent::__construct($env);
+
+        $this->source = $this->getSourceContext();
+
+        $this->blocks = [
+            'title' => [$this, 'block_title'],
+            'body' => [$this, 'block_body'],
+        ];
+    }
+
+    protected function doGetParent(array $context): bool|string|Template|TemplateWrapper
+    {
+        // line 1
+        return "back_base.html.twig";
+    }
+
+    protected function doDisplay(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2 = $this->extensions["Symfony\\Bundle\\WebProfilerBundle\\Twig\\WebProfilerExtension"];
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->enter($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "template", "afficher_back_fournisseur/index.html.twig"));
+
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "template", "afficher_back_fournisseur/index.html.twig"));
+
+        $this->parent = $this->load("back_base.html.twig", 1);
+        yield from $this->parent->unwrap()->yield($context, array_merge($this->blocks, $blocks));
+        
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->leave($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof);
+
+        
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
+
+    }
+
+    // line 3
+    /**
+     * @return iterable<null|scalar|\Stringable>
+     */
+    public function block_title(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2 = $this->extensions["Symfony\\Bundle\\WebProfilerBundle\\Twig\\WebProfilerExtension"];
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->enter($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "title"));
+
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "title"));
+
+        yield "Boussole - Administration des Fournisseurs";
+        
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
+
+        
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->leave($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof);
+
+        yield from [];
+    }
+
+    // line 5
+    /**
+     * @return iterable<null|scalar|\Stringable>
+     */
+    public function block_body(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2 = $this->extensions["Symfony\\Bundle\\WebProfilerBundle\\Twig\\WebProfilerExtension"];
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->enter($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "body"));
+
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "body"));
+
+        // line 6
+        yield "<div class=\"container mt-4\">
+    ";
+        // line 8
+        yield "    <div class=\"d-flex justify-content-between align-items-center mb-4\">
+        <h2 class=\"mb-0 fw-bold text-dark\">Gestion des Fournisseurs</h2>
+        <a href=\"";
+        // line 10
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_ajouter_fournisseur");
+        yield "\" class=\"btn btn-add-modern\">
+            <i class=\"fas fa-plus-circle me-2\"></i> Ajouter un fournisseur
+        </a>
+    </div>
+
+    ";
+        // line 16
+        yield "    <div class=\"card mb-4 border-0 shadow-sm bg-light\">
+        <div class=\"card-body py-3\">
+            <div class=\"row g-2 align-items-center\">
+                <div class=\"col-12 col-md-6\">
+                    <div class=\"input-group\">
+                        <span class=\"input-group-text bg-white\" style=\"border: 1px solid #ced4da; border-right: none;\">
+                            <i class=\"fas fa-search text-primary\"></i>
+                        </span>
+                        <input type=\"text\" id=\"searchInput\" class=\"form-control\" placeholder=\"Rechercher (nom, matricule, téléphone, franchise)...\">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    ";
+        // line 32
+        yield "    <div class=\"card border-0 shadow-sm\">
+        <div class=\"card-body p-0\">
+            <div class=\"table-responsive\">
+                <table id=\"fournisseursTable\" class=\"table table-hover align-middle mb-0\" style=\"table-layout: fixed;\">
+                    <thead class=\"table-light\">
+                        <tr>
+                            <th scope=\"col\" class=\"position-relative\" style=\"cursor:pointer; width: 6%;\" data-sort=\"id\">ID <i class=\"fas fa-sort ms-1 text-muted\"></i><div class=\"resizer\"></div></th>
+                            <th scope=\"col\" class=\"position-relative\" style=\"cursor:pointer; width: 30%;\" data-sort=\"nom\">Nom <i class=\"fas fa-sort ms-1 text-muted\"></i><div class=\"resizer\"></div></th>
+                            <th scope=\"col\" class=\"position-relative\" style=\"cursor:pointer; width: 20%;\" data-sort=\"matricule\">Matricule Fiscal <i class=\"fas fa-sort ms-1 text-muted\"></i><div class=\"resizer\"></div></th>
+                            <th scope=\"col\" class=\"position-relative\" style=\"cursor:pointer; width: 15%;\" data-sort=\"telephone\">Téléphone <i class=\"fas fa-sort ms-1 text-muted\"></i><div class=\"resizer\"></div></th>
+                            <th scope=\"col\" class=\"position-relative\" style=\"cursor:pointer; width: 15%;\" data-sort=\"franchise\">Franchise <i class=\"fas fa-sort ms-1 text-muted\"></i><div class=\"resizer\"></div></th>
+                            <th scope=\"col\" class=\"text-center position-relative\" style=\"width: 14%;\">Actions<div class=\"resizer\"></div></th>
+                        </tr>
+                    </thead>
+                    <tbody id=\"tableBody\">
+                        ";
+        // line 47
+        $context['_parent'] = $context;
+        $context['_seq'] = CoreExtension::ensureTraversable((isset($context["fournisseurs"]) || array_key_exists("fournisseurs", $context) ? $context["fournisseurs"] : (function () { throw new RuntimeError('Variable "fournisseurs" does not exist.', 47, $this->source); })()));
+        $context['_iterated'] = false;
+        foreach ($context['_seq'] as $context["_key"] => $context["f"]) {
+            // line 48
+            yield "                        <tr data-id=\"";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["f"], "id", [], "any", false, false, false, 48), "html", null, true);
+            yield "\">
+                            <td>";
+            // line 49
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["f"], "id", [], "any", false, false, false, 49), "html", null, true);
+            yield "</td>
+                            <td>
+                                <div class=\"editable-cell\" contenteditable=\"true\" data-field=\"nom\">";
+            // line 51
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["f"], "nom", [], "any", false, false, false, 51), "html", null, true);
+            yield "</div>
+                            </td>
+                            <td>
+                                <div class=\"editable-cell\" contenteditable=\"true\" data-field=\"matricule_fiscal\">";
+            // line 54
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["f"], "matricule_fiscal", [], "any", false, false, false, 54), "html", null, true);
+            yield "</div>
+                            </td>
+                            <td>
+                                <div class=\"editable-cell\" contenteditable=\"true\" data-field=\"telephone\">";
+            // line 57
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["f"], "telephone", [], "any", false, false, false, 57), "html", null, true);
+            yield "</div>
+                            </td>
+                             <td>
+                                <select class=\"form-select form-select-sm editable-select\" data-field=\"franchise_id\">
+                                    ";
+            // line 61
+            $context['_parent'] = $context;
+            $context['_seq'] = CoreExtension::ensureTraversable((isset($context["franchises"]) || array_key_exists("franchises", $context) ? $context["franchises"] : (function () { throw new RuntimeError('Variable "franchises" does not exist.', 61, $this->source); })()));
+            foreach ($context['_seq'] as $context["_key"] => $context["fr"]) {
+                // line 62
+                yield "                                        <option value=\"";
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["fr"], "id", [], "any", false, false, false, 62), "html", null, true);
+                yield "\" ";
+                if ((CoreExtension::getAttribute($this->env, $this->source, $context["f"], "franchise_id", [], "any", false, false, false, 62) && (CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, $context["f"], "franchise_id", [], "any", false, false, false, 62), "id", [], "any", false, false, false, 62) == CoreExtension::getAttribute($this->env, $this->source, $context["fr"], "id", [], "any", false, false, false, 62)))) {
+                    yield "selected";
+                }
+                yield ">
+                                            ";
+                // line 63
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["fr"], "nom", [], "any", false, false, false, 63), "html", null, true);
+                yield "
+                                        </option>
+                                    ";
+            }
+            $_parent = $context['_parent'];
+            unset($context['_seq'], $context['_key'], $context['fr'], $context['_parent']);
+            $context = array_intersect_key($context, $_parent) + $_parent;
+            // line 66
+            yield "                                </select>
+                            </td>
+                            <td class=\"text-center\">
+                                <button class=\"btn btn-delete-modern btn-sm\" data-id=\"";
+            // line 69
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["f"], "id", [], "any", false, false, false, 69), "html", null, true);
+            yield "\" title=\"Supprimer ce fournisseur\">
+                                    <i class=\"fas fa-trash-alt\"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        ";
+            $context['_iterated'] = true;
+        }
+        // line 74
+        if (!$context['_iterated']) {
+            // line 75
+            yield "                        <tr id=\"emptyRow\">
+                            <td colspan=\"6\" class=\"text-center py-4\">
+                                <p class=\"text-muted mb-0\">Aucun fournisseur enregistré pour le moment.</p>
+                            </td>
+                        </tr>
+                        ";
+        }
+        $_parent = $context['_parent'];
+        unset($context['_seq'], $context['_key'], $context['f'], $context['_parent'], $context['_iterated']);
+        $context = array_intersect_key($context, $_parent) + $_parent;
+        // line 81
+        yield "                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        ";
+        // line 87
+        yield "        <div class=\"card-footer bg-white border-top-0 py-3\">
+            <div class=\"d-flex justify-content-end\">
+                <div class=\"total-badge-modern\">
+                    <span class=\"label\">Total Fournisseurs</span>
+                    <span class=\"count\" id=\"totalDisplay\">";
+        // line 91
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((isset($context["total_fournisseurs"]) || array_key_exists("total_fournisseurs", $context) ? $context["total_fournisseurs"] : (function () { throw new RuntimeError('Variable "total_fournisseurs" does not exist.', 91, $this->source); })()), "html", null, true);
+        yield "</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+";
+        // line 99
+        yield "<div id=\"toast\" style=\"
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #198754;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 9999;
+    font-weight: 500;
+    font-size: 0.9rem;
+    pointer-events: none;
+\">Modification enregistrée !</div>
+
+<style>
+.editable-cell {
+    padding: 4px 8px;
+    margin: -4px -8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    outline: none;
+    min-height: 1.4em;
+    word-break: break-all;
+}
+.editable-cell:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+    cursor: text;
+}
+.editable-cell:focus {
+    background-color: rgba(13, 110, 253, 0.05);
+    box-shadow: 0 0 0 2px #0d6efd;
+    color: inherit;
+}
+th[data-sort]:hover {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+.resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    cursor: col-resize;
+    user-select: none;
+    height: 100%;
+    z-index: 10;
+    border-right: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+.resizer:hover, .resizer.resizing {
+    border-right: 2px solid #0d6efd;
+}
+.editable-select {
+    border: none;
+    background-color: transparent;
+    padding: 2px 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: inherit;
+    border-radius: 4px;
+    width: 100%;
+}
+.editable-select:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+.editable-select:focus {
+    background-color: rgba(13, 110, 253, 0.05);
+    box-shadow: 0 0 0 2px #0d6efd;
+    outline: none;
+    color: inherit;
+}
+
+/* Nouveaux Styles Modernes */
+.btn-add-modern {
+    background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+    color: white !important;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.2);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-add-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(25, 135, 84, 0.3);
+    filter: brightness(1.1);
+}
+
+.btn-delete-modern {
+    color: #dc3545;
+    background: transparent;
+    border: 1.5px solid #dc3545;
+    border-radius: 8px;
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+.btn-delete-modern:hover {
+    background-color: #dc3545;
+    color: white;
+    transform: scale(1.1);
+}
+
+.total-badge-modern {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 8px 16px;
+    gap: 12px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+.total-badge-modern .label {
+    color: #6c757d;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.total-badge-modern .count {
+    background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+    color: white;
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('searchInput');
+    var tableBody   = document.getElementById('tableBody');
+    var rows        = tableBody.getElementsByTagName('tr');
+
+    /* ===== 1. RECHERCHE EN TEMPS RÉEL ===== */
+    searchInput.addEventListener('keyup', function() {
+        var filter = searchInput.value.toLowerCase();
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].id === 'emptyRow') continue;
+            var text = rows[i].textContent || rows[i].innerText;
+            rows[i].style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+        }
+    });
+
+    /* ===== 2. TRI PAR COLONNE ===== */
+    var getCellValue = function(tr, idx) { return tr.children[idx].innerText || tr.children[idx].textContent; };
+    var comparer = function(idx, asc) {
+        return function(a, b) {
+            var v1 = getCellValue(asc ? a : b, idx);
+            var v2 = getCellValue(asc ? b : a, idx);
+            if (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)) return v1 - v2;
+            return v1.toString().localeCompare(v2);
+        };
+    };
+
+    var sortStates = {};
+    document.querySelectorAll('th[data-sort]').forEach(function(th) {
+        th.addEventListener('click', function(e) {
+            if (e.target.classList.contains('resizer')) return;
+
+            var key = th.getAttribute('data-sort');
+            sortStates[key] = !sortStates[key];
+            var asc = sortStates[key];
+
+            var table = th.closest('table');
+            var tbody = table.querySelector('tbody');
+            Array.from(tbody.querySelectorAll('tr'))
+                .filter(function(tr) { return tr.id !== 'emptyRow'; })
+                .sort(comparer(Array.from(th.parentNode.children).indexOf(th), asc))
+                .forEach(function(tr) { tbody.appendChild(tr); });
+
+            // Mise à jour des icônes
+            document.querySelectorAll('th[data-sort] i').forEach(function(i) { i.className = 'fas fa-sort ms-1 text-muted'; });
+            th.querySelector('i').className = asc ? 'fas fa-sort-up ms-1 text-primary' : 'fas fa-sort-down ms-1 text-primary';
+        });
+    });
+
+    /* ===== 3. TOAST ===== */
+    function showToast(message, isError) {
+        var toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.style.backgroundColor = isError ? '#dc3545' : '#198754';
+        toast.style.transform = 'translateY(0)';
+        toast.style.opacity = '1';
+        setTimeout(function() {
+            toast.style.transform = 'translateY(100px)';
+            toast.style.opacity = '0';
+        }, 3000);
+    }
+
+    /* ===== 4. ÉDITION EN LIGNE AJAX AVEC CONTROLE DE SAISIE ===== */
+    let oldValues = {};
+
+    document.querySelectorAll('.editable-cell').forEach(function(cell) {
+        cell.addEventListener('focus', function() {
+            oldValues[this.dataset.field + this.closest('tr').dataset.id] = this.innerText.trim();
+        });
+
+        cell.addEventListener('blur', function() {
+            var field = this.getAttribute('data-field');
+            var value = this.innerText.trim();
+            var id    = this.closest('tr').getAttribute('data-id');
+            var oldValue = oldValues[field + id];
+
+            // Ne rien faire si la valeur n'a pas changé
+            if (value === oldValue) return;
+
+            // --- CONTROLE DE SAISIE CLIENT ---
+            let errorMsg = null;
+            if (field === 'nom' && !/^[a-zA-Z\\s]+\$/.test(value)) {
+                errorMsg = 'Le nom doit contenir uniquement des lettres';
+            } else if (field === 'matricule_fiscal' && !/^(?=.*[a-zA-Z])(?=.*[0-9]).+\$/.test(value)) {
+                errorMsg = 'Le matricule doit inclure des lettres ET des chiffres';
+            } else if (field === 'telephone' && !/^[0-9]+\$/.test(value)) {
+                errorMsg = 'Le téléphone doit contenir uniquement des chiffres';
+            }
+
+            if (errorMsg) {
+                showToast(errorMsg, true);
+                this.innerText = oldValue; // Restauration
+                return;
+            }
+
+            // --- ENVOI AJAX ---
+            fetch('/admin/afficher_back_fournisseur/edit/' + id, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ field: field, value: value })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    showToast('Modification enregistrée !', false);
+                    oldValues[field + id] = value; // Mise à jour de la valeur de référence
+                } else {
+                    showToast('Erreur : ' + data.message, true);
+                    this.innerText = oldValue; // Restauration en cas d'erreur serveur
+                }
+            }.bind(this))
+            .catch(function() {
+                showToast('Erreur de connexion', true);
+                this.innerText = oldValue;
+            }.bind(this));
+        });
+
+        cell.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); this.blur(); }
+        });
+    });
+
+    /* ===== 5. ÉDITION VIA SELECT (FRANCHISE) ===== */
+    document.querySelectorAll('.editable-select').forEach(function(select) {
+        select.addEventListener('change', function() {
+            var field = this.getAttribute('data-field');
+            var value = this.value;
+            var id    = this.closest('tr').getAttribute('data-id');
+
+            fetch('/admin/afficher_back_fournisseur/edit/' + id, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ field: field, value: value })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    showToast('Franchise mise à jour !', false);
+                } else {
+                    showToast('Erreur : ' + data.message, true);
+                }
+            })
+            .catch(function() { showToast('Erreur de connexion', true); });
+        });
+    });
+
+    /* ===== 6. SUPPRESSION AJAX ===== */
+    document.querySelectorAll('.btn-delete-modern').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            if (!confirm('Voulez-vous vraiment supprimer ce fournisseur ?')) return;
+
+            var id  = this.getAttribute('data-id');
+            var row = this.closest('tr');
+
+            fetch('/admin/afficher_back_fournisseur/delete/' + id, {
+                method: 'DELETE',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    row.remove();
+                    showToast('Fournisseur supprimé avec succès !', false);
+
+                    // Mise à jour du total
+                    var totalDisplay = document.getElementById('totalDisplay');
+                    totalDisplay.innerText = parseInt(totalDisplay.innerText) - 1;
+
+                    if (tableBody.querySelectorAll('tr').length === 0) {
+                        tableBody.innerHTML = '<tr id=\"emptyRow\"><td colspan=\"6\" class=\"text-center py-4\"><p class=\"text-muted mb-0\">Aucun fournisseur enregistré.</p></td></tr>';
+                    }
+                } else {
+                    showToast('Erreur de suppression', true);
+                }
+            })
+            .catch(function() { showToast('Erreur de connexion', true); });
+        });
+    });
+
+    /* ===== 6. REDIMENSIONNEMENT DES COLONNES ===== */
+    const createResizableTable = function (table) {
+        const cols = table.querySelectorAll('th');
+        [].forEach.call(cols, function (col) {
+            const resizer = col.querySelector('.resizer');
+            if (!resizer) return;
+
+            let x = 0;
+            let w = 0;
+
+            const mouseDownHandler = function (e) {
+                x = e.clientX;
+                const styles = window.getComputedStyle(col);
+                w = parseInt(styles.width, 10);
+
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+                resizer.classList.add('resizing');
+            };
+
+            const mouseMoveHandler = function (e) {
+                const dx = e.clientX - x;
+                col.style.width = `\${w + dx}px`;
+            };
+
+            const mouseUpHandler = function () {
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+                resizer.classList.remove('resizing');
+            };
+
+            resizer.addEventListener('mousedown', mouseDownHandler);
+        });
+    };
+
+    createResizableTable(document.getElementById('fournisseursTable'));
+});
+</script>
+";
+        
+        $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
+
+        
+        $__internal_5a27a8ba21ca79b61932376b2fa922d2->leave($__internal_5a27a8ba21ca79b61932376b2fa922d2_prof);
+
+        yield from [];
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getTemplateName(): string
+    {
+        return "afficher_back_fournisseur/index.html.twig";
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function isTraitable(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getDebugInfo(): array
+    {
+        return array (  256 => 99,  246 => 91,  240 => 87,  233 => 81,  222 => 75,  220 => 74,  210 => 69,  205 => 66,  196 => 63,  187 => 62,  183 => 61,  176 => 57,  170 => 54,  164 => 51,  159 => 49,  154 => 48,  149 => 47,  132 => 32,  115 => 16,  107 => 10,  103 => 8,  100 => 6,  87 => 5,  64 => 3,  41 => 1,);
+    }
+
+    public function getSourceContext(): Source
+    {
+        return new Source("{% extends 'back_base.html.twig' %}
+
+{% block title %}Boussole - Administration des Fournisseurs{% endblock %}
+
+{% block body %}
+<div class=\"container mt-4\">
+    {# En-tête avec titre + bouton Ajouter #}
+    <div class=\"d-flex justify-content-between align-items-center mb-4\">
+        <h2 class=\"mb-0 fw-bold text-dark\">Gestion des Fournisseurs</h2>
+        <a href=\"{{ path('app_ajouter_fournisseur') }}\" class=\"btn btn-add-modern\">
+            <i class=\"fas fa-plus-circle me-2\"></i> Ajouter un fournisseur
+        </a>
+    </div>
+
+    {# Barre de recherche #}
+    <div class=\"card mb-4 border-0 shadow-sm bg-light\">
+        <div class=\"card-body py-3\">
+            <div class=\"row g-2 align-items-center\">
+                <div class=\"col-12 col-md-6\">
+                    <div class=\"input-group\">
+                        <span class=\"input-group-text bg-white\" style=\"border: 1px solid #ced4da; border-right: none;\">
+                            <i class=\"fas fa-search text-primary\"></i>
+                        </span>
+                        <input type=\"text\" id=\"searchInput\" class=\"form-control\" placeholder=\"Rechercher (nom, matricule, téléphone, franchise)...\">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Tableau des fournisseurs #}
+    <div class=\"card border-0 shadow-sm\">
+        <div class=\"card-body p-0\">
+            <div class=\"table-responsive\">
+                <table id=\"fournisseursTable\" class=\"table table-hover align-middle mb-0\" style=\"table-layout: fixed;\">
+                    <thead class=\"table-light\">
+                        <tr>
+                            <th scope=\"col\" class=\"position-relative\" style=\"cursor:pointer; width: 6%;\" data-sort=\"id\">ID <i class=\"fas fa-sort ms-1 text-muted\"></i><div class=\"resizer\"></div></th>
+                            <th scope=\"col\" class=\"position-relative\" style=\"cursor:pointer; width: 30%;\" data-sort=\"nom\">Nom <i class=\"fas fa-sort ms-1 text-muted\"></i><div class=\"resizer\"></div></th>
+                            <th scope=\"col\" class=\"position-relative\" style=\"cursor:pointer; width: 20%;\" data-sort=\"matricule\">Matricule Fiscal <i class=\"fas fa-sort ms-1 text-muted\"></i><div class=\"resizer\"></div></th>
+                            <th scope=\"col\" class=\"position-relative\" style=\"cursor:pointer; width: 15%;\" data-sort=\"telephone\">Téléphone <i class=\"fas fa-sort ms-1 text-muted\"></i><div class=\"resizer\"></div></th>
+                            <th scope=\"col\" class=\"position-relative\" style=\"cursor:pointer; width: 15%;\" data-sort=\"franchise\">Franchise <i class=\"fas fa-sort ms-1 text-muted\"></i><div class=\"resizer\"></div></th>
+                            <th scope=\"col\" class=\"text-center position-relative\" style=\"width: 14%;\">Actions<div class=\"resizer\"></div></th>
+                        </tr>
+                    </thead>
+                    <tbody id=\"tableBody\">
+                        {% for f in fournisseurs %}
+                        <tr data-id=\"{{ f.id }}\">
+                            <td>{{ f.id }}</td>
+                            <td>
+                                <div class=\"editable-cell\" contenteditable=\"true\" data-field=\"nom\">{{ f.nom }}</div>
+                            </td>
+                            <td>
+                                <div class=\"editable-cell\" contenteditable=\"true\" data-field=\"matricule_fiscal\">{{ f.matricule_fiscal }}</div>
+                            </td>
+                            <td>
+                                <div class=\"editable-cell\" contenteditable=\"true\" data-field=\"telephone\">{{ f.telephone }}</div>
+                            </td>
+                             <td>
+                                <select class=\"form-select form-select-sm editable-select\" data-field=\"franchise_id\">
+                                    {% for fr in franchises %}
+                                        <option value=\"{{ fr.id }}\" {% if (f.franchise_id and f.franchise_id.id == fr.id) %}selected{% endif %}>
+                                            {{ fr.nom }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td class=\"text-center\">
+                                <button class=\"btn btn-delete-modern btn-sm\" data-id=\"{{ f.id }}\" title=\"Supprimer ce fournisseur\">
+                                    <i class=\"fas fa-trash-alt\"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr id=\"emptyRow\">
+                            <td colspan=\"6\" class=\"text-center py-4\">
+                                <p class=\"text-muted mb-0\">Aucun fournisseur enregistré pour le moment.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {# Footer : Total des fournisseurs #}
+        <div class=\"card-footer bg-white border-top-0 py-3\">
+            <div class=\"d-flex justify-content-end\">
+                <div class=\"total-badge-modern\">
+                    <span class=\"label\">Total Fournisseurs</span>
+                    <span class=\"count\" id=\"totalDisplay\">{{ total_fournisseurs }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Toast de notification #}
+<div id=\"toast\" style=\"
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #198754;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 9999;
+    font-weight: 500;
+    font-size: 0.9rem;
+    pointer-events: none;
+\">Modification enregistrée !</div>
+
+<style>
+.editable-cell {
+    padding: 4px 8px;
+    margin: -4px -8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    outline: none;
+    min-height: 1.4em;
+    word-break: break-all;
+}
+.editable-cell:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+    cursor: text;
+}
+.editable-cell:focus {
+    background-color: rgba(13, 110, 253, 0.05);
+    box-shadow: 0 0 0 2px #0d6efd;
+    color: inherit;
+}
+th[data-sort]:hover {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+.resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    cursor: col-resize;
+    user-select: none;
+    height: 100%;
+    z-index: 10;
+    border-right: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+.resizer:hover, .resizer.resizing {
+    border-right: 2px solid #0d6efd;
+}
+.editable-select {
+    border: none;
+    background-color: transparent;
+    padding: 2px 4px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: inherit;
+    border-radius: 4px;
+    width: 100%;
+}
+.editable-select:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+.editable-select:focus {
+    background-color: rgba(13, 110, 253, 0.05);
+    box-shadow: 0 0 0 2px #0d6efd;
+    outline: none;
+    color: inherit;
+}
+
+/* Nouveaux Styles Modernes */
+.btn-add-modern {
+    background: linear-gradient(135deg, #198754 0%, #20c997 100%);
+    color: white !important;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.2);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-add-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(25, 135, 84, 0.3);
+    filter: brightness(1.1);
+}
+
+.btn-delete-modern {
+    color: #dc3545;
+    background: transparent;
+    border: 1.5px solid #dc3545;
+    border-radius: 8px;
+    width: 35px;
+    height: 35px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+.btn-delete-modern:hover {
+    background-color: #dc3545;
+    color: white;
+    transform: scale(1.1);
+}
+
+.total-badge-modern {
+    display: flex;
+    align-items: center;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    padding: 8px 16px;
+    gap: 12px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+.total-badge-modern .label {
+    color: #6c757d;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.total-badge-modern .count {
+    background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+    color: white;
+    padding: 2px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var searchInput = document.getElementById('searchInput');
+    var tableBody   = document.getElementById('tableBody');
+    var rows        = tableBody.getElementsByTagName('tr');
+
+    /* ===== 1. RECHERCHE EN TEMPS RÉEL ===== */
+    searchInput.addEventListener('keyup', function() {
+        var filter = searchInput.value.toLowerCase();
+        for (var i = 0; i < rows.length; i++) {
+            if (rows[i].id === 'emptyRow') continue;
+            var text = rows[i].textContent || rows[i].innerText;
+            rows[i].style.display = text.toLowerCase().indexOf(filter) > -1 ? '' : 'none';
+        }
+    });
+
+    /* ===== 2. TRI PAR COLONNE ===== */
+    var getCellValue = function(tr, idx) { return tr.children[idx].innerText || tr.children[idx].textContent; };
+    var comparer = function(idx, asc) {
+        return function(a, b) {
+            var v1 = getCellValue(asc ? a : b, idx);
+            var v2 = getCellValue(asc ? b : a, idx);
+            if (v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2)) return v1 - v2;
+            return v1.toString().localeCompare(v2);
+        };
+    };
+
+    var sortStates = {};
+    document.querySelectorAll('th[data-sort]').forEach(function(th) {
+        th.addEventListener('click', function(e) {
+            if (e.target.classList.contains('resizer')) return;
+
+            var key = th.getAttribute('data-sort');
+            sortStates[key] = !sortStates[key];
+            var asc = sortStates[key];
+
+            var table = th.closest('table');
+            var tbody = table.querySelector('tbody');
+            Array.from(tbody.querySelectorAll('tr'))
+                .filter(function(tr) { return tr.id !== 'emptyRow'; })
+                .sort(comparer(Array.from(th.parentNode.children).indexOf(th), asc))
+                .forEach(function(tr) { tbody.appendChild(tr); });
+
+            // Mise à jour des icônes
+            document.querySelectorAll('th[data-sort] i').forEach(function(i) { i.className = 'fas fa-sort ms-1 text-muted'; });
+            th.querySelector('i').className = asc ? 'fas fa-sort-up ms-1 text-primary' : 'fas fa-sort-down ms-1 text-primary';
+        });
+    });
+
+    /* ===== 3. TOAST ===== */
+    function showToast(message, isError) {
+        var toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.style.backgroundColor = isError ? '#dc3545' : '#198754';
+        toast.style.transform = 'translateY(0)';
+        toast.style.opacity = '1';
+        setTimeout(function() {
+            toast.style.transform = 'translateY(100px)';
+            toast.style.opacity = '0';
+        }, 3000);
+    }
+
+    /* ===== 4. ÉDITION EN LIGNE AJAX AVEC CONTROLE DE SAISIE ===== */
+    let oldValues = {};
+
+    document.querySelectorAll('.editable-cell').forEach(function(cell) {
+        cell.addEventListener('focus', function() {
+            oldValues[this.dataset.field + this.closest('tr').dataset.id] = this.innerText.trim();
+        });
+
+        cell.addEventListener('blur', function() {
+            var field = this.getAttribute('data-field');
+            var value = this.innerText.trim();
+            var id    = this.closest('tr').getAttribute('data-id');
+            var oldValue = oldValues[field + id];
+
+            // Ne rien faire si la valeur n'a pas changé
+            if (value === oldValue) return;
+
+            // --- CONTROLE DE SAISIE CLIENT ---
+            let errorMsg = null;
+            if (field === 'nom' && !/^[a-zA-Z\\s]+\$/.test(value)) {
+                errorMsg = 'Le nom doit contenir uniquement des lettres';
+            } else if (field === 'matricule_fiscal' && !/^(?=.*[a-zA-Z])(?=.*[0-9]).+\$/.test(value)) {
+                errorMsg = 'Le matricule doit inclure des lettres ET des chiffres';
+            } else if (field === 'telephone' && !/^[0-9]+\$/.test(value)) {
+                errorMsg = 'Le téléphone doit contenir uniquement des chiffres';
+            }
+
+            if (errorMsg) {
+                showToast(errorMsg, true);
+                this.innerText = oldValue; // Restauration
+                return;
+            }
+
+            // --- ENVOI AJAX ---
+            fetch('/admin/afficher_back_fournisseur/edit/' + id, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ field: field, value: value })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    showToast('Modification enregistrée !', false);
+                    oldValues[field + id] = value; // Mise à jour de la valeur de référence
+                } else {
+                    showToast('Erreur : ' + data.message, true);
+                    this.innerText = oldValue; // Restauration en cas d'erreur serveur
+                }
+            }.bind(this))
+            .catch(function() {
+                showToast('Erreur de connexion', true);
+                this.innerText = oldValue;
+            }.bind(this));
+        });
+
+        cell.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') { e.preventDefault(); this.blur(); }
+        });
+    });
+
+    /* ===== 5. ÉDITION VIA SELECT (FRANCHISE) ===== */
+    document.querySelectorAll('.editable-select').forEach(function(select) {
+        select.addEventListener('change', function() {
+            var field = this.getAttribute('data-field');
+            var value = this.value;
+            var id    = this.closest('tr').getAttribute('data-id');
+
+            fetch('/admin/afficher_back_fournisseur/edit/' + id, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ field: field, value: value })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    showToast('Franchise mise à jour !', false);
+                } else {
+                    showToast('Erreur : ' + data.message, true);
+                }
+            })
+            .catch(function() { showToast('Erreur de connexion', true); });
+        });
+    });
+
+    /* ===== 6. SUPPRESSION AJAX ===== */
+    document.querySelectorAll('.btn-delete-modern').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            if (!confirm('Voulez-vous vraiment supprimer ce fournisseur ?')) return;
+
+            var id  = this.getAttribute('data-id');
+            var row = this.closest('tr');
+
+            fetch('/admin/afficher_back_fournisseur/delete/' + id, {
+                method: 'DELETE',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    row.remove();
+                    showToast('Fournisseur supprimé avec succès !', false);
+
+                    // Mise à jour du total
+                    var totalDisplay = document.getElementById('totalDisplay');
+                    totalDisplay.innerText = parseInt(totalDisplay.innerText) - 1;
+
+                    if (tableBody.querySelectorAll('tr').length === 0) {
+                        tableBody.innerHTML = '<tr id=\"emptyRow\"><td colspan=\"6\" class=\"text-center py-4\"><p class=\"text-muted mb-0\">Aucun fournisseur enregistré.</p></td></tr>';
+                    }
+                } else {
+                    showToast('Erreur de suppression', true);
+                }
+            })
+            .catch(function() { showToast('Erreur de connexion', true); });
+        });
+    });
+
+    /* ===== 6. REDIMENSIONNEMENT DES COLONNES ===== */
+    const createResizableTable = function (table) {
+        const cols = table.querySelectorAll('th');
+        [].forEach.call(cols, function (col) {
+            const resizer = col.querySelector('.resizer');
+            if (!resizer) return;
+
+            let x = 0;
+            let w = 0;
+
+            const mouseDownHandler = function (e) {
+                x = e.clientX;
+                const styles = window.getComputedStyle(col);
+                w = parseInt(styles.width, 10);
+
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+                resizer.classList.add('resizing');
+            };
+
+            const mouseMoveHandler = function (e) {
+                const dx = e.clientX - x;
+                col.style.width = `\${w + dx}px`;
+            };
+
+            const mouseUpHandler = function () {
+                document.removeEventListener('mousemove', mouseMoveHandler);
+                document.removeEventListener('mouseup', mouseUpHandler);
+                resizer.classList.remove('resizing');
+            };
+
+            resizer.addEventListener('mousedown', mouseDownHandler);
+        });
+    };
+
+    createResizableTable(document.getElementById('fournisseursTable'));
+});
+</script>
+{% endblock %}
+", "afficher_back_fournisseur/index.html.twig", "C:\\Users\\Technologie\\Desktop\\Esprit-PIDEV-3A15-2526-Boussole\\templates\\afficher_back_fournisseur\\index.html.twig");
+    }
+}
