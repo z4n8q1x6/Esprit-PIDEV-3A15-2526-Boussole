@@ -42,7 +42,7 @@ final class TransactionController extends AbstractController
             $entityManager->persist($transaction);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Recette validÃ©e avec succÃ¨s !');
+            $this->addFlash('success', 'Recette validée avec succès !');
             return $this->redirectToRoute('app_transaction_index',[], Response::HTTP_SEE_OTHER);
         }
 
@@ -111,7 +111,7 @@ final class TransactionController extends AbstractController
     }
 
     // =========================================================================
-    // NOUVELLE ROUTE : HISTORIQUE (PlacÃ©e AVANT le /{id} pour Ã©viter les conflits)
+    // NOUVELLE ROUTE : HISTORIQUE (Placée AVANT le /{id} pour éviter les conflits)
     // =========================================================================
     #[Route('/historique', name: 'app_transaction_historique', methods: ['GET'])]
     public function historique(
@@ -187,7 +187,7 @@ final class TransactionController extends AbstractController
         try {
             $data = json_decode($request->getContent(), true);
             if (!is_array($data) || empty($data)) {
-                return new JsonResponse(['success' => false, 'message' => 'DonnÃ©es invalides.'], 400);
+                return new JsonResponse(['success' => false, 'message' => 'Données invalides.'], 400);
             }
 
             $errorMessages = [];
@@ -244,7 +244,7 @@ final class TransactionController extends AbstractController
 
             return new JsonResponse([
                 'success' => true,
-                'message' => 'Transaction modifiÃ©e avec succÃ¨s !',
+                'message' => 'Transaction modifiée avec succès !',
                 'solde' => $solde,
                 'transaction' => [
                     'id' => $transaction->getId(),
@@ -281,7 +281,7 @@ final class TransactionController extends AbstractController
 
         return new JsonResponse([
             'success' => true,
-            'message' => 'Transaction supprimÃ©e avec succÃ¨s !',
+            'message' => 'Transaction supprimée avec succès !',
             'solde' => $solde,
         ]);
     }

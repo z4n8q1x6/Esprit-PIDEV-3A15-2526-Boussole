@@ -90,7 +90,7 @@
     {% endfor %}
 
     <div class="row g-4">
-        <!-- Formulaire UnifiÃ© avec validation HTML5 intÃ©grÃ©e -->
+        <!-- Formulaire Unifié avec validation HTML5 intégrée -->
         <div class="col-12 col-lg-4">
             <div class="dashboard-card h-100">
                 <h4 class="mb-4 text-white">Nouveau Budget</h4>
@@ -171,7 +171,7 @@
                             <td>{{ b.franchiseId ? b.franchiseId.nom : '<span class="badge bg-secondary text-dark">Réseau Global</span>'|raw }}</td>
                             <td>
                                 <div class="editable-cell d-inline-block fw-bold text-white" data-id="{{ b.id }}" data-field="mois" title="Double-cliquez pour modifier le mois">{{ "%02d"|format(b.mois) }}</div> /
-                                <div class="editable-cell d-inline-block fw-bold text-white" data-id="{{ b.id }}" data-field="annee" title="Double-cliquez pour modifier l'annÃ©e">{{ b.annee }}</div>
+                                <div class="editable-cell d-inline-block fw-bold text-white" data-id="{{ b.id }}" data-field="annee" title="Double-cliquez pour modifier l'année">{{ b.annee }}</div>
                             </td>
                             <td>
                                 {% if b.typeBudget == 'OBJECTIF_REVENU' %}
@@ -181,7 +181,7 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <div class="editable-cell" data-id="{{ b.id }}" data-field="categorie" title="Double-cliquez pour modifier la catÃ©gorie">{{ b.categorie }}</div>
+                                <div class="editable-cell" data-id="{{ b.id }}" data-field="categorie" title="Double-cliquez pour modifier la catégorie">{{ b.categorie }}</div>
                             </td>
                             <td>
                                 <div class="editable-cell fw-bold" style="font-family: monospace; color: #e2e8f0;" data-id="{{ b.id }}" data-field="montant_cible" title="Double-cliquez pour modifier le montant">{{ b.montantCible|number_format(2, '.', ' ') }} DT</div>
@@ -192,7 +192,7 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="6" class="text-center py-5 text-muted">Aucun budget dÃ©fini. Modifiez le formulaire Ã  gauche pour en ajouter un.</td>
+                            <td colspan="6" class="text-center py-5 text-muted">Aucun budget défini. Modifiez le formulaire à gauche pour en ajouter un.</td>
                         </tr>
                     {% endfor %}
                     </tbody>
@@ -296,14 +296,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     if (data.success) {
                         restoreCell(this, newValue, field);
-                        showToast('Mise Ã  jour effectuÃ©e.', true);
+                        showToast('Mise à jour effectuée.', true);
                     } else {
                         restoreCell(this, originalValue, field);
-                        showToast(data.message || 'Erreur (vÃ©rifiez la saisie)', false);
+                        showToast(data.message || 'Erreur (vérifiez la saisie)', false);
                     }
                 } catch (error) {
                     restoreCell(this, originalValue, field);
-                    showToast('Erreur rÃ©seau.', false);
+                    showToast('Erreur réseau.', false);
                 }
             };
 
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Inline Deletion (AJAX) ---
     document.querySelectorAll('.delete-row-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-            if(!confirm('ÃŠtes-vous sÃ»r de vouloir supprimer cette ligne budgÃ©taire ?')) return;
+            if(!confirm('Êtes-vous sûr de vouloir supprimer cette ligne budgétaire ?')) return;
             
             const id = this.dataset.id;
             const row = document.getElementById('row-' + id);
@@ -351,13 +351,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     row.style.opacity = '0';
                     row.style.transform = 'translateY(10px) scale(0.98)';
                     setTimeout(() => row.remove(), 400);
-                    showToast('Ligne supprimÃ©e avec succÃ¨s.', true);
+                    showToast('Ligne supprimée avec succès.', true);
                 } else {
                     showToast('Erreur lors de la suppression.', false);
                 }
             })
             .catch(error => {
-                showToast('Erreur rÃ©seau.', false);
+                showToast('Erreur réseau.', false);
             });
         });
     });
@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(cat && cat.value.trim() === '') {
                 isValid = false;
                 cat.style.borderColor = '#ef4444';
-                cat.insertAdjacentHTML('afterend', '<div class="custom-invalid-msg text-danger mt-1" style="font-size: 0.8rem;">La catÃ©gorie est obligatoire.</div>');
+                cat.insertAdjacentHTML('afterend', '<div class="custom-invalid-msg text-danger mt-1" style="font-size: 0.8rem;">La catégorie est obligatoire.</div>');
             }
 
             // validate montant
@@ -400,7 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!isValid) {
                 e.preventDefault();
-                showToast('Veuillez vÃ©rifier les champs en rouge.', false);
+                showToast('Veuillez vérifier les champs en rouge.', false);
             }
         });
     }
