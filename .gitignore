@@ -21,3 +21,7 @@ compose.override.yaml
 /var/data.db
 /var/data.db.sql
 ###< doctrine/doctrine-bundle ###
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
