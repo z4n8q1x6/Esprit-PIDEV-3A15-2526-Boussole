@@ -97,9 +97,14 @@
 	<nav class="navbar navbar-expand-xl">
 		<div class="container">
 			<!-- Logo START -->
-			<a class="navbar-brand" href="index.html">
-				<img class="light-mode-item navbar-brand-item" src="{{ asset('assets/images/logo.svg') }}" alt="logo">
-				<img class="dark-mode-item navbar-brand-item" src="{{ asset('assets/images/logo-light.svg') }}" alt="logo">
+			<a class="navbar-brand d-flex align-items-center" href="#">
+				<div class="header-logo-icon me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 55px; border-radius: 20px; border: 2px solid #00e5ff !important; box-shadow: 0 0 10px rgba(0, 229, 255, 0.3); background-color: transparent;">
+                    <i class="bi bi-phone" style="color: #00e5ff; font-size: 1.1rem;"></i>
+                </div>
+                <div>
+                    <h3 class="mb-0 fw-bold text-body" style="letter-spacing: 0.5px;">Boussole</h3>
+                    <small class="mb-0 fw-bold d-block" style="color: #00e5ff; font-size: 0.7rem; letter-spacing: 1.5px; margin-top: -2px;">ENTREPRISE</small>
+                </div>
 			</a>
 			<!-- Logo END -->
 
@@ -305,38 +310,7 @@ Page content END -->
 </main>
 <!-- **************** MAIN CONTENT END **************** -->
 
-<!-- =======================
-Footer START -->
-<footer class="bg-dark p-3">
-	<div class="container">
-		<div class="row align-items-center">
-			<!-- Widget -->
-			<div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
-				<!-- Logo START -->
-				<a href="index.html"> <img class="h-20px" src="{{ asset('assets/images/logo-light.svg') }}" alt="logo"> </a>
-			</div>
 
-			<!-- Widget -->
-			<div class="col-md-4 mb-3 mb-md-0">
-				<div class="text-center text-white text-primary-hover">
-					Copyrights ©2023 Eduport. Build by <a href="https://www.webestica.com/" target="_blank" class="text-white">Webestica</a>.
-				</div>
-			</div>
-			<!-- Widget -->
-			<div class="col-md-4">
-				<!-- Rating -->
-				<ul class="list-inline mb-0 text-center text-md-end">
-					<li class="list-inline-item ms-2"><a href="#"><i class="text-white fab fa-facebook"></i></a></li>
-					<li class="list-inline-item ms-2"><a href="#"><i class="text-white fab fa-instagram"></i></a></li>
-					<li class="list-inline-item ms-2"><a href="#"><i class="text-white fab fa-linkedin-in"></i></a></li>
-					<li class="list-inline-item ms-2"><a href="#"><i class="text-white fab fa-twitter"></i></a></li>
-				</ul>
-			</div>
-		</div>
-	</div>
-</footer>
-<!-- =======================
-Footer END -->
 
 <div class="back-top"><i class="bi bi-arrow-up-short position-absolute top-50 start-50 translate-middle"></i></div>
 
