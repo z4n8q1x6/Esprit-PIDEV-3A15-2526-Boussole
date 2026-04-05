@@ -13,8 +13,23 @@ class Franchises
 {
 
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
+
+    public function __construct()
+    {
+        $this->alerteiass = new ArrayCollection();
+        $this->bilans = new ArrayCollection();
+        $this->budget_previsionnels = new ArrayCollection();
+        $this->charges = new ArrayCollection();
+        $this->commandes = new ArrayCollection();
+        $this->fournisseurs = new ArrayCollection();
+        $this->prets = new ArrayCollection();
+        $this->reclamationss = new ArrayCollection();
+        $this->transactions = new ArrayCollection();
+        $this->utilisateurs = new ArrayCollection();
+    }
 
     #[ORM\Column(type: "string", length: 100)]
     private string $nom;
