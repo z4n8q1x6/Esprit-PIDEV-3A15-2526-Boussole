@@ -6,14 +6,31 @@ use App\Repository\ChargeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class AfficherFrontChargeController extends AbstractController
 {
     #[Route('/afficher_front_charge', name: 'app_afficher_front_charge')]
     public function index(ChargeRepository $repo, Request $request): Response
     {
-        $allCharges = $repo->findAll();
+        $search = $request->query->get('q', '');
+        $sort = $request->query->get('sort', 'id');
+        $dir = $request->query->get('dir', 'ASC');
+
+        $qb = $repo->createQueryBuilder('c');
+
+        if (!empty($search)) {
+            $qb->andWhere('c.titre LIKE :search OR c.type LIKE :search OR c.status_validation LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        $allowedSorts = ['id', 'titre', 'montant', 'date_charge', 'type'];
+        if (in_array($sort, $allowedSorts)) {
+            $direction = strtoupper($dir) === 'DESC' ? 'DESC' : 'ASC';
+            $qb->orderBy('c.' . $sort, $direction);
+        }
+
+        $allCharges = $qb->getQuery()->getResult();
         
         // Pagination : 3 cartes par page
         $limit = 3;
@@ -34,7 +51,10 @@ class AfficherFrontChargeController extends AbstractController
             'charges' => $charges,
             'total' => $totalMontant,
             'currentPage' => $page,
-            'pagesCount' => $pagesCount
+            'pagesCount' => $pagesCount,
+            'search' => $search,
+            'sort' => $sort,
+            'dir' => $dir
         ]);
     }
 }

@@ -21,7 +21,7 @@ class Charge
     private float $montant;
 
     #[ORM\Column(type: "date")]
-    private \DateTimeInterface $date_charge;
+    private ?\DateTimeInterface $date_charge = null;
 
     #[ORM\Column(type: "string")]
     private string $type;
@@ -72,12 +72,12 @@ class Charge
         return $this; 
     }
 
-    public function getDateCharge(): \DateTimeInterface 
+    public function getDateCharge(): ?\DateTimeInterface 
     { 
         return $this->date_charge; 
     }
 
-    public function setDateCharge(\DateTimeInterface $date_charge): self 
+    public function setDateCharge(?\DateTimeInterface $date_charge): self 
     { 
         $this->date_charge = $date_charge; 
         return $this; 

@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 final class AjouterChargeController extends AbstractController
 {
@@ -26,7 +26,6 @@ final class AjouterChargeController extends AbstractController
             $charge->setId($manualId);
 
             // 2. SAUVEGARDE
-            // Le statut est maintenant géré par le formulaire lui-même
             $entityManager->persist($charge);
             $entityManager->flush();
 
