@@ -1,0 +1,235 @@
+{% extends 'back_base.html.twig' %}
+
+{% block title %}Vue d'ensemble - Boussole Management{% endblock %}
+
+{% block body %}
+<div class="row mb-4 align-items-center">
+    <div class="col-md-6">
+        <h1 class="h3 mb-0 fw-bold">Vue d'ensemble</h1>
+        <p class="text-muted">Bienvenue sur votre espace d'administration</p>
+    </div>
+    <div class="col-md-6 text-md-end">
+        {# Espace pour la barre de recherche globale de l'interface admin, si existante dans le template #}
+    </div>
+</div>
+
+<!-- KPI (Statistiques globales du réseau) -->
+<div class="row g-4 mb-4">
+    <!-- CARTE SOLDE TOTAL -->
+    <div class="col-md-4">
+        <div class="card card-body border p-4 h-100 shadow" style="border-radius: 12px;">
+            <h6 class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">SOLDE TOTAL</h6>
+            <h2 class="mb-0 fw-bold" style="color: #00e5ff;">
+                {{ solde|number_format(2, ',', ' ') }} TND
+            </h2>
+        </div>
+    </div>
+    
+    <!-- CARTE REVENUS -->
+    <div class="col-md-4">
+        <div class="card card-body border p-4 h-100 shadow" style="border-radius: 12px;">
+            <h6 class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">REVENUS</h6>
+            <h2 class="mb-0 fw-bold" style="color: #00ff88;">
+                {{ revenus|number_format(2, ',', ' ') }} TND
+            </h2>
+            <div class="mt-2">
+                <span class="badge bg-success bg-opacity-25 text-success border border-success" style="font-size: 0.8rem;">
+                    {{ taux_revenus|number_format(1, ',', ' ') }}% de l'objectif global
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CARTE DÉPENSES -->
+    <div class="col-md-4">
+        <div class="card card-body border p-4 h-100 shadow" style="border-radius: 12px;">
+            <h6 class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">DÉPENSES</h6>
+            <h2 class="mb-0 fw-bold text-danger">
+                {{ depenses|number_format(2, ',', ' ') }} TND
+            </h2>
+            <div class="mt-2">
+                {% if taux_depenses >= 90 %}
+                    <span class="badge bg-danger bg-opacity-25 text-danger border border-danger" style="font-size: 0.8rem;">
+                        {{ taux_depenses|number_format(1, ',', ' ') }}% de la limite consommée ⚠ Critique
+                    </span>
+                {% elseif taux_depenses >= 80 %}
+                    <span class="badge bg-danger bg-opacity-25 border border-danger" style="font-size: 0.8rem; color: #ff4d4d;">
+                        {{ taux_depenses|number_format(1, ',', ' ') }}% de la limite consommée ⚠ Attention
+                    </span>
+                {% else %}
+                    <span class="badge bg-danger bg-opacity-25 border border-danger" style="font-size: 0.8rem; color: #ff4d4d;">
+                        {{ taux_depenses|number_format(1, ',', ' ') }}% de la limite consommée
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TABS (Statistiques Globales / Radar) -->
+<ul class="nav nav-tabs nav-bottom-line nav-responsive border-0 mb-4" role="tablist">
+    <li class="nav-item" role="presentation">
+        <a class="nav-link active pb-3" data-bs-toggle="tab" href="#tab-stats" role="tab" style="color: #00e5ff; border-bottom: 2px solid #00e5ff; background: transparent;">
+            Statistiques Globales
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link text-muted pb-3" data-bs-toggle="tab" href="#tab-radar" role="tab" style="border: none; background: transparent;">
+            Radar de Performance
+        </a>
+    </li>
+</ul>
+
+<!-- Cible pour le contenu des onglets -->
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="tab-stats" role="tabpanel">
+        <div class="card border shadow" style="border-radius: 12px;">
+            <div class="card-body p-4">
+                <h5 class="mb-1">Réel vs Budget – Réseau Global (3 derniers mois)</h5>
+                <p class="text-muted small mb-4">Comparaison entre les montants réels (transactions) et les budgets prévisionnels de toutes les franchises</p>
+                
+                <div style="height: 350px;">
+                    <canvas id="budgetChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tab-pane fade" id="tab-radar" role="tabpanel">
+        <div class="card border shadow" style="border-radius: 12px;">
+            <div class="card-body p-4 text-center">
+                <p class="text-muted mb-0 py-5">Radar de performance en cours de développement...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Récupération des données passées par Symfony
+    const chartData = {{ chartData|raw }};
+    
+    // Inversion pour afficher du mois le plus ancien au plus récent (gauche à droite)
+    const labels = chartData.labels.reverse();
+    const reelData = chartData.reel.reverse();
+    const budgetData = chartData.budget.reverse();
+
+    const ctx = document.getElementById('budgetChart').getContext('2d');
+    
+    // Configuration globale de Chart.js pour le thème sombre
+    Chart.defaults.color = '#a1a1a8';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Réel (Transactions)',
+                    data: reelData,
+                    backgroundColor: '#00e5ff', 
+                    borderRadius: 4,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.8
+                },
+                {
+                    label: 'Budget Prévu',
+                    data: budgetData,
+                    backgroundColor: '#ff9800', // Orange style
+                    borderRadius: 4,
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.8
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20,
+                        color: '#a1a1a8'
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    padding: 12,
+                    borderColor: '#333',
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.y !== null) {
+                                label += new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'TND' }).format(context.parsed.y);
+                            }
+                            return label;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#333333',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString('fr-FR');
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Montant (TND)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Période'
+                    }
+                }
+            }
+        }
+    });
+
+    // Gestion propre des onglets custom (couleur et soulignement quand sélectionné)
+    const tabLinks = document.querySelectorAll('.nav-tabs .nav-link');
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            // Remise à zéro
+            tabLinks.forEach(t => {
+                t.style.color = '';
+                t.style.borderBottom = 'none';
+                t.classList.remove('active');
+                if(!t.classList.contains('text-muted')) t.classList.add('text-muted');
+            });
+            // Activation
+            this.classList.remove('text-muted');
+            this.classList.add('active');
+            this.style.color = '#00e5ff';
+            this.style.borderBottom = '2px solid #00e5ff';
+        });
+    });
+});
+</script>
+{% endblock %}

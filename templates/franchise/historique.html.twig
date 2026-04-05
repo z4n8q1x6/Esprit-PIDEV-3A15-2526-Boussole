@@ -1,0 +1,560 @@
+{% extends 'front_base.html.twig' %}
+
+{% block title %}Historique des transactions{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12 d-flex justify-content-between align-items-center">    
+        <div>
+            <h1 class="h3 mb-0 text-white">Historique des transactions</h1>   
+            <p class="text-muted">Historique des transactions</p>   
+        </div>
+        <div>
+            <a href="{{ path('app_transaction_index') }}" class="btn btn-outline-info">
+                <i class="bi bi-arrow-left me-2"></i>Retour au Dashboard      
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Card -->
+<div class="card bg-dark border border-secondary shadow mb-4">
+    <div class="card-body p-4">
+        <!-- Filtres -->
+        <form id="filterForm" method="get" action="{{ path('app_transaction_historique') }}"> 
+            <div class="row align-items-end g-3 mb-4">
+                <div class="col-md-3">
+                    <label class="text-muted small mb-1">Période</label>   
+                    <div class="dropdown">
+                        <button class="form-select bg-dark text-light border-secondary text-start d-flex justify-content-between align-items-center rounded-pill w-100" type="button" id="periodeDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #12141d !important;">
+                            <span><i class="bi bi-calendar3 text-primary me-2"></i> <span id="currentPeriodLabel">Période : Ce Mois</span></span>        
+                            <i class="bi bi-chevron-down ms-1"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark shadow border border-secondary p-3 mt-2" aria-labelledby="periodeDropdown" style="min-width: 320px; background-color: #0b0d14 !important; border-radius: 12px; z-index: 1050;">
+                            <li><a class="dropdown-item py-2 px-3 rounded mb-1 period-option {% if currentPeriode|default('this_month') == 'this_month' %}active{% endif %}" href="#" data-value="this_month">Ce Mois</a></li>
+                            <li><a class="dropdown-item py-2 px-3 rounded mb-1 period-option {% if currentPeriode|default('this_month') == 'last_month' %}active{% endif %}" href="#" data-value="last_month">Mois Dernier</a></li>       
+                            <li><a class="dropdown-item py-2 px-3 rounded mb-1 period-option {% if currentPeriode|default('this_month') == 'this_year' %}active{% endif %}" href="#" data-value="this_year">Cette Année</a></li>       
+                            <li><a class="dropdown-item py-2 px-3 rounded mb-2 period-option {% if currentPeriode|default('this_month') == 'all' %}active{% endif %}" href="#" data-value="all">Tout</a></li>
+                            <li><hr class="dropdown-divider border-secondary mb-3"></li>
+                            <li class="px-2">
+                                <span class="text-muted small fw-bold d-block mb-2">Plage personnalisée</span>
+                                <div class="row gx-2">
+                                    <div class="col-5">
+                                        <input type="date" class="form-control form-control-sm bg-dark text-light border-secondary rounded custom-date-input" name="date_start" id="customDateStart" value="{{ currentStart|default('') }}" style="background-color: #12141d !important; color-scheme: dark;">
+                                    </div>
+                                    <div class="col-5">
+                                        <input type="date" class="form-control form-control-sm bg-dark text-light border-secondary rounded custom-date-input" name="date_end" id="customDateEnd" value="{{ currentEnd|default('') }}" style="background-color: #12141d !important; color-scheme: dark;">
+                                    </div>
+                                    <div class="col-2">
+                                        <button type="button" class="btn btn-info w-100 rounded text-center text-dark fw-bold px-0 custom-date-btn" style="background-color: #0dcaf0; border-color: #0dcaf0;">OK</button>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <input type="hidden" name="periode" id="periodeValue" value="{{ currentPeriode|default('this_month') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="text-muted small mb-1">Type</label>
+                    <select name="type" class="form-select bg-dark text-light border-secondary rounded-pill" style="background-color: #12141d !important;" onchange="this.form.submit()">
+                        <option value="TOUT" {% if currentType is defined and currentType == 'TOUT' %}selected{% endif %}>TOUT</option>
+                        <option value="RECETTE" {% if currentType is defined and currentType == 'RECETTE' %}selected{% endif %}>RECETTE</option>
+                        <option value="DEPENSE" {% if currentType is defined and currentType == 'DEPENSE' %}selected{% endif %}>DÉPENSE</option>        
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <span class="input-group-text bg-transparent border-0 text-muted ps-0"><i class="bi bi-search"></i></span>
+                        <input type="text" name="search" value="{{ currentSearch|default('') }}" class="form-control bg-dark text-light border-secondary rounded-pill" placeholder="Rechercher..." style="background-color: #12141d !important;">
+                    </div>
+                </div>
+                <div class="col-md-3 d-flex justify-content-end align-items-center">
+                    <a href="#" id="resetFiltersBtn" class="text-muted me-3 text-decoration-none small">Réinitialiser</a>
+                    <button type="submit" class="d-none"></button>
+                    <a href="#" class="btn btn-primary rounded-pill fw-bold px-4" style="background-color: #0d6efd; color: white; border: none;">Exporter...</a>
+                </div>
+            </div>
+        </form>
+
+        <!-- Tableau -->
+        <div class="table-responsive" style="background-color: #12141d !important; border-radius: 12px; padding: 1rem;">
+            <table class="table table-dark table-hover table-borderless align-middle mb-0" style="background-color: #12141d !important;">
+                <thead class="border-bottom border-secondary">
+                    {% set qs = app.request.query.all %}
+                    {% set dirDate = (currentSort == 'date' and currentDirection == 'ASC') ? 'DESC' : 'ASC' %}
+                    {% set dirType = (currentSort == 'type' and currentDirection == 'ASC') ? 'DESC' : 'ASC' %}
+                    {% set dirDesc = (currentSort == 'description' and currentDirection == 'ASC') ? 'DESC' : 'ASC' %}
+                    {% set dirMontant = (currentSort == 'montant' and currentDirection == 'ASC') ? 'DESC' : 'ASC' %}
+                    <tr>
+                        <th>
+                            <a href="{{ path(app.request.attributes.get('_route'), qs|merge({'sort': 'date', 'direction': dirDate})) }}" class="text-muted text-decoration-none">
+                                DATE {% if currentSort == 'date' %}<i class="bi bi-caret-{{ currentDirection == 'ASC' ? 'up' : 'down' }}-fill text-info"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path(app.request.attributes.get('_route'), qs|merge({'sort': 'type', 'direction': dirType})) }}" class="text-muted text-decoration-none">
+                                TYPE {% if currentSort == 'type' %}<i class="bi bi-caret-{{ currentDirection == 'ASC' ? 'up' : 'down' }}-fill text-info"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path(app.request.attributes.get('_route'), qs|merge({'sort': 'description', 'direction': dirDesc})) }}" class="text-muted text-decoration-none">
+                                DESCRIPTION {% if currentSort == 'description' %}<i class="bi bi-caret-{{ currentDirection == 'ASC' ? 'up' : 'down' }}-fill text-info"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ path(app.request.attributes.get('_route'), qs|merge({'sort': 'montant', 'direction': dirMontant})) }}" class="text-muted text-decoration-none">
+                                MONTANT (TND) {% if currentSort == 'montant' %}<i class="bi bi-caret-{{ currentDirection == 'ASC' ? 'up' : 'down' }}-fill text-info"></i>{% endif %}
+                            </a>
+                        </th>
+                        <th class="text-muted" style="width: 50px;"></th>     
+                    </tr>
+                </thead>
+                <tbody id="transactionsTableBody">
+                {% for tx in transactions %}
+                    <tr data-id="{{ tx.id }}" class="tx-row">
+                        <td class="editable-cell" data-field="date" data-value="{{ tx.date|date('Y-m-d') }}">{{ tx.date|date('Y-m-d') }}</td>
+                        <td>
+                            {% if tx.type == 'RECETTE' %}
+                                <span class="text-success"><i class="bi bi-arrow-up-right"></i> {{ tx.type }}</span>
+                            {% else %}
+                                <span class="text-danger"><i class="bi bi-arrow-down-right"></i> {{ tx.type }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="editable-cell" data-field="description" data-value="{{ tx.description }}">{{ tx.description }}</td>
+                        <td class="editable-cell" data-field="montant" data-value="{{ tx.montant }}" style="{% if tx.type == 'RECETTE' %}color: #198754{% else %}color: #dc3545{% endif %}; font-weight: bold;">
+                            {{ tx.montant|number_format(2, ',', ' ') }} TND   
+                        </td>
+                        <td class="text-end">
+                            <span class="delete-icon" title="Supprimer" data-id="{{ tx.id }}" style="cursor:pointer; opacity:0; transition: opacity 0.2s;"> 
+                                <i class="bi bi-trash3 text-danger"></i>      
+                            </span>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr id="emptyDefaultRow">
+                        <td colspan="5" class="text-center text-muted py-4">Aucune transaction trouvée</td>
+                    </tr>
+                {% endfor %}
+                    <tr id="emptySearchRow" style="display: none;">
+                        <td colspan="5" class="text-center text-muted py-4">Aucun résultat pour cette recherche.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Les 4 cartes (KPI) du bas -->
+<div class="row g-4 mb-5">
+    <div class="col-md-3">
+        <div class="card card-body bg-dark border border-secondary p-3 text-center h-100 shadow" style="background-color: #12141d !important; border-radius: 12px;">
+            <h6 class="text-muted mb-2">Nombre Transactions</h6>
+            <h3 id="kpi-nb" class="text-info mb-0 fw-bold">{{ nombreTransactions }}</h3>  
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-body bg-dark border border-secondary p-3 text-center h-100 shadow" style="background-color: #12141d !important; border-radius: 12px;">
+            <h6 class="text-muted mb-2">Total Recettes</h6>
+            <h3 id="kpi-recettes" class="text-success mb-0 fw-bold">{{ totalRecettes|number_format(2, ',', ' ') }} TND</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-body bg-dark border border-secondary p-3 text-center h-100 shadow" style="background-color: #12141d !important; border-radius: 12px;">
+            <h6 class="text-muted mb-2">Total Charges</h6>
+            <h3 id="kpi-charges" class="text-danger mb-0 fw-bold">{{ totalCharges|number_format(2, ',', ' ') }} TND</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-body bg-dark border border-secondary p-3 text-center h-100 shadow" style="background-color: #12141d !important; border-radius: 12px;">
+            <h6 class="text-muted mb-2">Solde Filtré</h6>
+            <h3 id="soldeDisplay" class="{% if soldeFiltre < 0 %}text-danger{% else %}text-info{% endif %} mb-0 fw-bold">{{ soldeFiltre|number_format(2, ',', ' ') }} TND</h3>
+        </div>
+    </div>
+</div>
+
+{# Toast notification pour les actions AJAX #}
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
+    <div id="actionToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body" id="toastMessage"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+{# Modal de confirmation de suppression #}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content bg-dark border border-secondary text-white">
+            <div class="modal-body text-center py-4">
+                <i class="bi bi-exclamation-triangle-fill text-warning fs-1 mb-3 d-block"></i>
+                <h6 class="mb-2">Supprimer cette transaction ?</h6>
+                <p class="text-muted small mb-0">Cette action est irréversible.</p>
+            </div>
+            <div class="modal-footer border-secondary justify-content-center py-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-sm btn-danger" id="confirmDeleteBtn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hover : afficher l'icône de suppression */
+    .tx-row:hover .delete-icon { opacity: 1 !important; }
+
+    /* Cellule éditable */
+    .editable-cell {
+        cursor: pointer;
+        position: relative;
+        transition: background-color 0.2s ease;
+        border-radius: 4px;
+    }
+    .editable-cell:hover { background-color: rgba(0, 229, 255, 0.08); }       
+    .editable-cell:hover::after {
+        content: '\F4CB';
+        font-family: 'bootstrap-icons';
+        position: absolute;
+        right: 6px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.7rem;
+        color: #00e5ff;
+        opacity: 0.7;
+    }
+
+    /* Input inline */
+    .editable-cell input {
+        background: transparent;
+        border: 1px solid #00e5ff;
+        border-radius: 4px;
+        color: #fff;
+        padding: 2px 6px;
+        width: 100%;
+        outline: none;
+        font-size: inherit;
+    }
+
+    .editable-cell .inline-error {
+        position: absolute;
+        bottom: -18px;
+        left: 0;
+        font-size: 0.7rem;
+        color: #dc3545;
+        white-space: nowrap;
+        animation: fadeInError 0.3s ease;
+    }
+    @keyframes fadeInError {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .tx-row.removing { animation: slideOutLeft 0.4s ease forwards; }
+    @keyframes slideOutLeft {
+        to { opacity: 0; transform: translateX(-30px); }
+    }
+    .editable-cell.success-flash { animation: successPulse 0.5s ease; }       
+    @keyframes successPulse {
+        0% { background-color: rgba(25, 135, 84, 0.3); }
+        100% { background-color: transparent; }
+    }
+    #actionToast.toast-success { background-color: #198754; color: #fff; }    
+    #actionToast.toast-error { background-color: #dc3545; color: #fff; }      
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // ===== GESTION FILTRE PERIODE =====
+    const periodeValue = document.getElementById('periodeValue');
+    const label = document.getElementById('currentPeriodLabel');
+    const options = document.querySelectorAll('.period-option');
+    const form = document.getElementById('filterForm');
+
+    if(periodeValue && label && options && form) {
+        const labelsMap = {
+            'this_month': 'Ce Mois',
+            'last_month': 'Mois Dernier',
+            'this_year': 'Cette Année',
+            'all': 'Tout',
+            'custom': 'Personnalisée'
+        };
+
+        const initialVal = periodeValue.value || 'this_month';
+        if(initialVal === 'custom') {
+            const start = document.getElementById('customDateStart').value;     
+            const end = document.getElementById('customDateEnd').value;
+            if(start || end) {
+                label.innerText = 'Du ' + (start || '...') + ' au ' + (end || '...');
+            } else {
+                 label.innerText = 'Période : ' + labelsMap[initialVal];       
+            }
+        } else {
+            label.innerText = 'Période : ' + (labelsMap[initialVal] || 'Ce Mois');
+        }
+
+        options.forEach(opt => {
+            opt.addEventListener('click', function(e) {
+                e.preventDefault();
+                const val = this.getAttribute('data-value');
+                periodeValue.value = val;
+
+                document.getElementById('customDateStart').value = '';
+                document.getElementById('customDateEnd').value = '';
+
+                form.submit();
+            });
+        });
+
+        const customBtn = document.querySelector('.custom-date-btn');
+        if(customBtn) {
+            customBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                periodeValue.value = 'custom';
+                form.submit();
+            });
+        }
+
+        document.querySelectorAll('.custom-date-input, .dropdown-menu').forEach(el => {
+             el.addEventListener('click', function(e) {
+                 e.stopPropagation();
+             });
+        });
+        
+        // BOUTON REINITIALISER
+        const resetBtn = document.getElementById('resetFiltersBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Afficher TOUTES les transactions par défaut lors de la réinitialisation
+                periodeValue.value = 'all';
+                // Vider les autres inputs du formulaire form
+                const selects = form.querySelectorAll('select');
+                selects.forEach(sel => { sel.value = 'TOUT'; });
+                const texts = form.querySelectorAll('input[type="text"]');
+                texts.forEach(txt => { txt.value = ''; });
+                const dates = form.querySelectorAll('input[type="date"]');
+                dates.forEach(d => { d.value = ''; });
+                
+                // Soumettre le formulaire vide/réinitialisé
+                form.submit();
+            });
+        }
+    }
+
+    // ===== GESTION RECHERCHE INSTANTANÉE FRONTEND =====
+    const searchHistoryInput = document.querySelector('input[name="search"]');
+    if (searchHistoryInput) {
+        searchHistoryInput.addEventListener('input', function() {
+            const filter = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('.tx-row');
+            
+            let nb = 0;
+            let recettes = 0;
+            let charges = 0;
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(filter)) {
+                    row.style.setProperty('display', 'table-row', 'important');
+                    nb++;
+                    
+                    const montantStr = row.querySelector('[data-field="montant"]').dataset.value;
+                    const typeIsRecette = row.querySelector('span.text-success') !== null;
+                    const montant = parseFloat(montantStr);
+                    
+                    if (typeIsRecette) {
+                        recettes += montant;
+                    } else {
+                        charges += montant;
+                    }
+                } else {
+                    row.style.setProperty('display', 'none', 'important');
+                }
+            });
+
+            // Mise à jour des KPIs animée (instantanée)
+            const solde = recettes - charges;
+            
+            document.getElementById('kpi-nb').textContent = nb;
+            document.getElementById('kpi-recettes').textContent = formatNumber(recettes);
+            document.getElementById('kpi-charges').textContent = formatNumber(charges);
+            
+            updateSolde(solde);
+            
+            // Masquer la ligne "Aucune transaction" par défaut si nb > 0
+            const emptySearchRow = document.getElementById('emptySearchRow');
+            const emptyDefaultRow = document.getElementById('emptyDefaultRow');
+            if(emptyDefaultRow) emptyDefaultRow.style.display = 'none';
+
+            if(emptySearchRow) {
+                 if(nb === 0) emptySearchRow.style.display = 'table-row';
+                 else emptySearchRow.style.display = 'none';
+            }
+        });
+        
+        // Empêcher la soumission du formulaire par touche entrée si on est sur la recherche (car elle est dynamique mtn)
+        searchHistoryInput.addEventListener('keydown', function(e) {
+            if(e.key === 'Enter') {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // ===== GESTION TOAST & UPDATE SOLDE =====
+    const toast = document.getElementById('actionToast');
+    const toastMessage = document.getElementById('toastMessage');
+    const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
+
+    function showToast(message, type) {
+        toast.className = 'toast align-items-center border-0 toast-' + type;  
+        toastMessage.textContent = message;
+        bsToast.show();
+    }
+
+    function formatNumber(num) {
+        return parseFloat(num).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TND';
+    }
+
+    function updateSolde(solde) {
+        const el = document.getElementById('soldeDisplay');
+        if(el) {
+            el.textContent = formatNumber(solde);
+            el.className = 'mb-0 fw-bold ' + (solde < 0 ? 'text-danger' : 'text-info');
+        }
+    }
+
+    // ===== ÉDITION INLINE (double-clic) =====
+    document.querySelectorAll('.editable-cell').forEach(function(cell) {      
+        cell.addEventListener('dblclick', function() {
+            if (cell.querySelector('input')) return;
+
+            const field = cell.dataset.field;
+            const oldValue = cell.dataset.value;
+            const row = cell.closest('tr');
+            const txId = row.dataset.id;
+            const originalHTML = cell.innerHTML;
+
+            const oldError = cell.querySelector('.inline-error');
+            if (oldError) oldError.remove();
+
+            const input = document.createElement('input');
+            input.type = field === 'date' ? 'date' : 'text';
+            input.value = oldValue;
+            input.setAttribute('data-original', oldValue);
+
+            cell.innerHTML = '';
+            cell.appendChild(input);
+            input.focus();
+            if(input.type === 'text') {
+                input.select();
+            }
+
+            function saveEdit() {
+                const newValue = input.value.trim();
+
+                if (newValue === oldValue) {
+                    cancelEdit();
+                    return;
+                }
+
+                if (field === 'description') {
+                    if (newValue === '') { cancelEdit(); showToast('La description est obligatoire.', 'error'); return; }
+                    if (newValue.length < 3) { cancelEdit(); showToast('Minimum 3 caractères.', 'error'); return; }
+                }
+                if (field === 'montant') {
+                    const num = parseFloat(newValue.replace(',', '.'));       
+                    if (isNaN(num) || num <= 0) { cancelEdit(); showToast('Le montant doit être > 0.', 'error'); return; }
+                }
+
+                const payload = {};
+                payload[field] = field === 'montant' ? parseFloat(newValue.replace(',', '.')) : newValue;
+
+                fetch('/transaction/' + txId + '/edit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    body: JSON.stringify(payload)
+                }).then(r => r.json()).then(data => {
+                    if (data.success) {
+                        cell.dataset.value = field === 'montant' ? data.transaction.montant : newValue;
+                        if (field === 'montant') cell.textContent = formatNumber(data.transaction.montant);
+                        else if (field === 'date') cell.textContent = data.transaction.date;
+                        else cell.textContent = newValue;
+
+                        cell.classList.add('success-flash');
+                        setTimeout(() => cell.classList.remove('success-flash'), 500);
+
+                        updateSolde(data.solde);
+                        showToast('Modifié avec succès !', 'success');  
+
+                        setTimeout(() => location.reload(), 800);
+                    } else {
+                        cancelEdit();
+                        showToast(data.message || 'Erreur', 'error');
+                    }
+                }).catch(err => {
+                    cancelEdit();
+                    showToast('Erreur réseau.', 'error');
+                });
+            }
+
+            function cancelEdit() { cell.innerHTML = originalHTML; }
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') { e.preventDefault(); saveEdit(); }    
+                if (e.key === 'Escape') { cancelEdit(); }
+            });
+
+            input.addEventListener('blur', function() {
+                setTimeout(function() { if (cell.querySelector('input')) saveEdit(); }, 150);
+            });
+        });
+    });
+
+    // ===== SUPPRESSION =====
+    let deleteId = null;
+    const deleteModalEl = document.getElementById('deleteModal');
+    if(deleteModalEl) {
+        const deleteModal = new bootstrap.Modal(deleteModalEl);
+
+        document.querySelectorAll('.delete-icon').forEach(function(icon) {    
+            icon.addEventListener('click', function() {
+                deleteId = this.dataset.id;
+                deleteModal.show();
+            });
+        });
+
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+            if (!deleteId) return;
+
+            fetch('/transaction/' + deleteId, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            }).then(r => {
+                // If it's a GET redirection instead of JSON, we handle it as success
+                if(r.redirected || !r.headers.get('content-type')?.includes('application/json')) {
+                    return { success: true, solde: 0 };
+                }
+                return r.json();
+            }).then(data => {
+                if (data.success || data.solde !== undefined) {
+                    const row = document.querySelector('tr[data-id="' + deleteId + '"]');
+                    if (row) {
+                        row.classList.add('removing');
+                        setTimeout(() => row.remove(), 400);
+                    }
+                    showToast('Transaction supprimée !', 'success');       
+                    setTimeout(() => location.reload(), 800);
+                } else {
+                    showToast('Erreur lors de la suppression.', 'error');     
+                }
+                deleteModal.hide();
+                deleteId = null;
+            }).catch(() => {
+                showToast('Action effectuée.', 'success');
+                setTimeout(() => location.reload(), 800);
+                deleteModal.hide();
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -152,6 +152,7 @@
         ]
     },
     "symfony/web-profiler-bundle": {
+    "symfony/validator": {
         "version": "8.0",
         "recipe": {
             "repo": "github.com/symfony/recipes",
@@ -162,6 +163,11 @@
         "files": [
             "config/packages/web_profiler.yaml",
             "config/routes/web_profiler.yaml"
+            "version": "7.0",
+            "ref": "8c1c4e28d26a124b0bb273f537ca8ce443472bfd"
+        },
+        "files": [
+            "./config/packages/validator.yaml"
         ]
     }
 }

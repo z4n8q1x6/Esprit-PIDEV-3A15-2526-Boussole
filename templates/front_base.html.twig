@@ -352,6 +352,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     resultsBox.appendChild(li);
                 }
 
+                
                 resultsBox.style.display = 'block';
             } else {
                 resultsBox.style.display = 'none';
@@ -365,6 +366,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
+        
         // Show results if clicking on input and there is text
         searchInput.addEventListener('click', function() {
             if(searchInput.value.trim().length > 0) {
