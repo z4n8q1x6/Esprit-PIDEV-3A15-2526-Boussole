@@ -64,7 +64,9 @@ class __TwigTemplate_824142dd533b4875f0d4d221e33332ab extends Template
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f = $this->extensions["Symfony\\Bridge\\Twig\\Extension\\ProfilerExtension"];
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->enter($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof = new \Twig\Profiler\Profile($this->getTemplateName(), "block", "title"));
 
-        yield "Boussole - Ajouter une Charge";
+        yield "Boussole - ";
+        yield (((($tmp = (isset($context["is_edit"]) || array_key_exists("is_edit", $context) ? $context["is_edit"] : (function () { throw new RuntimeError('Variable "is_edit" does not exist.', 2, $this->source); })())) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("Modifier") : ("Ajouter"));
+        yield " une Charge";
         
         $__internal_6f47bbe9983af81f1e7450e9a3e3768f->leave($__internal_6f47bbe9983af81f1e7450e9a3e3768f_prof);
 
@@ -86,7 +88,10 @@ class __TwigTemplate_824142dd533b4875f0d4d221e33332ab extends Template
     <div class=\"col-12\">
         <div class=\"card border rounded-3 mt-4\">
             <div class=\"card-header border-bottom\">
-                <h3 class=\"mb-0\"><i class=\"fas fa-file-invoice-dollar me-2\"></i>Nouvelle Charge</h3>
+                <h3 class=\"mb-0\"><i class=\"fas fa-file-invoice-dollar me-2\"></i>";
+        // line 9
+        yield (((($tmp = (isset($context["is_edit"]) || array_key_exists("is_edit", $context) ? $context["is_edit"] : (function () { throw new RuntimeError('Variable "is_edit" does not exist.', 9, $this->source); })())) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("Modifier la Charge") : ("Nouvelle Charge"));
+        yield "</h3>
             </div>
 
             <div class=\"card-body\">
@@ -213,12 +218,19 @@ class __TwigTemplate_824142dd533b4875f0d4d221e33332ab extends Template
         yield "</div>
                     </div>
 
-                    <div class=\"col-12 d-sm-flex justify-content-end\">
-                        <button type=\"submit\" class=\"btn btn-primary mb-0\">Enregistrer la charge</button>
+                    <div class=\"col-12 d-sm-flex justify-content-between\">
+                        <a href=\"";
+        // line 73
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_afficher_front_charge");
+        yield "\" class=\"btn btn-light mb-0\">Retour à la liste</a>
+                        <button type=\"submit\" class=\"btn btn-primary mb-0\">";
+        // line 74
+        yield (((($tmp = (isset($context["is_edit"]) || array_key_exists("is_edit", $context) ? $context["is_edit"] : (function () { throw new RuntimeError('Variable "is_edit" does not exist.', 74, $this->source); })())) && $tmp instanceof Markup ? (string) $tmp : $tmp)) ? ("Enregistrer les modifications") : ("Enregistrer la charge"));
+        yield "</button>
                     </div>
                 ";
-        // line 75
-        yield         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["form"]) || array_key_exists("form", $context) ? $context["form"] : (function () { throw new RuntimeError('Variable "form" does not exist.', 75, $this->source); })()), 'form_end');
+        // line 76
+        yield         $this->env->getRuntime('Symfony\Component\Form\FormRenderer')->renderBlock((isset($context["form"]) || array_key_exists("form", $context) ? $context["form"] : (function () { throw new RuntimeError('Variable "form" does not exist.', 76, $this->source); })()), 'form_end');
         yield "
             </div>
         </div>
@@ -252,20 +264,20 @@ class __TwigTemplate_824142dd533b4875f0d4d221e33332ab extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  221 => 75,  212 => 69,  208 => 68,  200 => 63,  196 => 62,  192 => 60,  186 => 56,  182 => 55,  174 => 50,  170 => 49,  162 => 44,  158 => 43,  150 => 38,  146 => 37,  138 => 32,  134 => 31,  128 => 28,  125 => 27,  119 => 23,  116 => 22,  113 => 20,  103 => 16,  100 => 15,  95 => 14,  85 => 5,  75 => 4,  58 => 2,  41 => 1,);
+        return array (  233 => 76,  228 => 74,  224 => 73,  217 => 69,  213 => 68,  205 => 63,  201 => 62,  197 => 60,  191 => 56,  187 => 55,  179 => 50,  175 => 49,  167 => 44,  163 => 43,  155 => 38,  151 => 37,  143 => 32,  139 => 31,  133 => 28,  130 => 27,  124 => 23,  121 => 22,  118 => 20,  108 => 16,  105 => 15,  100 => 14,  93 => 9,  87 => 5,  77 => 4,  58 => 2,  41 => 1,);
     }
 
     public function getSourceContext(): Source
     {
         return new Source("{% extends 'front_base.html.twig' %}
-{% block title %}Boussole - Ajouter une Charge{% endblock %}
+{% block title %}Boussole - {{ is_edit ? 'Modifier' : 'Ajouter' }} une Charge{% endblock %}
 
 {% block content %}
 <div class=\"row\">
     <div class=\"col-12\">
         <div class=\"card border rounded-3 mt-4\">
             <div class=\"card-header border-bottom\">
-                <h3 class=\"mb-0\"><i class=\"fas fa-file-invoice-dollar me-2\"></i>Nouvelle Charge</h3>
+                <h3 class=\"mb-0\"><i class=\"fas fa-file-invoice-dollar me-2\"></i>{{ is_edit ? 'Modifier la Charge' : 'Nouvelle Charge' }}</h3>
             </div>
 
             <div class=\"card-body\">
@@ -328,8 +340,9 @@ class __TwigTemplate_824142dd533b4875f0d4d221e33332ab extends Template
                         <div class=\"text-danger small\">{{ form_errors(form.preuve_image) }}</div>
                     </div>
 
-                    <div class=\"col-12 d-sm-flex justify-content-end\">
-                        <button type=\"submit\" class=\"btn btn-primary mb-0\">Enregistrer la charge</button>
+                    <div class=\"col-12 d-sm-flex justify-content-between\">
+                        <a href=\"{{ path('app_afficher_front_charge') }}\" class=\"btn btn-light mb-0\">Retour à la liste</a>
+                        <button type=\"submit\" class=\"btn btn-primary mb-0\">{{ is_edit ? 'Enregistrer les modifications' : 'Enregistrer la charge' }}</button>
                     </div>
                 {{ form_end(form) }}
             </div>

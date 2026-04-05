@@ -36,6 +36,27 @@ final class AjouterChargeController extends AbstractController
 
         return $this->render('ajouter_charge/index.html.twig', [
             'form' => $form->createView(),
+            'is_edit' => false,
+        ]);
+    }
+
+    #[Route('/modifier_charge/{id}', name: 'app_modifier_charge')]
+    public function modifier(Charge $charge, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $form = $this->createForm(ChargeType::class, $charge);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            $this->addFlash('success', 'La charge (ID: ' . $charge->getId() . ') a été modifiée avec succès !');
+
+            return $this->redirectToRoute('app_afficher_front_charge');
+        }
+
+        return $this->render('ajouter_charge/index.html.twig', [
+            'form' => $form->createView(),
+            'is_edit' => true,
         ]);
     }
 }

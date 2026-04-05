@@ -1,14 +1,14 @@
 {% extends 'front_base.html.twig' %}
 
-{% block title %}Boussole - Administration des Charges{% endblock %}
+{% block title %}Boussole - Administration des Fournisseurs{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     {# En-tête avec titre + bouton Ajouter #}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0 fw-bold text-dark">Gestion des Charges</h2>
-        <a href="{{ path('app_ajouter_charge') }}" class="btn btn-add-modern">
-            <i class="fas fa-plus-circle me-2"></i> Ajouter une charge
+        <h2 class="mb-0 fw-bold text-dark">Gestion des Fournisseurs</h2>
+        <a href="{{ path('app_ajouter_fournisseur') }}" class="btn btn-add-modern">
+            <i class="fas fa-plus-circle me-2"></i> Ajouter un fournisseur
         </a>
     </div>
 
@@ -21,80 +21,60 @@
                         <span class="input-group-text bg-white" style="border: 1px solid #ced4da; border-right: none;">
                             <i class="fas fa-search text-primary"></i>
                         </span>
-                        <input type="text" id="searchInput" class="form-control" placeholder="Rechercher (titre, type, statut, franchise)...">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Rechercher (nom, matricule, téléphone, franchise)...">
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    {# Tableau des charges #}
+    {# Tableau des fournisseurs #}
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table id="chargesTable" class="table table-hover align-middle mb-0" style="table-layout: fixed;">
+                <table id="fournisseursTable" class="table table-hover align-middle mb-0" style="table-layout: fixed;">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" style="cursor:pointer; width: 7%;" data-sort="id">ID <i class="fas fa-sort ms-1 text-muted"></i></th>
-                            <th scope="col" style="cursor:pointer; width: 12%;" data-sort="titre">Titre <i class="fas fa-sort ms-1 text-muted"></i></th>
-                            <th scope="col" style="cursor:pointer; width: 8%;" data-sort="montant">Montant <i class="fas fa-sort ms-1 text-muted"></i></th>
-                            <th scope="col" style="cursor:pointer; width: 8%;" data-sort="date">Date <i class="fas fa-sort ms-1 text-muted"></i></th>
-                            <th scope="col" style="cursor:pointer; width: 14%;" data-sort="type">Type <i class="fas fa-sort ms-1 text-muted"></i></th>
-                            <th scope="col" style="cursor:pointer; width: 20%;" data-sort="preuve">Preuve <i class="fas fa-sort ms-1 text-muted"></i></th>
-                            <th scope="col" style="cursor:pointer; width: 12%;" data-sort="statut">Statut <i class="fas fa-sort ms-1 text-muted"></i></th>
-                            <th scope="col" style="cursor:pointer; width: 11%;" data-sort="franchise">Franchise <i class="fas fa-sort ms-1 text-muted"></i></th>
-                            <th scope="col" class="text-center" style="width: 8%;">Supp</th>
+                            <th scope="col" class="position-relative" style="cursor:pointer; width: 6%;" data-sort="id">ID <i class="fas fa-sort ms-1 text-muted"></i><div class="resizer"></div></th>
+                            <th scope="col" class="position-relative" style="cursor:pointer; width: 30%;" data-sort="nom">Nom <i class="fas fa-sort ms-1 text-muted"></i><div class="resizer"></div></th>
+                            <th scope="col" class="position-relative" style="cursor:pointer; width: 20%;" data-sort="matricule">Matricule Fiscal <i class="fas fa-sort ms-1 text-muted"></i><div class="resizer"></div></th>
+                            <th scope="col" class="position-relative" style="cursor:pointer; width: 15%;" data-sort="telephone">Téléphone <i class="fas fa-sort ms-1 text-muted"></i><div class="resizer"></div></th>
+                            <th scope="col" class="position-relative" style="cursor:pointer; width: 15%;" data-sort="franchise">Franchise <i class="fas fa-sort ms-1 text-muted"></i><div class="resizer"></div></th>
+                            <th scope="col" class="text-center position-relative" style="width: 14%;">Actions<div class="resizer"></div></th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        {% for charge in charges %}
-                        <tr data-id="{{ charge.id }}">
-                            <td>{{ charge.id }}</td>
+                        {% for f in fournisseurs %}
+                        <tr data-id="{{ f.id }}">
+                            <td>{{ f.id }}</td>
                             <td>
-                                <div class="editable-cell" contenteditable="true" data-field="titre">{{ charge.titre }}</div>
+                                <div class="editable-cell" contenteditable="true" data-field="nom">{{ f.nom }}</div>
                             </td>
                             <td>
-                                <div class="editable-cell fw-bold" contenteditable="true" data-field="montant">{{ charge.montant }}</div>
+                                <div class="editable-cell" contenteditable="true" data-field="matricule_fiscal">{{ f.matricule_fiscal }}</div>
                             </td>
                             <td>
-                                <div class="editable-cell" contenteditable="true" data-field="date_charge">{{ charge.date_charge ? (charge.date_charge|date('Y-m-d')) : '' }}</div>
+                                <div class="editable-cell" contenteditable="true" data-field="telephone">{{ f.telephone }}</div>
                             </td>
-                            <td>
-                                <select class="form-select form-select-sm editable-select" data-field="type">
-                                    {% for val, label in types %}
-                                        <option value="{{ val }}" {% if charge.type == val %}selected{% endif %}>{{ label }}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>
-                                <div class="editable-cell" contenteditable="true" data-field="preuve_image">{{ charge.preuve_image }}</div>
-                            </td>
-                            <td>
-                                <select class="form-select form-select-sm editable-select" data-field="status_validation">
-                                    {% for val, label in statuts %}
-                                        <option value="{{ val }}" {% if charge.status_validation == val %}selected{% endif %}>{{ label }}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>
+                             <td>
                                 <select class="form-select form-select-sm editable-select" data-field="franchise_id">
                                     {% for fr in franchises %}
-                                        <option value="{{ fr.id }}" {% if (charge.franchise_id and charge.franchise_id.id == fr.id) %}selected{% endif %}>
+                                        <option value="{{ fr.id }}" {% if (f.franchise_id and f.franchise_id.id == fr.id) %}selected{% endif %}>
                                             {{ fr.nom }}
                                         </option>
                                     {% endfor %}
                                 </select>
                             </td>
-                             <td class="text-center">
-                                <button class="btn btn-delete-modern btn-sm" data-id="{{ charge.id }}" title="Supprimer cette charge">
+                            <td class="text-center">
+                                <button class="btn btn-delete-modern btn-sm" data-id="{{ f.id }}" title="Supprimer ce fournisseur">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </td>
                         </tr>
                         {% else %}
                         <tr id="emptyRow">
-                            <td colspan="9" class="text-center py-4">
-                                <p class="text-muted mb-0">Aucune charge enregistrée pour le moment.</p>
+                            <td colspan="6" class="text-center py-4">
+                                <p class="text-muted mb-0">Aucun fournisseur enregistré pour le moment.</p>
                             </td>
                         </tr>
                         {% endfor %}
@@ -103,12 +83,12 @@
             </div>
         </div>
 
-        {# Footer : Total des charges #}
+        {# Footer : Total des fournisseurs #}
         <div class="card-footer bg-white border-top-0 py-3">
             <div class="d-flex justify-content-end">
                 <div class="total-badge-modern">
-                    <span class="label">Total Charges</span>
-                    <span class="count"><span id="totalDisplay">{{ total_charges|number_format(2, ',', ' ') }}</span> TND</span>
+                    <span class="label">Total Fournisseurs</span>
+                    <span class="count" id="totalDisplay">{{ total_fournisseurs }}</span>
                 </div>
             </div>
         </div>
@@ -131,6 +111,7 @@
     z-index: 9999;
     font-weight: 500;
     font-size: 0.9rem;
+    pointer-events: none;
 ">Modification enregistrée !</div>
 
 <style>
@@ -141,6 +122,7 @@
     transition: all 0.2s ease;
     outline: none;
     min-height: 1.4em;
+    word-break: break-all;
 }
 .editable-cell:hover {
     background-color: rgba(13, 110, 253, 0.1);
@@ -150,6 +132,24 @@
     background-color: rgba(13, 110, 253, 0.05);
     box-shadow: 0 0 0 2px #0d6efd;
     color: inherit;
+}
+th[data-sort]:hover {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+.resizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    cursor: col-resize;
+    user-select: none;
+    height: 100%;
+    z-index: 10;
+    border-right: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+.resizer:hover, .resizer.resizing {
+    border-right: 2px solid #0d6efd;
 }
 .editable-select {
     border: none;
@@ -169,9 +169,6 @@
     box-shadow: 0 0 0 2px #0d6efd;
     outline: none;
     color: inherit;
-}
-th[data-sort]:hover {
-    background-color: #e9ecef !important;
 }
 
 /* Nouveaux Styles Modernes */
@@ -232,7 +229,7 @@ th[data-sort]:hover {
 .total-badge-modern .count {
     background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
     color: white;
-    padding: 2px 14px;
+    padding: 2px 12px;
     border-radius: 20px;
     font-weight: 700;
     font-size: 1.1rem;
@@ -269,7 +266,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     var sortStates = {};
     document.querySelectorAll('th[data-sort]').forEach(function(th) {
-        th.addEventListener('click', function() {
+        th.addEventListener('click', function(e) {
+            if (e.target.classList.contains('resizer')) return;
+
             var key = th.getAttribute('data-sort');
             sortStates[key] = !sortStates[key];
             var asc = sortStates[key];
@@ -319,17 +318,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // --- CONTROLE DE SAISIE CLIENT ---
             let errorMsg = null;
-            if (field === 'titre' && !/^[a-zA-ZÀ-ÿ\s]+$/.test(value)) {
-                errorMsg = 'Le titre ne doit contenir que des lettres';
-            } else if (field === 'montant') {
-                let val = parseFloat(value.replace(',', '.'));
-                if (isNaN(val) || val <= 0) {
-                    errorMsg = 'Le montant doit être un nombre supérieur à zéro';
-                }
-            } else if (field === 'date_charge' && isNaN(Date.parse(value))) {
-                errorMsg = 'Format de date invalide';
-            } else if (field === 'preuve_image' && value === '') {
-                errorMsg = 'Le justificatif est obligatoire';
+            if (field === 'nom' && !/^[a-zA-Z\s]+$/.test(value)) {
+                errorMsg = 'Le nom doit contenir uniquement des lettres';
+            } else if (field === 'matricule_fiscal' && !/^(?=.*[a-zA-Z])(?=.*[0-9]).+$/.test(value)) {
+                errorMsg = 'Le matricule doit inclure des lettres ET des chiffres';
+            } else if (field === 'telephone' && !/^[0-9]+$/.test(value)) {
+                errorMsg = 'Le téléphone doit contenir uniquement des chiffres';
             }
 
             if (errorMsg) {
@@ -339,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // --- ENVOI AJAX ---
-            fetch('/afficher_back_charge/edit/' + id, {
+            fetch('/afficher_back_fournisseur/edit/' + id, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 body: JSON.stringify({ field: field, value: value })
@@ -349,10 +343,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.success) {
                     showToast('Modification enregistrée !', false);
                     oldValues[field + id] = value; // Mise à jour de la valeur de référence
-                    if (data.newTotal !== undefined) {
-                        document.getElementById('totalDisplay').innerText =
-                            Number(data.newTotal).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-                    }
                 } else {
                     showToast('Erreur : ' + data.message, true);
                     this.innerText = oldValue; // Restauration en cas d'erreur serveur
@@ -369,14 +359,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    /* ===== 5. ÉDITION VIA SELECT (ENUMS) ===== */
+    /* ===== 5. ÉDITION VIA SELECT (FRANCHISE) ===== */
     document.querySelectorAll('.editable-select').forEach(function(select) {
         select.addEventListener('change', function() {
             var field = this.getAttribute('data-field');
             var value = this.value;
             var id    = this.closest('tr').getAttribute('data-id');
 
-            fetch('/afficher_back_charge/edit/' + id, {
+            fetch('/afficher_back_fournisseur/edit/' + id, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 body: JSON.stringify({ field: field, value: value })
@@ -384,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 if (data.success) {
-                    showToast('Modification enregistrée !', false);
+                    showToast('Franchise mise à jour !', false);
                 } else {
                     showToast('Erreur : ' + data.message, true);
                 }
@@ -396,12 +386,12 @@ document.addEventListener('DOMContentLoaded', function() {
     /* ===== 6. SUPPRESSION AJAX ===== */
     document.querySelectorAll('.btn-delete-modern').forEach(function(btn) {
         btn.addEventListener('click', function() {
-            if (!confirm('Voulez-vous vraiment supprimer cette charge ?')) return;
+            if (!confirm('Voulez-vous vraiment supprimer ce fournisseur ?')) return;
 
             var id  = this.getAttribute('data-id');
             var row = this.closest('tr');
 
-            fetch('/afficher_back_charge/delete/' + id, {
+            fetch('/afficher_back_fournisseur/delete/' + id, {
                 method: 'DELETE',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
@@ -409,9 +399,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(function(data) {
                 if (data.success) {
                     row.remove();
-                    showToast('Charge supprimée avec succès !', false);
+                    showToast('Fournisseur supprimé avec succès !', false);
+                    
+                    // Mise à jour du total
+                    var totalDisplay = document.getElementById('totalDisplay');
+                    totalDisplay.innerText = parseInt(totalDisplay.innerText) - 1;
+
                     if (tableBody.querySelectorAll('tr').length === 0) {
-                        tableBody.innerHTML = '<tr id="emptyRow"><td colspan="9" class="text-center py-4"><p class="text-muted mb-0">Aucune charge enregistrée.</p></td></tr>';
+                        tableBody.innerHTML = '<tr id="emptyRow"><td colspan="6" class="text-center py-4"><p class="text-muted mb-0">Aucun fournisseur enregistré.</p></td></tr>';
                     }
                 } else {
                     showToast('Erreur de suppression', true);
@@ -421,11 +416,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    /* ===== 7. REDIMENSIONNEMENT DES COLONNES ===== */
+    /* ===== 6. REDIMENSIONNEMENT DES COLONNES ===== */
     const createResizableTable = function (table) {
         const cols = table.querySelectorAll('th');
         [].forEach.call(cols, function (col) {
-            // Recueille le div du resizer
             const resizer = col.querySelector('.resizer');
             if (!resizer) return;
 
@@ -457,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    createResizableTable(document.getElementById('chargesTable'));
+    createResizableTable(document.getElementById('fournisseursTable'));
 });
 </script>
 {% endblock %}

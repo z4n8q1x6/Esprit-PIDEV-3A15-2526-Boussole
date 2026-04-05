@@ -10,6 +10,7 @@ return [
     [ // $staticRoutes
         '/admin/reclamation' => [[['_route' => 'app_admin_reclamation', '_controller' => 'App\\Controller\\AdminReclamationController::index'], null, null, null, false, false, null]],
         '/afficher_back_charge' => [[['_route' => 'app_afficher_back_charge', '_controller' => 'App\\Controller\\AfficherBackChargeController::index'], null, null, null, false, false, null]],
+        '/afficher_back_fournisseur' => [[['_route' => 'app_afficher_back_fournisseur', '_controller' => 'App\\Controller\\AfficherBackFournisseurController::index'], null, null, null, false, false, null]],
         '/afficher_front_charge' => [[['_route' => 'app_afficher_front_charge', '_controller' => 'App\\Controller\\AfficherFrontChargeController::index'], null, null, null, false, false, null]],
         '/afficher_front_fournisseur' => [[['_route' => 'app_afficher_front_fournisseur', '_controller' => 'App\\Controller\\AfficherFrontFournisseurController::index'], null, null, null, false, false, null]],
         '/ajouter_charge' => [[['_route' => 'app_ajouter_charge', '_controller' => 'App\\Controller\\AjouterChargeController::index'], null, null, null, false, false, null]],
@@ -20,18 +21,36 @@ return [
     [ // $regexpList
         0 => '{^(?'
                 .'|/_error/(\\d+)(?:\\.([^/]++))?(*:35)'
-                .'|/afficher_back_charge/delete/([^/]++)(*:79)'
-                .'|/fournisseur/delete/([^/]++)(*:114)'
-                .'|/modifier_fournisseur/([^/]++)(*:152)'
-                .'|/reclamations/([^/]++)/delete(*:189)'
+                .'|/afficher_back_(?'
+                    .'|charge/(?'
+                        .'|delete/([^/]++)(*:85)'
+                        .'|edit/([^/]++)(*:105)'
+                    .')'
+                    .'|fournisseur/(?'
+                        .'|edit/([^/]++)(*:142)'
+                        .'|delete/([^/]++)(*:165)'
+                    .')'
+                .')'
+                .'|/charge/delete/([^/]++)(*:198)'
+                .'|/fournisseur/delete/([^/]++)(*:234)'
+                .'|/modifier_(?'
+                    .'|charge/([^/]++)(*:270)'
+                    .'|fournisseur/([^/]++)(*:298)'
+                .')'
+                .'|/reclamations/([^/]++)/delete(*:336)'
             .')/?$}sDu',
     ],
     [ // $dynamicRoutes
         35 => [[['_route' => '_preview_error', '_controller' => 'error_controller::preview', '_format' => 'html'], ['code', '_format'], null, null, false, true, null]],
-        79 => [[['_route' => 'app_charge_delete', '_controller' => 'App\\Controller\\AfficherBackChargeController::delete'], ['id'], null, null, false, true, null]],
-        114 => [[['_route' => 'app_fournisseur_delete', '_controller' => 'App\\Controller\\AfficherFrontFournisseurController::delete'], ['id'], ['POST' => 0, 'GET' => 1], null, false, true, null]],
-        152 => [[['_route' => 'app_modifier_fournisseur', '_controller' => 'App\\Controller\\AjouterFournisseurController::modifier'], ['id'], null, null, false, true, null]],
-        189 => [
+        85 => [[['_route' => 'app_afficher_back_charge_delete', '_controller' => 'App\\Controller\\AfficherBackChargeController::delete'], ['id'], ['DELETE' => 0], null, false, true, null]],
+        105 => [[['_route' => 'app_afficher_back_charge_edit', '_controller' => 'App\\Controller\\AfficherBackChargeController::inlineEdit'], ['id'], ['POST' => 0], null, false, true, null]],
+        142 => [[['_route' => 'app_afficher_back_fournisseur_edit', '_controller' => 'App\\Controller\\AfficherBackFournisseurController::edit'], ['id'], ['POST' => 0], null, false, true, null]],
+        165 => [[['_route' => 'app_afficher_back_fournisseur_delete', '_controller' => 'App\\Controller\\AfficherBackFournisseurController::delete'], ['id'], ['DELETE' => 0], null, false, true, null]],
+        198 => [[['_route' => 'app_charge_delete', '_controller' => 'App\\Controller\\AfficherFrontChargeController::delete'], ['id'], ['POST' => 0, 'GET' => 1], null, false, true, null]],
+        234 => [[['_route' => 'app_fournisseur_delete', '_controller' => 'App\\Controller\\AfficherFrontFournisseurController::delete'], ['id'], ['POST' => 0, 'GET' => 1], null, false, true, null]],
+        270 => [[['_route' => 'app_modifier_charge', '_controller' => 'App\\Controller\\AjouterChargeController::modifier'], ['id'], null, null, false, true, null]],
+        298 => [[['_route' => 'app_modifier_fournisseur', '_controller' => 'App\\Controller\\AjouterFournisseurController::modifier'], ['id'], null, null, false, true, null]],
+        336 => [
             [['_route' => 'reclamation_delete', '_controller' => 'App\\Controller\\ReclamationController::delete'], ['id'], ['POST' => 0], null, false, false, null],
             [null, null, null, null, false, false, 0],
         ],

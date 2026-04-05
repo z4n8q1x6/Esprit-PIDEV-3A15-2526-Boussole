@@ -15,7 +15,7 @@ class Fournisseur
     private int $id;
 
     #[ORM\Column(type: "string", length: 255)]
-    private string $nom;
+    private ?string $nom = null;
 
     #[ORM\Column(type: "string", length: 100, nullable: true)]
     private ?string $matricule_fiscal = null;
@@ -24,8 +24,8 @@ class Fournisseur
     private ?string $telephone = null;
 
     #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "fournisseurs")]
-    #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: false)]
-    private Franchises $franchise_id;
+    #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: true)]
+    private ?Franchises $franchise_id = null;
 
     // --- GETTERS & SETTERS ---
 
@@ -40,12 +40,12 @@ class Fournisseur
         return $this;
     }
 
-    public function getNom(): string
+    public function getNom(): ?string
     {
         return $this->nom;
     }
-
-    public function setNom(string $nom): self
+    
+    public function setNom(?string $nom): self
     {
         $this->nom = $nom;
         return $this;
@@ -73,12 +73,12 @@ class Fournisseur
         return $this;
     }
 
-    public function getFranchiseId(): Franchises
+    public function getFranchiseId(): ?Franchises
     {
         return $this->franchise_id;
     }
-
-    public function setFranchiseId(Franchises $franchise_id): self
+    
+    public function setFranchiseId(?Franchises $franchise_id): self
     {
         $this->franchise_id = $franchise_id;
         return $this;
