@@ -58,7 +58,6 @@ final class ReclamationController extends AbstractController
     {
         $submitedToken = $request->getPayload()->get('token');
         if ($this->isCsrfTokenValid('delete-item', $submitedToken)) {
-            dd($submitedToken);
             $this->em->remove($reclamation);
             $this->em->flush();
             $this->addFlash('success', 'Reclamation deleted successfully.');

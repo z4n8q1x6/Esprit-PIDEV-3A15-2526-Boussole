@@ -3,14 +3,17 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use App\Entity\Franchises;
 
 #[ORM\Entity]
 class Alerteias
 {
-
+    public function __construct()
+    {
+        $this->date_detection = new \DateTime();
+    }
     #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: "integer")]
     private int $id;
 
@@ -20,13 +23,13 @@ class Alerteias
     #[ORM\Column(type: "text")]
     private string $message;
 
-    #[ORM\Column(type: "string")]
-    private string $score_gravite;
+    #[ORM\Column(type: "float")]
+    private float $score_gravite;
 
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $date_detection;
 
-        #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "alerteiass")]
+    #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "alerteiass")]
     #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Franchises $franchise_id;
 
@@ -60,12 +63,12 @@ class Alerteias
         $this->message = $value;
     }
 
-    public function getScore_gravite()
+    public function getScore_gravite(): float
     {
         return $this->score_gravite;
     }
 
-    public function setScore_gravite($value)
+    public function setScore_gravite(float $value)
     {
         $this->score_gravite = $value;
     }

@@ -25,15 +25,24 @@
             {% endfor %}
         {% endfor %}
 
-        <div class="card-body p-0">  {# ← remove padding so table goes edge to edge #}
+        <div class="card-body p-0">
+            <div class="mb-3 p-4 pb-0">
+                <input 
+                    type="text" 
+                    id="search-reclamation-user" 
+                    class="form-control form-control-sm" 
+                    placeholder="Rechercher par sujet..."
+                    aria-label="Rechercher dans la table"
+                >
+            </div>
             <div class="table-responsive">
-                <table class="table table-dark-gray align-middle mb-0 table-hover">  {# ← no explicit widths #}
+                <table id="table-reclamation-user" class="table table-dark-gray align-middle mb-0 table-hover">
                     <thead>
                         <tr>
-                            <th scope="col" class="border-0 rounded-start ps-4">Sujet</th>
-                            <th scope="col" class="border-0">Description</th>
-                            <th scope="col" class="border-0 text-center">Statut</th>
-                            <th scope="col" class="border-0">Date de création</th>
+                            <th scope="col" class="border-0 rounded-start ps-4" style="cursor: pointer;">Sujet</th>
+                            <th scope="col" class="border-0" style="cursor: pointer;">Description</th>
+                            <th scope="col" class="border-0 text-center" style="cursor: pointer;">Statut</th>
+                            <th scope="col" class="border-0" style="cursor: pointer;">Date de création</th>
                             <th scope="col" class="border-0 rounded-end text-center">Action</th>
                         </tr>
                     </thead>
@@ -82,4 +91,16 @@
         </div>
     </div>
 </div>
+
+<script src="{{ asset('assets/js/table-search-sort.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        new TableSearchSort({
+            tableId: 'table-reclamation-user',
+            searchInputSelector: '#search-reclamation-user',
+            searchColumnIndex: 0,
+            sortableColumns: [0, 1, 2, 3]
+        });
+    });
+</script>
 {% endblock %}
