@@ -142,6 +142,7 @@
                         <th>CHARGES (TND)</th>
                         <th>RÉSULTAT NET</th>
                         <th>RENTABILITÉ</th>
+                        <th class="text-center" style="width: 40px;"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -189,10 +190,13 @@
                                 <span class="status-equil">— Équilibré</span>
                             {% endif %}
                         </td>
+                        <td class="text-center align-middle">
+                            <i class="fas fa-trash text-muted delete-row-btn" style="cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='#ef4444';" onmouseout="this.style.color=''" data-id="{{ bilan.id }}" title="Supprimer ce bilan"></i>
+                        </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="7" class="text-center py-5 text-muted">Aucun historique disponible.</td>
+                        <td colspan="8" class="text-center py-5 text-muted">Aucun historique disponible.</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -248,34 +252,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. SELECTION DE LIGNE ET SUPPRESSION AU CLAVIER (Delete/Suppr)
-    const table = document.getElementById('bilansTable');
-    let selectedRowId = null;
-    let selectedRowElement = null;
+        // DECLARATION COMMUNE POUR DELETE ET EDIT
+        const table = document.getElementById('bilansTable');
 
-    if (table) {
-        table.addEventListener('click', (e) => {
-            // Ne pas sÃ©lectionner si on clique sur un input d'Ã©dition
-            if(e.target.tagName.toLowerCase() === 'input') return;
-
-            const tr = e.target.closest('tr');
-            if (tr && tr.dataset.id) {
-                // Retirer la sÃ©lection prÃ©cÃ©dente
-                document.querySelectorAll('#bilansTable tbody tr').forEach(r => r.classList.remove('selected'));
-                
-                // Ajouter la sÃ©lection actuelle
-                tr.classList.add('selected');
-                selectedRowId = tr.dataset.id;
-                selectedRowElement = tr;
-            }
-        });
-
-        // Supprimer avec la touche "Suppr" ou "Delete"
-        document.addEventListener('keydown', async (e) => {
-            if ((e.key === 'Delete' || e.key === 'Backspace') && selectedRowId) {
-                
-                // Eviter de supprimer si on est en train de taper dans un champ text/number
-                if(document.activeElement.tagName.toLowerCase() === 'input') return;
+        if (table) {
+            // 2. SUPPRESSION VIA ICONE CORBEILLE (CRUD Delete)
+            document.querySelectorAll('.delete-row-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const id = btn.dataset.id;
+                    const row = btn.closest('tr');
 
                 const confirm = await Swal.fire({
                     title: 'Supprimer ce bilan ?',
@@ -289,22 +275,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (confirm.isConfirmed) {
                     try {
-                        const res = await fetch('/bilan/' + selectedRowId + '/delete-ajax', { method: 'POST' });
+                        const res = await fetch('/bilan/' + id + '/delete-ajax', { method: 'POST' });
                         const data = await res.json();
                         if (data.success) {
-                            selectedRowElement.style.opacity = '0';
+                            row.style.opacity = '0';
+                            row.style.transform = 'translateY(10px) scale(0.98)';
+                            row.style.transition = 'all 0.4s';
                             setTimeout(() => {
-                                selectedRowElement.remove();
-                                selectedRowId = null;
-                                selectedRowElement = null;
-                            }, 300);
+                                row.remove();
+                                if (document.querySelectorAll('#bilansTable tbody tr').length === 0) {
+                                  document.querySelector('#bilansTable tbody').innerHTML = '<tr><td colspan="8" class="text-center py-5 text-muted">Aucun historique disponible.</td></tr>';
+                                }
+                            }, 400);
                             Toast.fire({ icon: 'success', title: 'Bilan supprimé.' });
                         }
                     } catch (err) {
                         Toast.fire({ icon: 'error', title: 'Erreur lors de la suppression.' });
                     }
                 }
-            }
+            });
         });
 
         // 3. INLINE EDIT (DOUBLE CLICK)
@@ -361,9 +350,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     input.focus();
                     return;
                 }
-                
-                const field = cell.dataset.field;
-
                 // Revert si vide ou non changÃ©
                 if (newValue === '' || parseFloat(newValue) === currentValue) {
                     restoreCell(currentValue);
@@ -374,7 +360,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const payload = {};
                     payload[field] = newValue;
 
-                    const res = await fetch('/bilan/' + id + '/edit-ajax', {
+                    const res = await fetch('/bilan/' + tr.dataset.id + '/edit-ajax', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
