@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Entity\Utilisateur;
@@ -11,10 +10,10 @@ use App\Entity\Utilisateur;
 #[ORM\Entity]
 class Franchises
 {
-
     #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: "string", length: 100)]
     private string $nom;
@@ -37,7 +36,7 @@ class Franchises
     #[ORM\Column(type: "float")]
     private float $solde_actuel;
 
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -120,32 +119,32 @@ class Franchises
     #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Alerteias::class)]
     private Collection $alerteiass;
 
-        public function getAlerteiass(): Collection
-        {
-            return $this->alerteiass;
+    public function getAlerteiass(): Collection
+    {
+        return $this->alerteiass;
+    }
+
+    public function addAlerteias(Alerteias $alerteias): self
+    {
+        if (!$this->alerteiass->contains($alerteias)) {
+            $this->alerteiass[] = $alerteias;
+            $alerteias->setFranchise_id($this);
         }
 
-        public function addAlerteias(Alerteias $alerteias): self
-        {
-            if (!$this->alerteiass->contains($alerteias)) {
-                $this->alerteiass[] = $alerteias;
-                $alerteias->setFranchise_id($this);
+        return $this;
+    }
+
+    public function removeAlerteias(Alerteias $alerteias): self
+    {
+        if ($this->alerteiass->removeElement($alerteias)) {
+            // set the owning side to null (unless already changed)
+            if ($alerteias->getFranchise_id() === $this) {
+                $alerteias->setFranchise_id(null);
             }
-
-            return $this;
         }
 
-        public function removeAlerteias(Alerteias $alerteias): self
-        {
-            if ($this->alerteiass->removeElement($alerteias)) {
-                // set the owning side to null (unless already changed)
-                if ($alerteias->getFranchise_id() === $this) {
-                    $alerteias->setFranchise_id(null);
-                }
-            }
-
-            return $this;
-        }
+        return $this;
+    }
 
     #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Bilan::class)]
     private Collection $bilans;
@@ -174,30 +173,30 @@ class Franchises
     #[ORM\OneToMany(mappedBy: "id_franchise", targetEntity: Utilisateur::class)]
     private Collection $utilisateurs;
 
-        public function getUtilisateurs(): Collection
-        {
-            return $this->utilisateurs;
+    public function getUtilisateurs(): Collection
+    {
+        return $this->utilisateurs;
+    }
+
+    public function addUtilisateur(Utilisateur $utilisateur): self
+    {
+        if (!$this->utilisateurs->contains($utilisateur)) {
+            $this->utilisateurs[] = $utilisateur;
+            $utilisateur->setId_franchise($this);
         }
 
-        public function addUtilisateur(Utilisateur $utilisateur): self
-        {
-            if (!$this->utilisateurs->contains($utilisateur)) {
-                $this->utilisateurs[] = $utilisateur;
-                $utilisateur->setId_franchise($this);
+        return $this;
+    }
+
+    public function removeUtilisateur(Utilisateur $utilisateur): self
+    {
+        if ($this->utilisateurs->removeElement($utilisateur)) {
+            // set the owning side to null (unless already changed)
+            if ($utilisateur->getId_franchise() === $this) {
+                $utilisateur->setId_franchise(null);
             }
-
-            return $this;
         }
 
-        public function removeUtilisateur(Utilisateur $utilisateur): self
-        {
-            if ($this->utilisateurs->removeElement($utilisateur)) {
-                // set the owning side to null (unless already changed)
-                if ($utilisateur->getId_franchise() === $this) {
-                    $utilisateur->setId_franchise(null);
-                }
-            }
-
-            return $this;
-        }
+        return $this;
+    }
 }
