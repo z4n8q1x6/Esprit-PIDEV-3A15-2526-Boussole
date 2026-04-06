@@ -12,6 +12,22 @@
             </div>
         </div>
 
+        <!-- Filtres -->
+        <div class="row mb-4">
+            <div class="col-lg-10 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <a href="{{ path('app_mes_commandes', {'statut': 'tous'}) }}" class="btn {{ statutActuel == 'tous' ? 'btn-primary' : 'btn-outline-secondary' }}">Toutes</a>
+                            <a href="{{ path('app_mes_commandes', {'statut': 'EN_ATTENTE'}) }}" class="btn {{ statutActuel == 'EN_ATTENTE' ? 'btn-warning' : 'btn-outline-warning' }}">En attente</a>
+                            <a href="{{ path('app_mes_commandes', {'statut': 'VALIDEE'}) }}" class="btn {{ statutActuel == 'VALIDEE' ? 'btn-success' : 'btn-outline-success' }}">Validées</a>
+                            <a href="{{ path('app_mes_commandes', {'statut': 'REFUSEE'}) }}" class="btn {{ statutActuel == 'REFUSEE' ? 'btn-danger' : 'btn-outline-danger' }}">Refusées</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row">
             <div class="col-lg-10 mx-auto">
                 {% if commandes is empty %}

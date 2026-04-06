@@ -106,18 +106,54 @@ class __TwigTemplate_454d0b66be5c315b815cba1add8b1432 extends Template
             </div>
         </div>
 
+        <!-- Filtres -->
+        <div class=\"row mb-4\">
+            <div class=\"col-lg-10 mx-auto\">
+                <div class=\"card\">
+                    <div class=\"card-body\">
+                        <div class=\"d-flex gap-2 flex-wrap\">
+                            <a href=\"";
+        // line 21
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_mes_commandes", ["statut" => "tous"]);
+        yield "\" class=\"btn ";
+        yield ((((isset($context["statutActuel"]) || array_key_exists("statutActuel", $context) ? $context["statutActuel"] : (function () { throw new RuntimeError('Variable "statutActuel" does not exist.', 21, $this->source); })()) == "tous")) ? ("btn-primary") : ("btn-outline-secondary"));
+        yield "\">Toutes</a>
+                            <a href=\"";
+        // line 22
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_mes_commandes", ["statut" => "EN_ATTENTE"]);
+        yield "\" class=\"btn ";
+        yield ((((isset($context["statutActuel"]) || array_key_exists("statutActuel", $context) ? $context["statutActuel"] : (function () { throw new RuntimeError('Variable "statutActuel" does not exist.', 22, $this->source); })()) == "EN_ATTENTE")) ? ("btn-warning") : ("btn-outline-warning"));
+        yield "\">En attente</a>
+                            <a href=\"";
+        // line 23
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_mes_commandes", ["statut" => "VALIDEE"]);
+        yield "\" class=\"btn ";
+        yield ((((isset($context["statutActuel"]) || array_key_exists("statutActuel", $context) ? $context["statutActuel"] : (function () { throw new RuntimeError('Variable "statutActuel" does not exist.', 23, $this->source); })()) == "VALIDEE")) ? ("btn-success") : ("btn-outline-success"));
+        yield "\">Validées</a>
+                            <a href=\"";
+        // line 24
+        yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_mes_commandes", ["statut" => "REFUSEE"]);
+        yield "\" class=\"btn ";
+        yield ((((isset($context["statutActuel"]) || array_key_exists("statutActuel", $context) ? $context["statutActuel"] : (function () { throw new RuntimeError('Variable "statutActuel" does not exist.', 24, $this->source); })()) == "REFUSEE")) ? ("btn-danger") : ("btn-outline-danger"));
+        yield "\">Refusées</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class=\"row\">
             <div class=\"col-lg-10 mx-auto\">
                 ";
-        // line 17
-        if (Twig\Extension\CoreExtension::testEmpty((isset($context["commandes"]) || array_key_exists("commandes", $context) ? $context["commandes"] : (function () { throw new RuntimeError('Variable "commandes" does not exist.', 17, $this->source); })()))) {
-            // line 18
+        // line 33
+        if (Twig\Extension\CoreExtension::testEmpty((isset($context["commandes"]) || array_key_exists("commandes", $context) ? $context["commandes"] : (function () { throw new RuntimeError('Variable "commandes" does not exist.', 33, $this->source); })()))) {
+            // line 34
             yield "                    <div class=\"text-center py-5\">
                         <i class=\"fas fa-shopping-bag fa-4x text-muted mb-3\"></i>
                         <h4>Aucune commande</h4>
                         <p class=\"text-muted\">Vous n'avez pas encore passé de commande.</p>
                         <a href=\"";
-            // line 22
+            // line 38
             yield $this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_marketplace");
             yield "\" class=\"btn btn-primary mt-3\">
                             <i class=\"fas fa-shopping-cart me-2\"></i>Commander maintenant
@@ -125,7 +161,7 @@ class __TwigTemplate_454d0b66be5c315b815cba1add8b1432 extends Template
                     </div>
                 ";
         } else {
-            // line 27
+            // line 43
             yield "                    <div class=\"card shadow-sm border-0 rounded-4\">
                         <div class=\"card-body p-0\">
                             <div class=\"table-responsive\">
@@ -141,54 +177,54 @@ class __TwigTemplate_454d0b66be5c315b815cba1add8b1432 extends Template
                                     </thead>
                                     <tbody>
                                         ";
-            // line 41
+            // line 57
             $context['_parent'] = $context;
-            $context['_seq'] = CoreExtension::ensureTraversable((isset($context["commandes"]) || array_key_exists("commandes", $context) ? $context["commandes"] : (function () { throw new RuntimeError('Variable "commandes" does not exist.', 41, $this->source); })()));
+            $context['_seq'] = CoreExtension::ensureTraversable((isset($context["commandes"]) || array_key_exists("commandes", $context) ? $context["commandes"] : (function () { throw new RuntimeError('Variable "commandes" does not exist.', 57, $this->source); })()));
             foreach ($context['_seq'] as $context["_key"] => $context["commande"]) {
-                // line 42
+                // line 58
                 yield "                                        <tr>
                                             <td class=\"ps-3 fw-bold\">#";
-                // line 43
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["commande"], "id", [], "any", false, false, false, 43), "html", null, true);
+                // line 59
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["commande"], "id", [], "any", false, false, false, 59), "html", null, true);
                 yield "</td>
                                             <td>";
-                // line 44
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate(CoreExtension::getAttribute($this->env, $this->source, $context["commande"], "date_creation", [], "any", false, false, false, 44), "d/m/Y H:i"), "html", null, true);
+                // line 60
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatDate(CoreExtension::getAttribute($this->env, $this->source, $context["commande"], "date_creation", [], "any", false, false, false, 60), "d/m/Y H:i"), "html", null, true);
                 yield "</td>
                                             <td class=\"fw-bold text-primary\">";
-                // line 45
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatNumber(CoreExtension::getAttribute($this->env, $this->source, $context["commande"], "montant_total", [], "any", false, false, false, 45), 2, ",", " "), "html", null, true);
+                // line 61
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatNumber(CoreExtension::getAttribute($this->env, $this->source, $context["commande"], "montant_total", [], "any", false, false, false, 61), 2, ",", " "), "html", null, true);
                 yield " DT</td>
                                             <td>
                                                 ";
-                // line 47
-                if ((CoreExtension::getAttribute($this->env, $this->source, $context["commande"], "statut", [], "any", false, false, false, 47) == "EN_ATTENTE")) {
-                    // line 48
+                // line 63
+                if ((CoreExtension::getAttribute($this->env, $this->source, $context["commande"], "statut", [], "any", false, false, false, 63) == "EN_ATTENTE")) {
+                    // line 64
                     yield "                                                    <span class=\"badge bg-warning text-dark\">En attente</span>
                                                 ";
-                } elseif ((CoreExtension::getAttribute($this->env, $this->source,                 // line 49
-$context["commande"], "statut", [], "any", false, false, false, 49) == "VALIDEE")) {
-                    // line 50
+                } elseif ((CoreExtension::getAttribute($this->env, $this->source,                 // line 65
+$context["commande"], "statut", [], "any", false, false, false, 65) == "VALIDEE")) {
+                    // line 66
                     yield "                                                    <span class=\"badge bg-success\">Validée</span>
                                                 ";
-                } elseif ((CoreExtension::getAttribute($this->env, $this->source,                 // line 51
-$context["commande"], "statut", [], "any", false, false, false, 51) == "REFUSEE")) {
-                    // line 52
+                } elseif ((CoreExtension::getAttribute($this->env, $this->source,                 // line 67
+$context["commande"], "statut", [], "any", false, false, false, 67) == "REFUSEE")) {
+                    // line 68
                     yield "                                                    <span class=\"badge bg-danger\">Refusée</span>
                                                 ";
                 } else {
-                    // line 54
+                    // line 70
                     yield "                                                    <span class=\"badge bg-secondary\">";
-                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["commande"], "statut", [], "any", false, false, false, 54), "html", null, true);
+                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["commande"], "statut", [], "any", false, false, false, 70), "html", null, true);
                     yield "</span>
                                                 ";
                 }
-                // line 56
+                // line 72
                 yield "                                            </td>
                                             <td class=\"text-end pe-3\">
                                                 <a href=\"";
-                // line 58
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_mes_commandes_detail", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["commande"], "id", [], "any", false, false, false, 58)]), "html", null, true);
+                // line 74
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Symfony\Bridge\Twig\Extension\RoutingExtension']->getPath("app_mes_commandes_detail", ["id" => CoreExtension::getAttribute($this->env, $this->source, $context["commande"], "id", [], "any", false, false, false, 74)]), "html", null, true);
                 yield "\" class=\"btn btn-sm btn-outline-primary rounded-pill px-3\">
                                                     <i class=\"fas fa-eye me-1\"></i>Détails
                                                 </a>
@@ -199,7 +235,7 @@ $context["commande"], "statut", [], "any", false, false, false, 51) == "REFUSEE"
             $_parent = $context['_parent'];
             unset($context['_seq'], $context['_key'], $context['commande'], $context['_parent']);
             $context = array_intersect_key($context, $_parent) + $_parent;
-            // line 64
+            // line 80
             yield "                                    </tbody>
                                 </table>
                             </div>
@@ -207,7 +243,7 @@ $context["commande"], "statut", [], "any", false, false, false, 51) == "REFUSEE"
                     </div>
                 ";
         }
-        // line 70
+        // line 86
         yield "            </div>
         </div>
     </div>
@@ -243,7 +279,7 @@ $context["commande"], "statut", [], "any", false, false, false, 51) == "REFUSEE"
      */
     public function getDebugInfo(): array
     {
-        return array (  211 => 70,  203 => 64,  191 => 58,  187 => 56,  181 => 54,  177 => 52,  175 => 51,  172 => 50,  170 => 49,  167 => 48,  165 => 47,  160 => 45,  156 => 44,  152 => 43,  149 => 42,  145 => 41,  129 => 27,  121 => 22,  115 => 18,  113 => 17,  100 => 6,  87 => 5,  64 => 3,  41 => 1,);
+        return array (  247 => 86,  239 => 80,  227 => 74,  223 => 72,  217 => 70,  213 => 68,  211 => 67,  208 => 66,  206 => 65,  203 => 64,  201 => 63,  196 => 61,  192 => 60,  188 => 59,  185 => 58,  181 => 57,  165 => 43,  157 => 38,  151 => 34,  149 => 33,  135 => 24,  129 => 23,  123 => 22,  117 => 21,  100 => 6,  87 => 5,  64 => 3,  41 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -259,6 +295,22 @@ $context["commande"], "statut", [], "any", false, false, false, 51) == "REFUSEE"
             <div class=\"col-12 text-center\">
                 <h1 class=\"display-5 fw-bold\">Mes Commandes</h1>
                 <hr class=\"w-25 mx-auto\">
+            </div>
+        </div>
+
+        <!-- Filtres -->
+        <div class=\"row mb-4\">
+            <div class=\"col-lg-10 mx-auto\">
+                <div class=\"card\">
+                    <div class=\"card-body\">
+                        <div class=\"d-flex gap-2 flex-wrap\">
+                            <a href=\"{{ path('app_mes_commandes', {'statut': 'tous'}) }}\" class=\"btn {{ statutActuel == 'tous' ? 'btn-primary' : 'btn-outline-secondary' }}\">Toutes</a>
+                            <a href=\"{{ path('app_mes_commandes', {'statut': 'EN_ATTENTE'}) }}\" class=\"btn {{ statutActuel == 'EN_ATTENTE' ? 'btn-warning' : 'btn-outline-warning' }}\">En attente</a>
+                            <a href=\"{{ path('app_mes_commandes', {'statut': 'VALIDEE'}) }}\" class=\"btn {{ statutActuel == 'VALIDEE' ? 'btn-success' : 'btn-outline-success' }}\">Validées</a>
+                            <a href=\"{{ path('app_mes_commandes', {'statut': 'REFUSEE'}) }}\" class=\"btn {{ statutActuel == 'REFUSEE' ? 'btn-danger' : 'btn-outline-danger' }}\">Refusées</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
