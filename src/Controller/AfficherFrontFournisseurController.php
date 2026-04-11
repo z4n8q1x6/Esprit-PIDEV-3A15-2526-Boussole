@@ -9,11 +9,79 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class AfficherFrontFournisseurController extends AbstractController
 {
+    #[Route('/fournisseur/pdf/{id}', name: 'app_fournisseur_pdf')]
+    public function pdf(Fournisseur $fournisseur): Response
+    {
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->set('isRemoteEnabled', true);
+        
+        $dompdf = new Dompdf($pdfOptions);
+        
+        $dateStr = (new \DateTime())->format('d/m/Y H:i');
+        $nom = $fournisseur->getNom();
+        $matricule = $fournisseur->getMatriculeFiscal();
+        $tel = $fournisseur->getTelephone();
+        $franchise = $fournisseur->getFranchiseId() ? $fournisseur->getFranchiseId()->getNom() : 'Indépendant';
+        $id = $fournisseur->getId();
+
+        $html = <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Helvetica', sans-serif; color: #333; margin: 0; padding: 0; }
+        .header { background: #198754; color: white; padding: 40px 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; text-transform: uppercase; letter-spacing: 2px; }
+        .content { padding: 40px; }
+        .document-title { color: #198754; font-size: 20px; font-weight: bold; border-bottom: 2px solid #20c997; margin-bottom: 30px; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+        th { text-align: left; color: #6c757d; font-size: 13px; text-transform: uppercase; padding: 15px 10px; border-bottom: 1px solid #eee; width: 35%; }
+        td { padding: 20px 10px; border-bottom: 1px solid #f8f9fa; font-size: 16px; color: #212529; }
+        .info-box { background: #fdfdfd; border: 1px solid #eee; padding: 25px; border-radius: 8px; margin-top: 20px; font-size: 13px; color: #666; }
+        .footer { position: fixed; bottom: 0; width: 100%; padding: 20px; text-align: center; font-size: 11px; color: #adb5bd; border-top: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>BOUSSOLE</h1>
+        <p>Fiche Partenaire Officielle</p>
+    </div>
+    <div class="content">
+        <div class="document-title">Informations du Fournisseur</div>
+        <table>
+            <tr><th>Nom de l'entreprise</th><td><strong>{$nom}</strong></td></tr>
+            <tr><th>Matricule Fiscal</th><td>{$matricule}</td></tr>
+            <tr><th>Coordonnées Téléphone</th><td>{$tel}</td></tr>
+            <tr><th>Franchise associée</th><td>{$franchise}</td></tr>
+        </table>
+        <div class="info-box">
+            <strong style="color: #198754; display: block; margin-bottom: 10px;">Note de Conformité</strong>
+            Ce partenaire est enregistré dans le réseau Boussole. Les informations portées sur cette fiche sont extraites de notre base de données certifiée et ont été validées lors de la dernière mise à jour du dossier.
+        </div>
+    </div>
+    <div class="footer">Document généré le {$dateStr} par la plateforme Boussole.</div>
+</body>
+</html>
+HTML;
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return new Response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="fournisseur_'.$id.'.pdf"'
+        ]);
+    }
     #[Route('/afficher_front_fournisseur', name: 'app_afficher_front_fournisseur')]
     public function index(FournisseurRepository $repository, Request $request, HttpClientInterface $httpClient): Response
     {

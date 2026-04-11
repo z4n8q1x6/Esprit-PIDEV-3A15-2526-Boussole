@@ -11,12 +11,13 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/admin')]
 final class AfficherBackChargeController extends AbstractController
 {
     #[Route('/afficher_back_charge', name: 'app_afficher_back_charge')]
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(EntityManagerInterface $entityManager, HttpClientInterface $httpClient): Response
     {
         // getArrayResult() évite les erreurs PHP sur les propriétés typées non initialisées (franchise_id)
         $charges = $entityManager->createQuery(
@@ -31,9 +32,17 @@ final class AfficherBackChargeController extends AbstractController
             $totalCharges += $charge['montant'];
         }
 
+        // --- Récupération des taux de change (Backend Symfony) ---
+        $rates = $this->getExchangeRates($httpClient);
+        $totalEur = $totalCharges * $rates['eur'];
+        $totalUsd = $totalCharges * $rates['usd'];
+
         return $this->render('afficher_back_charge/index.html.twig', [
             'charges'       => $charges,
             'total_charges' => $totalCharges,
+            'total_eur'     => $totalEur,
+            'total_usd'     => $totalUsd,
+            'rates'         => $rates,
             'types'         => [
                 'CHARGES_EXPLOITATIONS' => 'Exploitation',
                 'CHARGES_FINANCIERES'   => 'Financière',
@@ -46,6 +55,22 @@ final class AfficherBackChargeController extends AbstractController
             ],
             'franchises'    => $franchises,
         ]);
+    }
+
+    private function getExchangeRates(HttpClientInterface $httpClient): array
+    {
+        try {
+            // Utilisation de l'API Fawaz Ahmed (gratuite, sans clé, sans expiration)
+            $response = $httpClient->request('GET', 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/tnd.json');
+            $data = $response->toArray();
+            
+            return [
+                'eur' => $data['tnd']['eur'] ?? 0,
+                'usd' => $data['tnd']['usd'] ?? 0,
+            ];
+        } catch (\Exception $e) {
+            return ['eur' => 0, 'usd' => 0];
+        }
     }
 
     #[Route('/afficher_back_charge/delete/{id}', name: 'app_afficher_back_charge_delete', methods: ['DELETE'])]

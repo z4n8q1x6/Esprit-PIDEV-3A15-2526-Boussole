@@ -29,7 +29,7 @@ final class AjouterChargeController extends AbstractController
             $entityManager->persist($charge);
             $entityManager->flush();
 
-            $this->addFlash('success', 'La charge a été enregistrée avec succès (ID: ' . $manualId . ') !');
+            $this->addFlash('success', 'La charge a été enregistrée avec succès !');
             
             return $this->redirectToRoute('app_ajouter_charge');
         }
@@ -49,7 +49,7 @@ final class AjouterChargeController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            $this->addFlash('success', 'La charge (ID: ' . $charge->getId() . ') a été modifiée avec succès !');
+            $this->addFlash('success', 'La charge a été modifiée avec succès !');
 
             return $this->redirectToRoute('app_afficher_front_charge');
         }
