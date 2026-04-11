@@ -72,4 +72,101 @@ class AfficherFrontChargeController extends AbstractController
             'dir' => $dir
         ]);
     }
+
+    #[Route('/afficher_front_charge/conseils', name: 'app_front_charge_conseils')]
+    public function conseils(ChargeRepository $repo, Request $request): Response
+    {
+        $search = $request->query->get('q', '');
+        
+        $qb = $repo->createQueryBuilder('c')
+            ->leftJoin('c.franchise_id', 'f')
+            ->addSelect('f');
+
+        if (!empty($search)) {
+            $qb->andWhere('c.titre LIKE :search OR c.type LIKE :search OR c.status_validation LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        // Utilisation de getArrayResult pour correspondre à la vue index
+        $allCharges = $qb->getQuery()->getArrayResult();
+        
+        if (empty($allCharges)) {
+            return $this->json([
+                'success' => false,
+                'message' => "Aucune donnée correspondant à votre recherche n'a été trouvée pour l'analyse."
+            ]);
+        }
+
+        $totalDepenses = 0;
+        $parCategorie = [];
+
+        foreach ($allCharges as $charge) {
+            $montant = (float) $charge['montant'];
+            $totalDepenses += $montant;
+            $type = (string) $charge['type'];
+
+            if (!isset($parCategorie[$type])) {
+                $parCategorie[$type] = [
+                    'montant' => 0,
+                    'count' => 0,
+                    'label' => $this->translateType($type)
+                ];
+            }
+            $parCategorie[$type]['montant'] += $montant;
+            $parCategorie[$type]['count']++;
+        }
+
+        $moyenneParCharge = $totalDepenses / count($allCharges);
+
+        $stats = [];
+        foreach ($parCategorie as $type => $data) {
+            $pourcentage = ($data['montant'] / $totalDepenses) * 100;
+            $stats[] = [
+                'type' => $type,
+                'label' => $data['label'],
+                'montant' => $data['montant'], // On garde le float pour le tri
+                'montant_format' => number_format($data['montant'], 2, ',', ' '),
+                'pourcentage' => round($pourcentage, 1),
+                'count' => $data['count'],
+                'conseil' => $this->getExtendedAdvice($type, round($pourcentage, 1))
+            ];
+        }
+
+        // Tri par montant décroissant (plus robuste)
+        usort($stats, fn($a, $b) => $b['montant'] <=> $a['montant']);
+
+        return $this->json([
+            'success' => true,
+            'total' => number_format($totalDepenses, 2, ',', ' '),
+            'moyenne' => number_format($moyenneParCharge, 2, ',', ' '),
+            'count' => count($allCharges),
+            'stats' => $stats
+        ]);
+    }
+
+    private function translateType(string $type): string
+    {
+        return match ($type) {
+            'CHARGES_EXPLOITATIONS' => 'Exploitation',
+            'CHARGES_FINANCIERES' => 'Financière',
+            'CHARGES_EXCEPTIONNELLES' => 'Exceptionnelle',
+            default => $type,
+        };
+    }
+
+    private function getExtendedAdvice(string $type, float $pourcentage): string
+    {
+        $baseAdvice = match ($type) {
+            'CHARGES_EXPLOITATIONS' => "<b>Exploitation :</b> Ces charges représentent le cœur de votre activité. Si elles sont élevées (>$pourcentage%), envisagez de renégocier les contrats fournisseurs ou d'optimiser vos processus de production.",
+            'CHARGES_FINANCIERES' => "<b>Financier :</b> Ce poste concerne vos frais bancaires et intérêts. Un pourcentage élevé ($pourcentage%) peut indiquer un endettement lourd. Vérifiez vos taux d'intérêt.",
+            'CHARGES_EXCEPTIONNELLES' => "<b>Exceptionnel :</b> Par nature imprévisibles, ces charges ne devraient pas peser lourd ($pourcentage%). Si elles dépassent 10%, analysez leur origine réelle.",
+            default => "Analyse standard pour ce type de charge.",
+        };
+
+        if ($pourcentage > 40) {
+            $baseAdvice .= " <span class='text-danger'><b>Attention :</b> Cette catégorie est prédominante.</span>";
+        }
+
+        return $baseAdvice;
+    }
 }

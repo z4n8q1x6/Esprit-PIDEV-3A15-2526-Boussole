@@ -12,6 +12,37 @@
         </a>
     </div>
 
+    {# Widget Météo Flottant #}
+    <div id="weather-widget" class="weather-widget shadow d-none d-lg-flex">
+        <div class="weather-icon-container">
+            <i class="fas {{ weather.icon }}"></i>
+        </div>
+        <div class="weather-info">
+            <div class="weather-temp">{{ weather.temp }}°C</div>
+            <div class="weather-city">Tunis</div>
+            <div class="weather-desc">{{ weather.desc }}</div>
+        </div>
+    </div>
+    
+    {# Section News Ticker #}
+    {% if news is not empty %}
+    <div class="news-ticker-container mb-5 shadow-sm">
+        <div class="ticker-badge">
+            <span class="pulse-dot"></span>
+            <span class="badge-text">BUSINESS NEWS</span>
+        </div>
+        <div class="ticker-body">
+            <div id="news-ticker-content">
+                {% for n in news %}
+                    <a href="{{ n.link }}" target="_blank" class="news-item">
+                        <i class="fas fa-external-link-alt me-2 small"></i>{{ n.title }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {# Barre de recherche et de tri #}
     <div class="card mb-5 border-0 shadow-sm modern-filter-bar">
         <div class="card-body p-3">
@@ -244,5 +275,153 @@
     font-weight: 800;
     font-size: 1.1rem;
 }
+
+/* News Ticker Extra Styles */
+.news-ticker-container {
+    display: flex;
+    background: #141619;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 55px;
+    align-items: center;
+    border: 1px solid rgba(255,255,255,0.05);
+}
+.ticker-badge {
+    background: #e63946;
+    color: white;
+    padding: 0 25px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    font-weight: 800;
+    font-size: 0.7rem;
+    letter-spacing: 1.2px;
+    z-index: 2;
+    box-shadow: 8px 0 15px rgba(0,0,0,0.3);
+}
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    margin-right: 12px;
+    box-shadow: 0 0 8px #fff;
+    animation: ticker-pulse 1.5s infinite;
+}
+@keyframes ticker-pulse {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}
+.ticker-body {
+    flex-grow: 1;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+#news-ticker-content {
+    height: 100%;
+}
+.news-item {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 25px;
+    color: #f8f9fa !important;
+    text-decoration: none !important;
+    font-weight: 500;
+    font-size: 0.95rem;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(30px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.news-item.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+.news-item:hover {
+    color: #00e5ff !important;
+}
+
+/* Floating Weather Widget Styles */
+.weather-widget {
+    position: fixed;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(15px);
+    border-radius: 25px;
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    z-index: 1000;
+    width: 140px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+}
+.weather-widget:hover {
+    transform: translateY(-55%) scale(1.08);
+    background: #ffffff;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15) !important;
+}
+.weather-icon-container {
+    font-size: 2.8rem;
+    background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 4px rgba(251, 133, 0, 0.2));
+}
+.weather-info {
+    text-align: center;
+}
+.weather-temp {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    line-height: 1;
+}
+.weather-city {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #0d6efd;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-top: 5px;
+}
+.weather-desc {
+    font-size: 0.75rem;
+    color: #6c757d;
+    font-weight: 500;
+}
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Script News Ticker existant
+    const newsItems = document.querySelectorAll('.news-item');
+    if (newsItems.length > 0) {
+        let currentIndex = 0;
+        newsItems[currentIndex].classList.add('active');
+        setInterval(() => {
+            newsItems[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % newsItems.length;
+            newsItems[currentIndex].classList.add('active');
+        }, 5000);
+    }
+
+    // 2. Script Météo (Désactivé : Migré vers PHP)
+    // La météo est désormais gérée par le contrôleur Symfony pour une meilleure intégration.
+});
+</script>
 {% endblock %}

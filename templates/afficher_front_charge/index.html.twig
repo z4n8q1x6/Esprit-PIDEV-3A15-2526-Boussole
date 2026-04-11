@@ -8,6 +8,9 @@
     <div class="d-flex justify-content-between align-items-center mb-5">
         <h2 class="fw-bold text-dark mb-0">Mes Charges Financières</h2>
         <div class="d-flex align-items-center gap-3">
+            <button id="btn-conseils" class="btn btn-info-modern">
+                <i class="fas fa-lightbulb me-2"></i> Conseils Financiers
+            </button>
             <a href="{{ path('app_ajouter_charge') }}" class="btn btn-add-modern">
                 <i class="fas fa-plus-circle me-2"></i> Ajouter une charge
             </a>
@@ -249,5 +252,135 @@
     font-size: 1.2rem;
     box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
 }
+.btn-info-modern {
+    background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);
+    color: white !important;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 28px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(13, 202, 240, 0.2);
+    transition: all 0.3s ease;
+}
+.btn-info-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(13, 202, 240, 0.3);
+    filter: brightness(1.1);
+}
 </style>
-{% endblock %}
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const btnConseils = document.getElementById('btn-conseils');
+    if (btnConseils) {
+        btnConseils.addEventListener('click', async () => {
+            btnConseils.disabled = true;
+            const originalHTML = btnConseils.innerHTML;
+            btnConseils.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Analyse...';
+
+            try {
+                // Récupérer le paramètre 'q' (recherche) de l'URL actuelle
+                const urlParams = new URLSearchParams(window.location.search);
+                const query = urlParams.get('q') || '';
+                
+                const response = await fetch(`{{ path('app_front_charge_conseils') }}?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    let htmlContent = `
+                        <div class="text-start" style="font-family: 'Heebo', sans-serif;">
+                            <!-- Header Card -->
+                            <div class="mb-4 p-3 rounded-3 shadow-sm" style="background: #1d3b53; border-top: 4px solid #00e5ff;">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="small text-uppercase fw-bold text-white-50">Résumé de l'Analyse</span>
+                                    <span class="badge bg-soft-info text-info" style="font-size: 0.7rem; background: rgba(0, 229, 255, 0.1) !important; color: #00e5ff !important;">
+                                        Basé sur ${data.count} charges
+                                    </span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-baseline mt-2">
+                                    <h6 class="mb-0 text-white opacity-75">Dépenses Totales :</h6>
+                                    <h4 class="mb-0 fw-bold" style="color: #00e5ff;">${data.total} <small class="fw-normal" style="font-size: 0.8rem;">TND</small></h4>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-secondary border-opacity-25">
+                                    <span class="small text-white-50">Moyenne par dépense :</span>
+                                    <span class="small fw-bold text-white">${data.moyenne} TND</span>
+                                </div>
+                            </div>
+
+                            <!-- Categories -->
+                            <div class="mb-2 px-1">
+                                <h6 class="fw-bold text-dark mb-3">
+                                    <i class="fas fa-chart-pie me-2" style="color: #1d3b53;"></i> 
+                                    Répartition budgétaire :
+                                </h6>
+                                
+                                ${data.stats.map(stat => {
+                                    const barColor = stat.pourcentage > 40 ? '#dc3545' : '#198754';
+                                    const badgeClass = stat.pourcentage > 40 ? 'bg-danger' : 'bg-success';
+                                    
+                                    return `
+                                    <div class="category-item mb-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="fw-bold text-dark" style="font-size: 0.95rem;">${stat.label}</span>
+                                            <span class="badge ${badgeClass} shadow-sm px-2 py-1" style="font-size: 0.75rem;">${stat.pourcentage}%</span>
+                                        </div>
+                                        <div class="progress" style="height: 8px; border-radius: 10px; background: #e9ecef;">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                                 role="progressbar" 
+                                                 style="width: ${stat.pourcentage}%; background-color: ${barColor};" 
+                                                 aria-valuenow="${stat.pourcentage}" 
+                                                 aria-valuemin="0" 
+                                                 aria-valuemax="100"></div>
+                                        </div>
+                                        <div class="mt-2 p-2 rounded bg-white border border-light-subtle shadow-sm border-start border-3" style="border-color: ${barColor} !important;">
+                                            <p class="mb-0 small text-dark" style="line-height: 1.5; font-size: 0.85rem;">
+                                                <i class="fas fa-info-circle me-1 opacity-50"></i> ${stat.conseil}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+
+                    Swal.fire({
+                        title: '<h4 class="fw-bold mb-0">📊 Analyse Avancée</h4>',
+                        html: htmlContent,
+                        confirmButtonText: '<i class="fas fa-check me-2"></i> J\'ai compris',
+                        confirmButtonColor: '#1d3b53',
+                        width: '580px',
+                        padding: '1.5rem',
+                        background: '#ffffff',
+                        showCloseButton: true,
+                        customClass: {
+                            popup: 'rounded-4 shadow-lg border-0',
+                            confirmButton: 'px-4 py-2 rounded-3'
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Analyse Financière',
+                        text: data.message,
+                        icon: 'info',
+                        confirmButtonColor: '#0d6efd'
+                    });
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                Swal.fire({
+                    title: 'Erreur',
+                    text: 'Impossible de générer les conseils.',
+                    icon: 'error',
+                    confirmButtonColor: '#dc3545'
+                });
+            } finally {
+                btnConseils.disabled = false;
+                btnConseils.innerHTML = originalHTML;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
