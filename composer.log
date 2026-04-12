@@ -1,0 +1,36 @@
+./composer.json has been updated
+Running composer update lexik/jwt-authentication-bundle
+Loading composer repositories with package information
+Restricting packages listed in "symfony/symfony" to "8.0.*"
+Updating dependencies
+Your requirements could not be resolved to an installable set of packages.
+
+  Problem 1
+    - Root composer.json requires lexik/jwt-authentication-bundle * -> satisfiable by lexik/jwt-authentication-bundle[v2.10.7, ..., v2.21.0, v3.0.0, v3.1.0, v3.1.1, v3.2.0].
+    - lcobucci/jwt 5.0.0 requires php ~8.1.0 || ~8.2.0 -> your php version (8.4.19) does not satisfy that requirement.
+    - lcobucci/jwt[5.1.0, ..., 5.3.0] require php ~8.1.0 || ~8.2.0 || ~8.3.0 -> your php version (8.4.19) does not satisfy that requirement.
+    - lcobucci/jwt[5.4.0, ..., 5.6.0] require ext-sodium * -> it is missing from your system. Install or enable PHP's sodium extension.
+
+      Alternatively you can require one of these packages that provide the extension (or parts of it):
+      Keep in mind that the suggestions are automated and may not be valid or safe to use
+      - paragonie/sodium_compat_ext_sodium
+      - juspay/expresscheckout-php-sdk Express Checkout SDK for PHP allows easy integration with Juspay's EC payments as a service platform
+      - vufind/vufind A flexible discovery layer.
+
+    - lexik/jwt-authentication-bundle v2.10.7 requires symfony/framework-bundle ^3.4|^4.0|^5.0 -> found symfony/framework-bundle[v3.4.0, ..., v3.4.47, v4.0.0, ..., v4.4.51, v5.0.0, ..., v5.4.45] but it conflicts with your root composer.json require (8.0.*).
+    - lexik/jwt-authentication-bundle[v2.11.3, ..., v2.13.0] require symfony/framework-bundle ^4.4|^5.1 -> found symfony/framework-bundle[v4.4.0, ..., v4.4.51, v5.1.0, ..., v5.4.45] but it conflicts with your root composer.json require (8.0.*).
+    - lexik/jwt-authentication-bundle v2.14.0 requires symfony/config ^4.4|^5.4|^6.0 -> found symfony/config[v4.4.0, ..., v4.4.44, v5.4.0, ..., v5.4.46, v6.0.0, ..., v6.4.34] but the package is fixed to v8.0.8 (lock file version) by a partial update and that version does not match. Make sure you list it as an argument for the update command.
+    - lexik/jwt-authentication-bundle[v2.14.1, ..., v2.19.1] require symfony/config ^4.4|^5.3|^6.0 -> found symfony/config[v4.4.0, ..., v4.4.44, v5.3.0, ..., v5.4.46, v6.0.0, ..., v6.4.34] but the package is fixed to v8.0.8 (lock file version) by a partial update and that version does not match. Make sure you list it as an argument for the update command.
+    - lexik/jwt-authentication-bundle[v2.20.0, ..., v2.21.0] require symfony/config ^4.4|^5.4|^6.0|^7.0 -> found symfony/config[v4.4.0, ..., v4.4.44, v5.4.0, ..., v5.4.46, v6.0.0, ..., v6.4.34, v7.0.0, ..., v7.4.8] but the package is fixed to v8.0.8 (lock file version) by a partial update and that version does not match. Make sure you list it as an argument for the update command.
+    - lexik/jwt-authentication-bundle[v3.0.0, ..., v3.1.1] require symfony/config ^6.4|^7.0 -> found symfony/config[v6.4.0, ..., v6.4.34, v7.0.0, ..., v7.4.8] but the package is fixed to v8.0.8 (lock file version) by a partial update and that version does not match. Make sure you list it as an argument for the update command.
+    - lexik/jwt-authentication-bundle v3.2.0 requires lcobucci/jwt ^5.0 -> satisfiable by lcobucci/jwt[5.0.0, ..., 5.6.0].
+
+To enable extensions, verify that they are enabled in your .ini files:
+    - C:\xampp_new\php84\php.ini
+You can also run `php --ini` in a terminal to see which files are used by PHP in CLI mode.
+Alternatively, you can run Composer with `--ignore-platform-req=ext-sodium` to temporarily ignore these required extensions.
+
+Use the option --with-all-dependencies (-W) to allow upgrades, downgrades and removals for packages currently locked to specific versions.
+You can also try re-running composer require with an explicit version constraint, e.g. "composer require lexik/jwt-authentication-bundle:*" to figure out if any version is installable, or "composer require lexik/jwt-authentication-bundle:^2.1" if you know which you need.
+
+Installation failed, reverting ./composer.json and ./composer.lock to their original content.
