@@ -7,9 +7,14 @@
     {# En-tête avec titre + bouton Ajouter #}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0 fw-bold text-dark">Gestion des Fournisseurs</h2>
-        <a href="{{ path('app_ajouter_fournisseur') }}" class="btn btn-add-modern">
-            <i class="fas fa-plus-circle me-2"></i> Ajouter un fournisseur
-        </a>
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_afficher_back_fournisseur_mail') }}" class="btn btn-mail-modern">
+                <i class="fas fa-envelope me-2"></i> Mail
+            </a>
+            <a href="{{ path('app_ajouter_fournisseur') }}" class="btn btn-add-modern">
+                <i class="fas fa-plus-circle me-2"></i> Ajouter un fournisseur
+            </a>
+        </div>
     </div>
 
     {# Barre de recherche #}
@@ -187,6 +192,24 @@ th[data-sort]:hover {
 .btn-add-modern:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(25, 135, 84, 0.3);
+    filter: brightness(1.1);
+}
+
+.btn-mail-modern {
+    background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+    color: white !important;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(28, 200, 138, 0.2);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-mail-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(28, 200, 138, 0.3);
     filter: brightness(1.1);
 }
 

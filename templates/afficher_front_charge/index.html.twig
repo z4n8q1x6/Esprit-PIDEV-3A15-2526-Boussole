@@ -190,9 +190,7 @@
 }
 
 /* Barre de filtrage */
-.modern-filter-bar {
-    border-radius: 15px;
-}
+.modern-filter-bar { border-radius: 15px; }
 
 /* Cartes Charges */
 .charge-card-modern {
@@ -207,9 +205,7 @@
     transform: translateY(-8px);
     box-shadow: 0 15px 30px rgba(0,0,0,0.1);
 }
-.card-header-accent {
-    height: 6px;
-}
+.card-header-accent { height: 6px; }
 
 .btn-action {
     border-radius: 10px;
@@ -242,11 +238,7 @@
     gap: 15px;
     border: 1px solid #e9ecef;
 }
-.total-counter-front .text {
-    color: #6c757d;
-    font-weight: 600;
-    font-size: 1rem;
-}
+.total-counter-front .text { color: #6c757d; font-weight: 600; font-size: 1rem; }
 .total-counter-front .number-box {
     background: var(--primary-gradient);
     color: white;
@@ -271,11 +263,46 @@
     box-shadow: 0 6px 20px rgba(13, 202, 240, 0.3);
     filter: brightness(1.1);
 }
-</style>
 
+/* Floating Widgets Styles */
+.stats-floating-wrapper {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 9999;
+    width: 200px;
+}
+.stats-glass-widget {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+}
+.stats-glass-widget:hover {
+    transform: scale(1.05);
+    background: #ffffff;
+}
+.widget-header {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #1d3b53;
+    letter-spacing: 1px;
+    text-align: center;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding-bottom: 8px;
+}
+.chart-container { min-height: 180px; width: 100%; }
+.stats-floating-wrapper .apexcharts-canvas { margin: 0 auto; }
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    /* 1. Bouton Conseils Financiers */
     const btnConseils = document.getElementById('btn-conseils');
     if (btnConseils) {
         btnConseils.addEventListener('click', async () => {
@@ -284,10 +311,8 @@ document.addEventListener('DOMContentLoaded', () => {
             btnConseils.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Analyse...';
 
             try {
-                // Récupérer le paramètre 'q' (recherche) de l'URL actuelle
                 const urlParams = new URLSearchParams(window.location.search);
                 const query = urlParams.get('q') || '';
-                
                 const response = await fetch(`{{ path('app_front_charge_conseils') }}?q=${encodeURIComponent(query)}`);
                 const data = await response.json();
 
@@ -342,12 +367,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                                 <i class="fas fa-info-circle me-1 opacity-50"></i> ${stat.conseil}
                                             </p>
                                         </div>
-                                    </div>
-                                    `;
+                                    </div>`;
                                 }).join('')}
                             </div>
-                        </div>
-                    `;
+                        </div>`;
 
                     Swal.fire({
                         title: '<h4 class="fw-bold mb-0">📊 Analyse Avancée</h4>',
@@ -363,28 +386,72 @@ document.addEventListener('DOMContentLoaded', () => {
                             confirmButton: 'px-4 py-2 rounded-3'
                         }
                     });
-                } else {
-                    Swal.fire({
-                        title: 'Analyse Financière',
-                        text: data.message,
-                        icon: 'info',
-                        confirmButtonColor: '#0d6efd'
-                    });
                 }
             } catch (error) {
-                console.error('Erreur:', error);
-                Swal.fire({
-                    title: 'Erreur',
-                    text: 'Impossible de générer les conseils.',
-                    icon: 'error',
-                    confirmButtonColor: '#dc3545'
-                });
+                console.error(error);
             } finally {
                 btnConseils.disabled = false;
                 btnConseils.innerHTML = originalHTML;
             }
         });
     }
+
+    /* 2. Statistiques ApexCharts */
+    const initCharts = () => {
+        if (typeof ApexCharts === 'undefined') return;
+
+        const statsStatus = {{ statsStatus|json_encode|raw }};
+        const statsType = {{ statsType|json_encode|raw }};
+        const hasData = Object.values(statsStatus).some(v => v > 0) || Object.values(statsType).some(v => v > 0);
+
+        if (!hasData) {
+            document.querySelectorAll(".chart-container").forEach(el => el.innerHTML = '<div class="small text-muted py-4">Aucune donnée</div>');
+            return;
+        }
+
+        const common = {
+            chart: { height: 180, toolbar: { show: false } },
+            legend: { show: false },
+            dataLabels: { enabled: true, style: { fontSize: '9px' } }
+        };
+
+        new ApexCharts(document.querySelector("#chart-status"), {
+            ...common,
+            series: Object.values(statsStatus),
+            labels: Object.keys(statsStatus),
+            chart: { ...common.chart, type: 'donut' },
+            colors: ['#198754', '#dc3545', '#ffc107']
+        }).render();
+
+        new ApexCharts(document.querySelector("#chart-type"), {
+            ...common,
+            series: Object.values(statsType),
+            labels: Object.keys(statsType),
+            chart: { ...common.chart, type: 'pie' },
+            colors: ['#e83e8c', '#6f42c1', '#0d6efd']
+        }).render();
+    };
+
+    if (typeof ApexCharts === 'undefined') {
+        const sc = document.createElement('script');
+        sc.src = 'https://cdn.jsdelivr.net/npm/apexcharts';
+        sc.onload = initCharts;
+        document.head.appendChild(sc);
+    } else {
+        initCharts();
+    }
 });
 </script>
+
+{# Widgets de Statistiques Flottants #}
+<div class="stats-floating-wrapper">
+    <div class="stats-glass-widget shadow-lg mb-4">
+        <div class="widget-header">STATUT</div>
+        <div id="chart-status" class="chart-container"></div>
+    </div>
+    <div class="stats-glass-widget shadow-lg">
+        <div class="widget-header">CATEGORIE</div>
+        <div id="chart-type" class="chart-container"></div>
+    </div>
+</div>
 {% endblock %}

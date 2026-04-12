@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Dompdf\Dompdf;
 use Dompdf\Options;
-
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class AfficherFrontFournisseurController extends AbstractController
@@ -141,6 +140,9 @@ HTML;
         // 5. Récupération de la météo (Backend PHP)
         $weather = $this->getWeatherData($httpClient);
 
+        // 6. Analyse IA avec DuckDuckGo (NO KEY)
+        $ai_analysis = $this->getAIAnalysis($fournisseurs, $httpClient, $repository);
+
         return $this->render('afficher_front_fournisseur/index.html.twig', [
             'fournisseurs' => $fournisseurs,
             'total' => $totalFournisseurs,
@@ -150,8 +152,102 @@ HTML;
             'currentSort' => $sort,
             'currentDirection' => $direction,
             'news' => $news,
-            'weather' => $weather
+            'weather' => $weather,
+            'ai_analysis' => $ai_analysis
         ]);
+    }
+
+    private function getAIAnalysis(array $pageFournisseurs, HttpClientInterface $httpClient, FournisseurRepository $repository): array
+    {
+        // 1. Analyse locale : Franchise la plus représentée (Toujours 100% exact)
+        $counts = [];
+        $allFournisseurs = $repository->findAll();
+        foreach ($allFournisseurs as $f) {
+            $name = $f->getFranchiseId() ? $f->getFranchiseId()->getNom() : 'Indépendant';
+            $counts[$name] = ($counts[$name] ?? 0) + 1;
+        }
+        arsort($counts);
+        $topFranchise = key($counts);
+        $topCount = current($counts);
+
+        // 2. Préparation des franchises de la page pour l'IA
+        $uniqueNames = [];
+        foreach ($pageFournisseurs as $f) {
+            if ($f->getFranchiseId()) {
+                $uniqueNames[] = $f->getFranchiseId()->getNom();
+            }
+        }
+        $uniqueNames = array_unique($uniqueNames);
+
+        // 3. Appel à l'Intelligence Artificielle (GROQ - Llama3)
+        $apiKey = $_ENV['GROQ_API_KEY'] ?? $_SERVER['GROQ_API_KEY'] ?? getenv('GROQ_API_KEY');
+        if (!$apiKey) {
+            return [
+                'top_franchise' => $topFranchise,
+                'top_count' => $topCount,
+                'research' => [],
+                'error' => 'Veuillez configurer GROQ_API_KEY dans le fichier .env'
+            ];
+        }
+
+        try {
+            $namesList = implode(', ', $uniqueNames);
+            
+            $prompt = "Tu es un expert analyste business pour la plateforme 'Boussole'. 
+            Analyse cette liste de franchises : [{$namesList}].
+            Pour chaque franchise, fournis :
+            1. Une description experte rédigée de 2-3 phrases.
+            2. Le Chiffre d'Affaires (CA) estimé.
+            3. La tendance boursière (soit 'gain', soit 'loss', soit 'neutral').
+            4. Le statut boursier textuel (ex: '+2.45%', '-1.2%', ou 'Non coté').
+            
+            Réponds UNIQUEMENT sous forme de JSON pur avec cette structure :
+            {
+                \"research\": {
+                    \"NomDeLaFranchise\": {
+                        \"summary\": \"...\",
+                        \"revenue\": \"...\",
+                        \"stock_trend\": \"gain|loss|neutral\",
+                        \"stock_status\": \"...\",
+                        \"link\": \"https://www.google.com/search?q=NomDeLaFranchise\"
+                    }
+                }
+            }";
+
+            $response = $httpClient->request('POST', 'https://api.groq.com/openai/v1/chat/completions', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $apiKey,
+                    'Content-Type' => 'application/json',
+                ],
+                'json' => [
+                    'model' => 'llama-3.1-8b-instant',
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'Tu es un assistant qui répond uniquement en JSON.'],
+                        ['role' => 'user', 'content' => $prompt]
+                    ],
+                    'response_format' => ['type' => 'json_object'],
+                    'temperature' => 0.2
+                ]
+            ]);
+
+            $result = $response->toArray();
+            $content = $result['choices'][0]['message']['content'] ?? '{}';
+            $data = json_decode($content, true);
+
+            return [
+                'top_franchise' => $topFranchise,
+                'top_count' => $topCount,
+                'research' => $data['research'] ?? [],
+                'error' => null
+            ];
+        } catch (\Exception $e) {
+            return [
+                'top_franchise' => $topFranchise,
+                'top_count' => $topCount,
+                'research' => [],
+                'error' => "Erreur Groq : " . $e->getMessage()
+            ];
+        }
     }
 
     private function getWeatherData(HttpClientInterface $httpClient): array

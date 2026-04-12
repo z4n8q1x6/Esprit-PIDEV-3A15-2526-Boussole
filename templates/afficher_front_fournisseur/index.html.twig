@@ -24,6 +24,65 @@
         </div>
     </div>
     
+    {# Widget IA DuckDuckGo Flottant #}
+    <div id="ai-widget" class="ai-widget shadow d-none d-lg-flex" onclick="toggleAIReport()">
+        <div class="ai-icon-container">
+            <i class="fas fa-robot"></i>
+            <span class="ai-pulse"></span>
+        </div>
+        <div class="ai-info">
+            <div class="ai-title">BOUSSOLE IA</div>
+            <div class="ai-status">Analyse en cours...</div>
+        </div>
+    </div>
+
+    {# Panneau d'Insights IA (Caché par défaut) #}
+    <div id="ai-report-panel" class="ai-report-panel shadow-lg">
+        <div class="ai-report-header">
+            <h5 class="mb-0"><i class="fas fa-microchip me-2"></i> Rapport d'Analyse IA</h5>
+            <button class="btn-close btn-close-white" onclick="toggleAIReport()"></button>
+        </div>
+        <div class="ai-report-body">
+            <div class="ai-insight-section mb-4">
+                <div class="insight-label">FRANCHISE LEADER</div>
+                <div class="insight-value">{{ ai_analysis.top_franchise }}</div>
+                <div class="insight-sub">{{ ai_analysis.top_count }} partenaires enregistrés</div>
+            </div>
+            <hr class="op-2">
+            <div class="ai-research-section">
+                <div class="insight-label mb-3">ANALYSE EXPERTE & FINANCIÈRE</div>
+                
+                {% if ai_analysis.error %}
+                    <div class="alert alert-warning py-2 small">
+                        <i class="fas fa-exclamation-triangle me-2"></i> {{ ai_analysis.error }}
+                    </div>
+                {% endif %}
+
+                {% for name, info in ai_analysis.research %}
+                    <div class="research-item mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="research-title mb-0">{{ name }}</div>
+                            <div class="stock-badge {{ info.stock_trend }}">
+                                <i class="fas {% if info.stock_trend == 'gain' %}fa-arrow-trend-up{% elseif info.stock_trend == 'loss' %}fa-arrow-trend-down{% else %}fa-minus{% endif %}"></i>
+                                {{ info.stock_status }}
+                            </div>
+                        </div>
+                        
+                        <div class="finance-badge mb-3">
+                            <i class="fas fa-coins me-1"></i> CA: <strong>{{ info.revenue }}</strong>
+                        </div>
+
+                        <p class="research-text">{{ info.summary }}</p>
+                        
+                        <div class="research-footer">
+                            <span class="source">Source: Boussole Intelligence</span>
+                            <a href="{{ info.link }}" target="_blank" class="btn-more">Lire plus <i class="fas fa-external-link-alt ms-1"></i></a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
     {# Section News Ticker #}
     {% if news is not empty %}
     <div class="news-ticker-container mb-5 shadow-sm">
@@ -408,6 +467,162 @@
     color: #6c757d;
     font-weight: 500;
 }
+
+/* AI Widget Styles */
+.ai-widget {
+    position: fixed;
+    right: 30px;
+    top: 72%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #212529 0%, #343a40 100%);
+    border-radius: 25px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 1000;
+    width: 200px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    color: white;
+}
+.ai-widget:hover {
+    transform: translateY(-55%) scale(1.05);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3) !important;
+}
+.ai-icon-container {
+    font-size: 1.8rem;
+    position: relative;
+    color: #00e5ff;
+}
+.ai-pulse {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 10px;
+    height: 10px;
+    background: #00e5ff;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #00e5ff;
+    animation: ai-glow 1.5s infinite;
+}
+@keyframes ai-glow {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.5); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}
+.ai-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #00e5ff;
+}
+.ai-status {
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+/* AI Report Panel */
+.ai-report-panel {
+    position: fixed;
+    right: 30px;
+    top: 15%;
+    bottom: 15%;
+    width: 350px;
+    background: white;
+    border-radius: 20px;
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateX(450px);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ai-report-panel.active {
+    transform: translateX(0);
+}
+.ai-report-header {
+    background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
+    color: white;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.ai-report-body {
+    padding: 25px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+.insight-sub {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+.research-item {
+    background: #fdfdfd;
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+.research-item:hover {
+    background: #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+.stock-badge {
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 50px;
+}
+.stock-badge.gain { background: rgba(25, 135, 84, 0.1); color: #198754; }
+.stock-badge.loss { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
+.stock-badge.neutral { background: #f1f3f5; color: #6c757d; }
+
+.finance-badge {
+    display: inline-block;
+    background: #e7f1ff;
+    color: #0d6efd;
+    font-size: 0.75rem;
+    padding: 2px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+.research-title {
+    font-weight: 800;
+    font-size: 1rem;
+    color: #1a1a1a;
+}
+.research-text {
+    font-size: 0.85rem;
+    color: #444;
+    margin-bottom: 12px;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.research-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #f1f3f5;
+    padding-top: 10px;
+}
+.source {
+    font-size: 0.7rem;
+    color: #adb5bd;
+    font-weight: 600;
+}
+.btn-more {
+    font-size: 0.7rem;
+    text-decoration: none;
+    color: #0d6efd;
+    font-weight: 700;
+}
+.op-2 { opacity: 0.2; }
 </style>
 
 <script>
@@ -427,5 +642,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Script Météo (Désactivé : Migré vers PHP)
     // La météo est désormais gérée par le contrôleur Symfony pour une meilleure intégration.
 });
+
+function toggleAIReport() {
+    const panel = document.getElementById('ai-report-panel');
+    panel.classList.toggle('active');
+}
 </script>
 {% endblock %}

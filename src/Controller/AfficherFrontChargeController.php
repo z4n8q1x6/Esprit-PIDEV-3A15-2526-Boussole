@@ -134,6 +134,26 @@ HTML;
             $totalMontant += $c['montant'];
         }
 
+        // Statistiques globales (sur tous les résultats filtrés)
+        $statsStatus = ['Validé' => 0, 'Refusé' => 0, 'En attente' => 0];
+        $statsType = ['Financière' => 0, 'Exploitation' => 0, 'Exceptionnelle' => 0];
+
+        foreach ($allCharges as $c) {
+            // Statut
+            $status = $c['status_validation'] ?? 'En attente';
+            if (isset($statsStatus[$status])) {
+                $statsStatus[$status]++;
+            } else {
+                $statsStatus['En attente']++;
+            }
+
+            // Type
+            $type = $c['type'] ?? '';
+            if ($type === 'CHARGES_FINANCIERES') $statsType['Financière']++;
+            elseif ($type === 'CHARGES_EXPLOITATIONS') $statsType['Exploitation']++;
+            elseif ($type === 'CHARGES_EXCEPTIONNELLES') $statsType['Exceptionnelle']++;
+        }
+
         return $this->render('afficher_front_charge/index.html.twig', [
             'charges' => $charges,
             'total' => $totalMontant,
@@ -141,7 +161,9 @@ HTML;
             'pagesCount' => $pagesCount,
             'search' => $search,
             'sort' => $sort,
-            'dir' => $dir
+            'dir' => $dir,
+            'statsStatus' => $statsStatus,
+            'statsType' => $statsType
         ]);
     }
 

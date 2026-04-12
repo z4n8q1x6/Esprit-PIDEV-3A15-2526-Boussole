@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/admin')]
@@ -71,6 +73,95 @@ final class AfficherBackChargeController extends AbstractController
         } catch (\Exception $e) {
             return ['eur' => 0, 'usd' => 0];
         }
+    }
+
+    #[Route('/afficher_back_charge/mail', name: 'app_afficher_back_charge_mail')]
+    public function sendEmailReport(EntityManagerInterface $entityManager, MailerInterface $mailer): Response
+    {
+        $charges = $entityManager->createQuery(
+            'SELECT c, f FROM App\Entity\Charge c LEFT JOIN c.franchise_id f'
+        )->getArrayResult();
+
+        $totalCharges = 0;
+        foreach ($charges as $charge) {
+            $totalCharges += $charge['montant'];
+        }
+
+        $htmlContent = $this->generateChargesEmailHtml($charges, $totalCharges);
+
+        $recipient = $_ENV['MAILER_TO'] ?? 'waellpbt@gmail.com';
+
+        $email = (new Email())
+            ->from($recipient)
+            ->to($recipient)
+            ->subject('Rapport Complet des Charges - Boutique Boussole')
+            ->html($htmlContent);
+
+        try {
+            $mailer->send($email);
+            $this->addFlash('success', 'Le rapport des charges a été envoyé avec succès à ' . $recipient);
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors de l\'envoi du mail : ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_afficher_back_charge');
+    }
+
+    private function generateChargesEmailHtml(array $charges, float $totalCharges): string
+    {
+        $rows = "";
+        foreach ($charges as $charge) {
+            $date = $charge['date_charge'] instanceof \DateTimeInterface ? $charge['date_charge']->format('d/m/Y') : (is_string($charge['date_charge']) ? date('d/m/Y', strtotime($charge['date_charge'])) : 'N/A');
+            $statusStr = $charge['status_validation'];
+            $badgeClass = $statusStr === 'Validé' ? 'background-color: #1cc88a;' : ($statusStr === 'En attente' ? 'background-color: #f6c23e;' : 'background-color: #e74a3b;');
+            
+            $rows .= "<tr>
+                <td style='padding: 12px; border-bottom: 1px solid #ddd;'>{$charge['titre']}</td>
+                <td style='padding: 12px; border-bottom: 1px solid #ddd; font-weight: bold; color: #2e59d9;'>".number_format($charge['montant'], 3, '.', ' ')." DT</td>
+                <td style='padding: 12px; border-bottom: 1px solid #ddd;'>{$date}</td>
+                <td style='padding: 12px; border-bottom: 1px solid #ddd;'>{$charge['type']}</td>
+                <td style='padding: 12px; border-bottom: 1px solid #ddd;'><span style='padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; color: #fff; {$badgeClass}'>{$statusStr}</span></td>
+            </tr>";
+        }
+
+        $year = date('Y');
+        $totalFormatted = number_format($totalCharges, 3, '.', ' ');
+
+        return "
+        <!DOCTYPE html>
+        <html>
+        <body style=\"font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f7f6;\">
+            <div style=\"max-width: 800px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);\">
+                <div style=\"background: #4e73df; color: #fff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;\">
+                    <h1 style=\"margin: 0; font-size: 24px;\">Rapport Mensuel des Charges</h1>
+                </div>
+                <div style=\"padding: 20px;\">
+                    <p>Bonjour,</p>
+                    <p>Veuillez trouver ci-dessous le récapitulatif complet des charges enregistrées dans le système <strong>Boussole</strong>.</p>
+                    <table style=\"width: 100%; border-collapse: collapse; margin-top: 20px;\">
+                        <thead>
+                            <tr style=\"background-color: #f8f9fc; color: #4e73df;\">
+                                <th style=\"padding: 12px; text-align: left; border-bottom: 2px solid #e3e6f0;\">Titre</th>
+                                <th style=\"padding: 12px; text-align: left; border-bottom: 2px solid #e3e6f0;\">Montant</th>
+                                <th style=\"padding: 12px; text-align: left; border-bottom: 2px solid #e3e6f0;\">Date</th>
+                                <th style=\"padding: 12px; text-align: left; border-bottom: 2px solid #e3e6f0;\">Type</th>
+                                <th style=\"padding: 12px; text-align: left; border-bottom: 2px solid #e3e6f0;\">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {$rows}
+                        </tbody>
+                    </table>
+                    <p style=\"margin-top: 25px; padding: 15px; background: #f8f9fc; border-radius: 5px; border-left: 5px solid #4e73df;\">
+                        <strong>Total Global des Charges :</strong> <span style=\"font-size: 18px; color: #4e73df;\">{$totalFormatted} DT</span>
+                    </p>
+                </div>
+                <div style=\"padding: 20px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; margin-top: 20px;\">
+                    <p>&copy; {$year} Boussole - Gestion de Franchise. Tous droits réservés.</p>
+                </div>
+            </div>
+        </body>
+        </html>";
     }
 
     #[Route('/afficher_back_charge/delete/{id}', name: 'app_afficher_back_charge_delete', methods: ['DELETE'])]
