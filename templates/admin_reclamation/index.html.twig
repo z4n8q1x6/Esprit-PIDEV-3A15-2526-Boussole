@@ -27,23 +27,68 @@
         {% endif %}
 
         <div class="card-body">
-            <div class="mb-3">
-                <input
-                    type="text"
-                    id="search-reclamation-admin"
-                    class="form-control form-control-sm"
-                    placeholder="Rechercher par sujet..."
-                    aria-label="Rechercher dans la table"
-                >
+            <div class="mb-3 pb-0">
+                <form method="get" class="d-flex gap-2">
+                    <input
+                            class="form-control form-control-sm"
+                            placeholder="Rechercher par sujet..."
+                            type="text"
+                            name="q"
+                            value="{{ app.request.query.get('q') }}"
+                            >
+                            <button type="submit" class="btn btn-primary btn-sm px-3">
+                                Search
+                            </button>
+                    {% if app.request.query.get('q') is not empty %}
+                    <a href="{{ path('admin_reclamation_index') }}" class="btn btn-outline-secondary">
+                        Clear
+                    </a>
+                    {% endif %}
+                </form>
             </div>
             <div class="table-responsive border-0">
                 <table id="table-reclamation-admin" class="table table-dark-gray align-middle p-4 mb-0 table-hover">
                     <thead>
+                        {% set currentSort = app.request.query.get('sort', 'id') %}
+                        {% set currentDir = app.request.query.get('direction', 'desc') %}
+                        {% set query = app.request.query.get('q') %}
                         <tr>
-                            <th scope="col" class="border-0 rounded-start" style="cursor: pointer;">Sujet</th>
-                            <th scope="col" class="border-0" style="cursor: pointer;">Description</th>
-                            <th scope="col" class="border-0" style="cursor: pointer;">Statut</th>
-                            <th scope="col" class="border-0 text-center" style="cursor: pointer;">Date de création</th>
+                            <th scope="col" class="border-0 rounded-start" style="cursor: pointer;">
+                                {% set isSujet = currentSort == 'sujet' %}
+                                {% set nextDir = (isSujet and currentDir == 'asc') ? 'desc' : 'asc' %}
+
+                                <a href="{{ path('admin_reclamation_index', {q: query, sort: 'sujet', direction: nextDir}) }}" class="text-reset text-decoration-none">
+                                    Sujet
+                                    {% if isSujet %}{{ currentDir == 'asc' ? '↑' : '↓' }}{% endif %}
+                                </a>
+                            </th>
+                            <th scope="col" class="border-0" style="cursor: pointer;">
+                                {% set isDesc = currentSort == 'description' %}
+                                {% set nextDir = (isDesc and currentDir == 'asc') ? 'desc' : 'asc' %}
+
+                                <a href="{{ path('admin_reclamation_index', {q: query, sort: 'description', direction: nextDir}) }}" class="text-reset text-decoration-none">
+                                    Description
+                                    {% if isDesc %}{{ currentDir == 'asc' ? '↑' : '↓' }}{% endif %}
+                                </a>
+                            </th>
+                            <th scope="col" class="border-0" style="cursor: pointer;">
+                                {% set isStatut = currentSort == 'statut' %}
+                                {% set nextDir = (isStatut and currentDir == 'asc') ? 'desc' : 'asc' %}
+
+                                <a href="{{ path('admin_reclamation_index', {q: query, sort: 'statut', direction: nextDir}) }}" class="text-reset text-decoration-none">
+                                    Statut
+                                    {% if isStatut %}{{ currentDir == 'asc' ? '↑' : '↓' }}{% endif %}
+                                </a>
+                            </th>
+                            <th scope="col" class="border-0 text-center" style="cursor: pointer;">
+                                {% set isDate = currentSort == 'date_creation' %}
+                                {% set nextDir = (isDate and currentDir == 'asc') ? 'desc' : 'asc' %}
+
+                                <a href="{{ path('admin_reclamation_index', {q: query, sort: 'date_creation', direction: nextDir}) }}" class="text-reset text-decoration-none">
+                                    Date de création
+                                    {% if isDate %}{{ currentDir == 'asc' ? '↑' : '↓' }}{% endif %}
+                                </a>
+                            </th>
                             <th scope="col" class="border-0 rounded-end text-center">Actions</th>
                         </tr>
                     </thead>
@@ -67,7 +112,6 @@
                                     <form method="post" action="{{ path('admin_reclamation_edit', {'id': reclamation.id}) }}" class="d-flex align-items-center">
                                         <input type="hidden" name="token" value="{{ csrf_token('edit-item') }}">
 
-                                        {# Match the variable case: reclamation.statut #}
                                         <select name="statut" class="form-select form-select-sm me-2" style="width: auto;">
                                             <option value="EN_ATTENTE" {{ reclamation.statut == 'EN_ATTENTE' ? 'selected' }}>EN_ATTENTE</option>
                                             <option value="EN_COURS" {{ reclamation.statut == 'EN_COURS' ? 'selected' }}>EN_COURS</option>
@@ -111,15 +155,4 @@
     </div>
 </div>
 
-<script src="{{ asset('assets/js/table-search-sort.js') }}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        new TableSearchSort({
-            tableId: 'table-reclamation-admin',
-            searchInputSelector: '#search-reclamation-admin',
-            searchColumnIndex: 0,
-            sortableColumns: [0, 1, 2, 3]
-        });
-    });
-</script>
 {% endblock %}
