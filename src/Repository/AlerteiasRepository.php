@@ -13,5 +13,13 @@ class AlerteiasRepository extends ServiceEntityRepository
         parent::__construct($registry, Alerteias::class);
     }
 
-    // Add custom methods as needed
+    public function searchAndSort(?string $search, string $sort, string $direction)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.type_alerte LIKE :search')
+            ->setParameter('search', '%' . $search . '%')
+            ->orderBy('a.' . $sort, $direction)
+            ->getQuery()
+            ->getResult();
+    }
 }

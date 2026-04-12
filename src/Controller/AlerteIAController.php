@@ -30,9 +30,16 @@ final class AlerteIAController extends AbstractController
     }
 
     #[Route('/alertes', name: 'alerte_index')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $alertes = $this->repo->findBy(['franchise_id' => $this->franchise_id]);
+        $search = $request->query->get('q', '');
+        $sort = $request->query->get('sort', 'id');
+        $direction = $request->query->get('direction', 'DESC');
+
+        if (!in_array($sort, ['type_alerte', 'message', 'score_gravite', 'date_detection'])) {
+            $sort = 'id';
+        }
+        $alertes = $this->repo->searchAndSort($search, $sort, $direction);
         return $this->render('alerte_ia/index.html.twig', [
             'alertes' => $alertes,
         ]);
