@@ -76,6 +76,11 @@
                         {{ form_widget(form.montant, {'attr': {'class': 'form-control bg-transparent text-light border-secondary', 'placeholder': '0.00'}}) }}
                         <div class="text-danger small">{{ form_errors(form.montant) }}</div>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label text-light">Type</label>
+                        {{ form_widget(form.type) }}
+                        <div class="text-danger small">{{ form_errors(form.type) }}</div>
+                    </div>
                     <div class="mb-4">
                         <label class="form-label text-light">Description</label>
                         {{ form_widget(form.description, {
@@ -90,7 +95,7 @@
                         </div>
                     </div>
                     <button type="submit" class="btn w-100 fw-bold" style="background-color: #00e5ff; color: #000;">
-                        VALIDER RECETTE
+                        VALIDER LA TRANSACTION
                     </button>
                 {{ form_end(form) }}
             </div>

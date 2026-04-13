@@ -1,4 +1,4 @@
-﻿# Suivi des Modifications du Projet Boussole
+# Suivi des Modifications du Projet Boussole
 
 Ce fichier répertorie toutes les modifications apportées au code source, organisées par tâches.
 
@@ -82,3 +82,42 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 * **Fichier** : src/Controller/DashboardSiegeController.php
     * **Action** : Refonte de la logique du graphique interactif ()
     * **Raison** : Le graphique ignorait les budgets de type LIMITE_DEPENSE. Ajout de datasets sÃ©parÃ©s : Revenus RÃ©els, Budget Revenus, DÃ©penses RÃ©elles et Limite DÃ©penses de maniÃ¨re rÃ©troactive sur 3 mois.
+
+---
+
+## Tâche 7 : Personnalisation PDF et application dynamique des couleurs
+**Date** : 13/04/2026
+* **Fichier modifié** : templates/bilan/bilan_pdf.html.twig
+  * **Lignes exactes** : Lignes 1 - 213 (Refonte complète)
+  * **Description** : Refonte intégrale en HTML/CSS du design du modèle PDF pour correspondre à 100% à la maquette graphique fournie (en-tête bleu nuit, encart d'infos formaté). Pour pallier aux limites du parseur CSS de l'outil de génération DOMPDF, intégration de balises `style="..."` inline pour attribuer de manière robuste et dynamique et inconditionnelle les couleurs vert `#10ac84` pour les rentrées d'argent, strictes rouge `#ff4757` pour les dépenses selon les contraintes demandées.
+
+---
+
+## Tâche 8 : Correction de la synchronisation Charge → Transaction (Dashboard & Historique)
+**Date** : 13/04/2026
+
+* **Fichier modifié** : src/Controller/AjouterChargeController.php
+  * **Lignes exactes** : Lignes 34 - 35
+  * **Description** : Correction du type de transaction : le type est défini sur `'DEPENSE'` (au lieu d'une valeur incorrecte). La description est passée de `'Charge : ' . titre` à `'Charge ' . titre` pour supprimer le caractère `:` qui violait la contrainte Regex de l'entité Transaction (`/^[A-Za-zÀ-ÿ\s]+$/` — lettres et espaces uniquement).
+* **Fichier modifié** : src/Controller/AjouterChargeController.php
+  * **Lignes exactes** : Lignes 37 - 41
+  * **Description** : Correction critique de l'association `franchise_id`. Avant : la transaction utilisait la franchise sélectionnée dans le formulaire de charge (ex: ID 6). Mais le Dashboard (`/transaction`) et l'Historique (`/transaction/historique`) filtrent par `findOneBy([])` (= franchise ID 1). Résultat : les transactions existaient en BDD mais n'apparaissaient jamais. Fix : la transaction utilise désormais toujours la même première franchise que le Dashboard/Historique via `findOneBy([])`.
+
+---
+
+## Tâche 9 : Bundle Faible n°1 – Graphiques Statistiques (Chart.js)
+**Date** : 13/04/2026
+
+* **Installation Requise** : `composer require symfony/ux-chartjs` (Bundle Symfony UX Chartjs)
+* **Fichier modifié** : src/Controller/DashboardSiegeController.php
+  * **Lignes exactes** : Lignes 11 - 12 (Imports)
+  * **Description** : Ajout des imports `Symfony\UX\Chartjs\Builder\ChartBuilderInterface` et `Symfony\UX\Chartjs\Model\Chart` pour l'injection du service de construction de graphiques.
+* **Fichier modifié** : src/Controller/DashboardSiegeController.php
+  * **Lignes exactes** : Lignes 17 (Signature) et Lignes 53 - 166 (Logique graphique)
+  * **Description** : Injection de `ChartBuilderInterface` dans la méthode `index()`. Construction d'un graphique de type `BAR` comparant « Réel (Transactions) » vs « Budget Prévu » sur les 3 derniers mois. La logique calcule pour chaque mois : les revenus réels (somme des transactions RECETTE), l'objectif de revenu et la limite de dépenses (depuis `Budget_previsionnel`). Le budget prévu = Objectif Revenu − Limite Dépenses. Datasets configurés avec couleurs Cyan (`#00d4ff`) et Orange (`#ff9800`), axes personnalisés et légende en bas.
+* **Fichier modifié** : templates/dashboard_siege/index.html.twig
+  * **Lignes exactes** : Lignes 86 - 96 (Conteneur graphique)
+  * **Description** : Intégration du graphique via `{{ render_chart(chart) }}` dans un onglet « Statistiques Globales » avec un conteneur de hauteur fixe (350px). Un second onglet « Radar de Performance » est prévu en placeholder.
+* **Fichier modifié** : templates/dashboard_siege/index.html.twig
+  * **Lignes exactes** : Lignes 109 - 157 (Script JavaScript)
+  * **Description** : Chargement de Chart.js via CDN (`cdn.jsdelivr.net/npm/chart.js`). Script Vanilla JS qui extrait le JSON de l'attribut `data-symfony--ux-chartjs--chart-view-value` généré par `render_chart()` et initialise le graphique directement — contournement nécessaire car le projet n'utilise pas AssetMapper/Stimulus. Gestion visuelle des onglets (couleur cyan active `#00e5ff` avec soulignement).

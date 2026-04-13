@@ -35,14 +35,13 @@ final class TransactionController extends AbstractController
         $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $transaction->setType('RECETTE');
             if ($dummyFranchise) {
                 $transaction->setFranchise_id($dummyFranchise);
             }
             $entityManager->persist($transaction);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Recette validée avec succès !');
+            $this->addFlash('success', 'Transaction validée avec succès !');
             return $this->redirectToRoute('app_transaction_index',[], Response::HTTP_SEE_OTHER);
         }
 

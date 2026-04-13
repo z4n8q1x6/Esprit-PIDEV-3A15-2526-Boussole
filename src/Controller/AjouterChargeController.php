@@ -20,16 +20,30 @@ final class AjouterChargeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
             // 1. GÉNÉRATION MANUELLE DE L'ID (Logique conservée)
             $manualId = (int) (time() + random_int(1, 1000));
             $charge->setId($manualId);
 
-            // 2. SAUVEGARDE
+            // 2. SAUVEGARDE DE LA CHARGE
             $entityManager->persist($charge);
+
+            // 3. SYNCHRONISATION AUTOMATIQUE EN TANT QUE DÉPENSE (TRANSACTION)
+            $transaction = new \App\Entity\Transaction();
+            $transaction->setDate($charge->getDateCharge());
+            $transaction->setMontant($charge->getMontant());
+            $transaction->setType('DEPENSE');
+            $transaction->setDescription('Charge ' . $charge->getTitre());
+            
+            // Toujours utiliser la première franchise (celle utilisée par le dashboard/historique)
+            $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+            if ($dummyFranchise) {
+                $transaction->setFranchise_id($dummyFranchise);
+            }
+
+            $entityManager->persist($transaction);
             $entityManager->flush();
 
-            $this->addFlash('success', 'La charge a été enregistrée avec succès (ID: ' . $manualId . ') !');
+            $this->addFlash('success', 'La charge a été enregistrée et ajoutée aux transactions en tant que dépense avec succès !');
             
             return $this->redirectToRoute('app_ajouter_charge');
         }

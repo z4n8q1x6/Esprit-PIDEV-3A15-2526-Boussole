@@ -24,6 +24,14 @@ class TransactionType extends AbstractType
                 'invalid_message' => 'Veuillez entrer un nombre valide.',
                 'attr' => ['class' => 'form-control bg-dark text-light border-secondary', 'placeholder' => '0.00']
             ])
+            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+                'label' => 'Type de Transaction',
+                'choices' => [
+                    'Recette (Entrée d\'argent)' => 'RECETTE',
+                    'Dépense / Charge (Sortie)' => 'DEPENSE',
+                ],
+                'attr' => ['class' => 'form-select bg-dark text-light border-secondary']
+            ])
             ->add('description', null, [
                 'label' => 'Description',
                 'attr' => [

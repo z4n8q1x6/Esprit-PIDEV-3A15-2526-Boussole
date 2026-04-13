@@ -8,11 +8,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
 
 class DashboardSiegeController extends AbstractController
 {
     #[Route('/admin/dashboard', name: 'app_siege_dashboard')]
-    public function index(EntityManagerInterface $em): Response
+    public function index(EntityManagerInterface $em, ChartBuilderInterface $chartBuilder): Response
     {
         $transactions = $em->getRepository(Transaction::class)->findAll();
 
@@ -52,7 +54,7 @@ class DashboardSiegeController extends AbstractController
         // Par simplicité, on structure un tableau des 3 derniers mois
         $chartData = [];
         for ($i = 2; $i >= 0; $i--) {
-            $date = new \DateTime()->modify("-$i month");
+            $date = (new \DateTime())->modify("-$i month");
             $month = (int) $date->format('n');
             $year = (int) $date->format('Y');
 
@@ -68,40 +70,106 @@ class DashboardSiegeController extends AbstractController
                 }
             }
 
-            // Calculer Budget Prévu (Objectif Revenu Global)
-            $budgets = $em->getRepository(Budget_previsionnel::class)->findBy([
+            // --- Calculer Objectif de Revenu ---
+            $budgetsRev = $em->getRepository(Budget_previsionnel::class)->findBy([
                 'mois' => $month,
                 'annee' => $year,
                 'type_budget' => 'OBJECTIF_REVENU',
-                'franchise_id' => null, // Bugdet réseau global
+                'franchise_id' => null,
             ]);
-            $budget = 0;
-            foreach ($budgets as $b) {
-                $budget += $b->getMontantCible();
-            }
-
-            // Si pas de budget global (null), additionner tous les budgets franchisés
-            if (empty($budgets)) {
-                $allBudgets = $em->getRepository(Budget_previsionnel::class)->findBy([
+            $objectifRevenu = 0;
+            if (!empty($budgetsRev)) {
+                foreach ($budgetsRev as $b) { $objectifRevenu += $b->getMontantCible(); }
+            } else {
+                $allBudgetsRev = $em->getRepository(Budget_previsionnel::class)->findBy([
                     'mois' => $month,
                     'annee' => $year,
                     'type_budget' => 'OBJECTIF_REVENU',
                 ]);
-                foreach ($allBudgets as $b) {
-                    $budget += $b->getMontantCible();
-                }
+                foreach ($allBudgetsRev as $b) { $objectifRevenu += $b->getMontantCible(); }
             }
+
+            // --- Calculer Limites de Dépenses ---
+            $budgetsDep = $em->getRepository(Budget_previsionnel::class)->findBy([
+                'mois' => $month,
+                'annee' => $year,
+                'type_budget' => 'LIMITE_DEPENSE',
+                'franchise_id' => null,
+            ]);
+            $limiteDepense = 0;
+            if (!empty($budgetsDep)) {
+                foreach ($budgetsDep as $b) { $limiteDepense += $b->getMontantCible(); }
+            } else {
+                $allBudgetsDep = $em->getRepository(Budget_previsionnel::class)->findBy([
+                    'mois' => $month,
+                    'annee' => $year,
+                    'type_budget' => 'LIMITE_DEPENSE',
+                ]);
+                foreach ($allBudgetsDep as $b) { $limiteDepense += $b->getMontantCible(); }
+            }
+
+            // Budget Prévu = Objectif de Revenu - Limite de Dépenses
+            $budget = $objectifRevenu - $limiteDepense;
 
             $chartData['labels'][] = $label;
             $chartData['reel'][] = $reel;
             $chartData['budget'][] = $budget;
         }
 
+        // Créer l'objet Chart via Symfony UX
+        $chart = $chartBuilder->createChart(Chart::TYPE_BAR);
+        
+        // Inversion pour affichage chronologique (de gauche à droite)
+        $chartData['labels'] = array_reverse($chartData['labels']);
+        $chartData['reel'] = array_reverse($chartData['reel']);
+        $chartData['budget'] = array_reverse($chartData['budget']);
+
+        $chart->setData([
+            'labels' => $chartData['labels'],
+            'datasets' => [
+                [
+                    'label' => 'Réel (Transactions)',
+                    'backgroundColor' => '#00d4ff', // Cyan
+                    'data' => $chartData['reel'],
+                    'borderRadius' => 4,
+                ],
+                [
+                    'label' => 'Budget Prévu',
+                    'backgroundColor' => '#ff9800', // Orange
+                    'data' => $chartData['budget'],
+                    'borderRadius' => 4,
+                ],
+            ],
+        ]);
+
+        $chart->setOptions([
+            'responsive' => true,
+            'maintainAspectRatio' => false,
+            'plugins' => [
+                'legend' => [
+                    'position' => 'bottom',
+                    'labels' => [
+                        'color' => '#a0aec0'
+                    ]
+                ]
+            ],
+            'scales' => [
+                'x' => [
+                    'grid' => [ 'display' => false ],
+                    'ticks' => [ 'color' => '#a0aec0' ]
+                ],
+                'y' => [
+                    'grid' => [ 'color' => '#1e293b' ],
+                    'ticks' => [ 'color' => '#a0aec0' ]
+                ]
+            ]
+        ]);
+
         return $this->render('dashboard_siege/index.html.twig', [
             'revenus' => $revenus,
             'depenses' => $depenses,
             'solde' => $solde,
-            'chartData' => json_encode($chartData),
+            'chart' => $chart,
             'taux_revenus' => $tauxRevenus,
             'taux_depenses' => $tauxDepenses,
         ]);

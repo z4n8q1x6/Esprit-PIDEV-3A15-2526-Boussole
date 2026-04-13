@@ -89,7 +89,7 @@
                 <p class="text-muted small mb-4">Comparaison entre les montants réels (transactions) et les budgets prévisionnels de toutes les franchises</p>
                 
                 <div style="height: 350px;">
-                    <canvas id="budgetChart"></canvas>
+                    {{ render_chart(chart) }}
                 </div>
             </div>
         </div>
@@ -111,104 +111,26 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Récupération des données passées par Symfony
-    const chartData = {{ chartData|raw }};
+    console.log('DOM Loaded. Looking for charts...');
+    const canvases = document.querySelectorAll('canvas');
     
-    // Inversion pour afficher du mois le plus ancien au plus récent (gauche à droite)
-    const labels = chartData.labels.reverse();
-    const reelData = chartData.reel.reverse();
-    const budgetData = chartData.budget.reverse();
+    canvases.forEach(canvas => {
+        console.log('Canvas found:', canvas);
+        console.dir(canvas.attributes);
+        let viewData = canvas.getAttribute('data-symfony--ux-chartjs--chart-view-value') || canvas.getAttribute('data-view') || canvas.getAttribute('data-controller-new');
+        
+        if (viewData) {
+            const payload = JSON.parse(viewData);
+            
+            // Configuration globale
+            Chart.defaults.color = '#a1a1a8';
+            Chart.defaults.font.family = "'Inter', sans-serif";
 
-    const ctx = document.getElementById('budgetChart').getContext('2d');
-    
-    // Configuration globale de Chart.js pour le thème sombre
-    Chart.defaults.color = '#a1a1a8';
-    Chart.defaults.font.family = "'Inter', sans-serif";
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Réel (Transactions)',
-                    data: reelData,
-                    backgroundColor: '#00e5ff', 
-                    borderRadius: 4,
-                    barPercentage: 0.6,
-                    categoryPercentage: 0.8
-                },
-                {
-                    label: 'Budget Prévu',
-                    data: budgetData,
-                    backgroundColor: '#ff9800', // Orange style
-                    borderRadius: 4,
-                    barPercentage: 0.6,
-                    categoryPercentage: 0.8
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20,
-                        color: '#a1a1a8'
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
-                    padding: 12,
-                    borderColor: '#333',
-                    borderWidth: 1,
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            if (context.parsed.y !== null) {
-                                label += new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'TND' }).format(context.parsed.y);
-                            }
-                            return label;
-                        }
-                    }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#333333',
-                        drawBorder: false
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return value.toLocaleString('fr-FR');
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Montant (TND)'
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false,
-                        drawBorder: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Période'
-                    }
-                }
-            }
+            new Chart(canvas, {
+                type: payload.type,
+                data: payload.data,
+                options: payload.options
+            });
         }
     });
 
