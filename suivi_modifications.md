@@ -121,3 +121,16 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 * **Fichier modifié** : templates/dashboard_siege/index.html.twig
   * **Lignes exactes** : Lignes 109 - 157 (Script JavaScript)
   * **Description** : Chargement de Chart.js via CDN (`cdn.jsdelivr.net/npm/chart.js`). Script Vanilla JS qui extrait le JSON de l'attribut `data-symfony--ux-chartjs--chart-view-value` généré par `render_chart()` et initialise le graphique directement — contournement nécessaire car le projet n'utilise pas AssetMapper/Stimulus. Gestion visuelle des onglets (couleur cyan active `#00e5ff` avec soulignement).
+
+---
+
+## Tâche 10 : Bundle Faible n°2 – Génération de QR Code (Signature Numérique)
+**Date** : 13/04/2026
+
+* **Installation Requise** : `composer require endroid/qr-code-bundle`
+* **Fichier modifié** : src/Controller/BilanController.php
+  * **Lignes exactes** : Lignes 217 - 239
+  * **Description** : Injection de `\Endroid\QrCode\Builder\BuilderInterface` dans l'action `exportPdf()`. Génération d'une entité QR Code contenant les données financières du bilan (ID, Franchise, Solde Net, Statut) en format chaîne de caractères. Personnalisation esthétique du QR Code aux couleurs de Boussole (cyan `#00d4ff` et fond bleu nuit `#1a1f2c`). Utilisation des paramètres nommés de PHP 8 (`size: 150`, `data: $qrData`, etc.) pour la méthode `build()` selon la nouvelle syntaxe Endroid (les appels chaînés style `->size()` n'étant plus valides). Conversion de l'image générée en Data URI (Base64) puis transmise à Twig via la variable `qr_code_uri`.
+* **Fichier modifié** : templates/bilan/bilan_pdf.html.twig
+  * **Lignes exactes** : Lignes 217 - 223
+  * **Description** : Intégration de la balise HTML `<img>` lisant la variable `{{ qr_code_uri }}` avec un conteneur stylisé pour afficher la signature numérique (QR code) sous la zone de résultat financier du PDF.

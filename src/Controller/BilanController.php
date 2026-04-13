@@ -215,8 +215,30 @@ final class BilanController extends AbstractController
     }
 
     #[Route('/pdf/{id}', name: 'export_pdf', methods: ['GET'])]
-    public function exportPdf(Bilan $bilan): Response
+    public function exportPdf(Bilan $bilan, \Endroid\QrCode\Builder\BuilderInterface $customQrCodeBuilder): Response
     {
+        // Generation du QR Code
+        $statut = $bilan->getResultatNet() >= 0 ? 'Beneficiaire' : 'Deficitaire';
+        $franchiseNom = $bilan->getFranchiseId() ? $bilan->getFranchiseId()->getNom() : 'SIEGE PRINCIPAL';
+        
+        $qrData = sprintf(
+            "Bilan N. %d - Franchise: %s - Solde: %s TND - Statut: %s",
+            $bilan->getId(),
+            $franchiseNom,
+            ($bilan->getResultatNet() >= 0 ? '+' : '') . number_format($bilan->getResultatNet(), 3, '.', ''),
+            $statut
+        );
+
+        $result = $customQrCodeBuilder->build(
+            size: 150,
+            margin: 5,
+            data: $qrData,
+            foregroundColor: new \Endroid\QrCode\Color\Color(0, 212, 255), // Cyan #00d4ff
+            backgroundColor: new \Endroid\QrCode\Color\Color(26, 31, 44) // Bleu nuit #1a1f2c (fond)
+        );
+
+        $qrCodeUri = $result->getDataUri();
+
         // 1. Configurer Dompdf
         $pdfOptions = new Options();
         $pdfOptions->set('defaultFont', 'Arial');
@@ -226,7 +248,8 @@ final class BilanController extends AbstractController
 
         // 2. Générer le HTML depuis le template Twig
         $html = $this->renderView('bilan/bilan_pdf.html.twig', [
-            'bilan' => $bilan
+            'bilan' => $bilan,
+            'qr_code_uri' => $qrCodeUri
         ]);
 
         // 3. Charger le HTML dans Dompdf
