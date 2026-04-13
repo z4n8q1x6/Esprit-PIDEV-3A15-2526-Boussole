@@ -4,36 +4,35 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.4",
+        "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/doctrine-bundle": "^3.2",
+        "doctrine/doctrine-bundle": "^3.2.2",
         "doctrine/doctrine-migrations-bundle": "^4.0",
-        "doctrine/orm": "^3.6",
-        "dompdf/dompdf": "^3.1",
-        "google-gemini-php/client": "^2.7",
+        "doctrine/orm": "^3.6.3",
+        "dompdf/dompdf": "^3.1.5",
+        "google-gemini-php/client": "^2.7.4",
         "lexik/jwt-authentication-bundle": "^3.2",
-        "nyholm/psr7": "^1.8",
-        "psr/http-client": "^1.0",
-        "symfony/asset": "8.0.*",
-        "symfony/console": "8.0.*",
-        "symfony/dotenv": "8.0.*",
-        "symfony/flex": "^2",
-        "symfony/form": "8.0.*",
-        "symfony/framework-bundle": "8.0.*",
-        "symfony/http-client": "^8.0",
-        "symfony/mailer": "8.0.*",
-        "symfony/runtime": "8.0.*",
-        "symfony/security-csrf": "8.0.*",
-        "symfony/serializer": "8.0.*",
-        "symfony/twig-bundle": "8.0.*",
-        "symfony/validator": "8.0.*",
-        "symfony/yaml": "8.0.*"
+        "nyholm/psr7": "^1.8.2",
+        "psr/http-client": "^1.0.3",
+        "symfony/asset": "6.4.*",
+        "symfony/console": "6.4.*",
+        "symfony/dotenv": "6.4.*",
+        "symfony/flex": "^2.10",
+        "symfony/form": "6.4.*",
+        "symfony/framework-bundle": "6.4.*",
+        "symfony/http-client": "6.4.*",
+        "symfony/runtime": "6.4.*",
+        "symfony/security-csrf": "6.4.*",
+        "symfony/serializer": "6.4.*",
+        "symfony/twig-bundle": "6.4.*",
+        "symfony/validator": "6.4.*",
+        "symfony/yaml": "6.4.*"
     },
     "require-dev": {
         "symfony/maker-bundle": "^1.67",
-        "symfony/stopwatch": "8.0.*",
-        "symfony/web-profiler-bundle": "8.0.*"
+        "symfony/stopwatch": "6.4.*",
+        "symfony/web-profiler-bundle": "6.4.*"
     },
     "config": {
         "allow-plugins": {
@@ -84,7 +83,7 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "8.0.*"
+            "require": "6.4.*"
         }
     }
 }

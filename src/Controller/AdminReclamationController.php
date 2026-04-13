@@ -22,9 +22,16 @@ final class AdminReclamationController extends AbstractController
     }
 
     #[Route('/reclamations', name: 'admin_reclamation_index')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $reclamations = $this->repo->findAll();
+        $search = $request->query->get('q', '');
+        $sort = $request->query->get('sort', 'id');
+        $direction = $request->query->get('direction', 'DESC');
+
+        if (!in_array($sort, ['sujet', 'description', 'statut', 'date_creation'])) {
+            $sort = 'id';
+        }
+        $reclamations = $this->repo->searchAndSort($search, $sort, $direction);
         return $this->render('admin_reclamation/index.html.twig', [
             'reclamations' => $reclamations,
         ]);

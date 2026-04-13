@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Franchises;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 class Reclamations
@@ -19,9 +20,20 @@ class Reclamations
     private ?int $id = null;
 
     #[ORM\Column(type: "string", length: 255)]
+    #[Assert\NotBlank(message: "Ce champ ne peut pas être vide.")]
+    #[Assert\Regex(
+        pattern: "/^\d/",
+        match: false,
+        message: "Le sujet ne peut pas commencer par un chiffre."
+    )]
     private string $sujet;
 
     #[ORM\Column(type: "text")]
+    #[Assert\NotBlank(message: "Ce champ ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 5,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères."
+    )]
     private string $description;
 
     #[ORM\Column(type: "string", length: 50)]

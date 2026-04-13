@@ -30,9 +30,16 @@ final class AlerteIAController extends AbstractController
     }
 
     #[Route('/alertes', name: 'alerte_index')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $alertes = $this->repo->findBy(['franchise_id' => $this->franchise_id]);
+        $search = $request->query->get('q', '');
+        $sort = $request->query->get('sort', 'id');
+        $direction = $request->query->get('direction', 'DESC');
+
+        if (!in_array($sort, ['type_alerte', 'message', 'score_gravite', 'date_detection'])) {
+            $sort = 'id';
+        }
+        $alertes = $this->repo->searchAndSort($search, $sort, $direction);
         return $this->render('alerte_ia/index.html.twig', [
             'alertes' => $alertes,
         ]);
@@ -53,37 +60,36 @@ final class AlerteIAController extends AbstractController
     #[Route('/new', name: 'alerte_new')]
     public function new(SerializerInterface $serializer): Response
     {
-        $yourApiKey = getenv('GOOGLE_API_KEY');
-        $client = Gemini::client($yourApiKey);
-        $prompt = <<<TEXT
-            Génère une alerte de sécurité avec ces champs:
-            - type_alerte: Une catégorie courte
-            - message: Une description détaillée
-            - score_gravite: Score de sévérité
-            TEXT;
+        $apiKey = getenv('GOOGLE_API_KEY');
+        $client = Gemini::client($apiKey);
+
+        $financialData = $this->repo->getFinancialData($this->franchise_id, date('n'), date('Y'));
+
+        $prompt = $this->buildPrompt($financialData, date('n'), date('Y'));
+
         $request = $client
             ->generativeModel(model: 'gemini-2.5-flash')
             ->withGenerationConfig(
                 generationConfig: new GenerationConfig(
                     responseMimeType: ResponseMimeType::APPLICATION_JSON,
                     responseSchema: new Schema(
-                        type: DataType::ARRAY,
-                        items: new Schema(
-                            type: DataType::OBJECT,
-                            properties: [
-                                'type_alerte' => new Schema(type: DataType::STRING),
-                                'message' => new Schema(type: DataType::STRING),
-                                'score_gravite' => new Schema(type: DataType::NUMBER),
-                            ],
-                            required: ['type_alerte', 'message', 'score_gravite'],
-                        )
+                        type: DataType::OBJECT,
+                        properties: [
+                            'type_alerte' => new Schema(type: DataType::STRING, maxLength: 35),
+                            'message' => new Schema(type: DataType::STRING, minLength: 100, maxLength: 1000),
+                            'score_gravite' => new Schema(type: DataType::NUMBER, minimum: 0.0, maximum: 10.0),
+                        ],
+                        required: ['type_alerte', 'message', 'score_gravite'],
                     )
                 )
             )
             ->generateContent($prompt);
-        $data = $request->json();
+        $data = (array) $request->json();
+        
+        $data['score_gravite'] = (float) $data['score_gravite'];
+
         $alerte = $serializer->denormalize(
-            $data[0],
+            $data,
             Alerteias::class,
         );
         $franchise = $this->em->getRepository(Franchises::class)->find($this->franchise_id);
@@ -91,5 +97,40 @@ final class AlerteIAController extends AbstractController
         $this->em->persist($alerte);
         $this->em->flush();
         return $this->redirectToRoute('alerte_index');
+    }
+
+    private function buildPrompt(array $financialData, int $month, int $year): string
+    {
+        return sprintf(
+            "Analyse les données financières pour %d/%d:\n\n"
+            . "RÉSULTATS FINANCIERS:\n"
+            . "- Chiffre d'affaires: %.2f TND\n"
+            . "- Charges opérationnelles: %.2f TND\n"
+            . "- Charges financières: %.2f TND\n"
+            . "- Charges exceptionnelles: %.2f TND\n"
+            . "- Résultat net: %.2f TND\n"
+            . "- Solde actuel: %.2f TND\n\n"
+            . "STATUT DES CHARGES:\n"
+            . "- Charges en attente: %d\n"
+            . "- Charges rejetées: %d\n\n"
+            . "ACTIVITÉ:\n"
+            . "- Transactions ce mois: %d\n\n"
+            . "Détecte les anomalies et risques financiers. Formule une alerte basée sur ces données.\n\n"
+            . "Retourne un objet JSON avec exactement ces champs:\n"
+            . "- type_alerte: String (max 35 caractères)\n"
+            . "- message: String (100-1000 caractères)\n"
+            . "- score_gravite: Number (0-10)",
+            $month,
+            $year,
+            $financialData['totalRecettes'],
+            $financialData['totalChargesExploitation'],
+            $financialData['totalChargesFinanciere'],
+            $financialData['totalChargesExceptionnelle'],
+            $financialData['resultatNet'],
+            $financialData['soldeActuel'],
+            $financialData['pendingChargesCount'],
+            $financialData['rejectedChargesCount'],
+            $financialData['transactionCount']
+        );
     }
 }
