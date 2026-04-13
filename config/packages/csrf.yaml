@@ -1,11 +1,6 @@
-# Enable stateless CSRF protection for forms and logins/logouts
+# config/packages/csrf.yaml
+# Enable CSRF protection (default in Symfony 6.4 when session is enabled)
+
 framework:
     form:
-        csrf_protection:
-            token_id: submit
-
-    csrf_protection:
-        stateless_token_ids:
-            - submit
-            - authenticate
-            - logout
+        csrf_protection: true
