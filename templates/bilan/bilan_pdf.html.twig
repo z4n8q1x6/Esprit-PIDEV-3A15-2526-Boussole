@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bilan Financier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #7f8c8d;
+        }
+        .info-section {
+            margin-bottom: 40px;
+        }
+        .info-section p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .table th, .table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        .table td {
+            font-size: 14px;
+        }
+        .amount {
+            text-align: right !important;
+        }
+        .result {
+            margin-top: 30px;
+            text-align: right;
+            font-size: 18px;
+        }
+        .result-amount {
+            font-weight: bold;
+            font-size: 20px;
+        }
+        .positive {
+            color: #27ae60;
+        }
+        .negative {
+            color: #c0392b;
+        }
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #ddd;
+            padding-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">Boussole</div>
+        <div class="subtitle">Document Officiel - Bilan Financier Mensuel</div>
+    </div>
+
+    <div class="info-section">
+        <p><strong>Franchise :</strong> 
+            {% if bilan.getFranchiseId() %}
+                {{ bilan.getFranchiseId().getNom() }}
+            {% else %}
+                SIÈGE PRINCIPAL
+            {% endif %}
+        </p>
+        <p><strong>Adresse/Ville :</strong> 
+            {% if bilan.getFranchiseId() %}
+                {{ bilan.getFranchiseId().getAdresse() }}
+            {% else %}
+                Siège Central Boussole
+            {% endif %}
+        </p>
+        <p><strong>Période :</strong> {{ "%02d"|format(bilan.getMois()) }} / {{ bilan.getAnnee() }}</p>
+        <p><strong>Édité le :</strong> {{ "now"|date("d/m/Y") }}</p>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th class="amount">Montant (TND)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Total des Recettes</td>
+                <td class="amount">{{ bilan.getTotalRecettes() | number_format(3, '.', ' ') }} TND</td>
+            </tr>
+            <tr>
+                <td>Total des Dépenses (Charges)</td>
+                <td class="amount">{{ bilan.getTotalCharges() | number_format(3, '.', ' ') }} TND</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="result">
+        Résultat Net : 
+        <span class="result-amount {% if bilan.getResultatNet() >= 0 %}positive{% else %}negative{% endif %}">
+            {{ bilan.getResultatNet() | number_format(3, '.', ' ') }} TND
+        </span>
+    </div>
+
+    <div class="footer">
+        Ceci est un document généré automatiquement par le système Boussole.<br>
+        &copy; {{ "now"|date("Y") }} Boussole - Tous droits réservés.
+    </div>
+
+</body>
+</html>

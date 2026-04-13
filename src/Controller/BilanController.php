@@ -11,6 +11,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use DateTime;
 
 #[Route('/admin/bilan')]
@@ -87,6 +89,27 @@ final class BilanController extends AbstractController
         $entityManager->flush();
 
         return $this->json(['success' => true]);
+    }
+
+    #[Route('/delete-batch-ajax', name: 'app_bilan_delete_batch_ajax', methods: ['POST'])]
+    public function deleteBatchAjax(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $ids = $data['ids'] ?? [];
+
+        if (empty($ids)) {
+            return $this->json(['success' => false, 'message' => 'Aucun bilan sélectionné.']);
+        }
+
+        $bilans = $entityManager->getRepository(Bilan::class)->findBy(['id' => $ids]);
+        
+        $count = count($bilans);
+        foreach ($bilans as $bilan) {
+            $entityManager->remove($bilan);
+        }
+        $entityManager->flush();
+
+        return $this->json(['success' => true, 'message' => $count . ' bilan(s) supprimé(s).']);
     }
 
     #[Route('/generate-ajax', name: 'app_bilan_generate_ajax', methods: ['POST'])]
@@ -188,6 +211,41 @@ final class BilanController extends AbstractController
             'success' => true,
             'message' => $msg,
             'reload' => true,
+        ]);
+    }
+
+    #[Route('/pdf/{id}', name: 'export_pdf', methods: ['GET'])]
+    public function exportPdf(Bilan $bilan): Response
+    {
+        // 1. Configurer Dompdf
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->set('isRemoteEnabled', true); // Permet de charger des images si besoin
+
+        $dompdf = new Dompdf($pdfOptions);
+
+        // 2. Générer le HTML depuis le template Twig
+        $html = $this->renderView('bilan/bilan_pdf.html.twig', [
+            'bilan' => $bilan
+        ]);
+
+        // 3. Charger le HTML dans Dompdf
+        $dompdf->loadHtml($html);
+
+        // 4. Configurer la taille du papier (A4, portrait)
+        $dompdf->setPaper('A4', 'portrait');
+
+        // 5. Rendre le HTML en PDF
+        $dompdf->render();
+
+        // 6. Renvoyer le PDF pour qu'il soit téléchargé (via Symfony Response)
+        $pdfOutput = $dompdf->output();
+        
+        $filename = "Bilan_Financier_" . $bilan->getMois() . "_" . $bilan->getAnnee() . ".pdf";
+
+        return new Response($pdfOutput, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
     }
 }
