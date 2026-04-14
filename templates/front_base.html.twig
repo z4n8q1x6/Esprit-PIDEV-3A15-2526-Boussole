@@ -137,7 +137,7 @@
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="pagesMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Gestion</a>
 						<ul class="dropdown-menu" aria-labelledby="pagesMenu">
-							<li> <a class="dropdown-item" href="#"><i class="fas fa-truck fa-fw me-2"></i>Fournisseur</a> </li>
+							<li> <a class="dropdown-item" href="{{ path('app_afficher_front_fournisseur') }}"><i class="fas fa-truck fa-fw me-2"></i>Fournisseur</a> </li>
 							<li> <a class="dropdown-item" href="{{ path('alerte_index') }}"><i class="bi bi-exclamation-triangle fa-fw me-2"></i>Alertes</a> </li>
 							<li> <a class="dropdown-item" href="{{ path('reclamation_index') }}"><i class="fas fa-volume-up fa-fw me-2"></i>Réclamations</a> </li>
 						</ul>
@@ -147,7 +147,7 @@
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="accounntMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Finances</a>
 						<ul class="dropdown-menu" aria-labelledby="accounntMenu">
-							<li> <a class="dropdown-item" href="#"><i class="fas fa-money-bill-wave fa-fw me-2"></i>Charge</a> </li>
+							<li> <a class="dropdown-item" href="{{ path('app_afficher_front_charge') }}"><i class="fas fa-money-bill-wave fa-fw me-2"></i>Charge</a> </li>
 							<li> <a class="dropdown-item" href="#"><i class="bi bi-calendar3 fa-fw me-2"></i>Mensualité</a> </li>
 							<li> <a class="dropdown-item" href="#"><i class="fas fa-university fa-fw me-2"></i>Prêt</a> </li>
 							<li> <a class="dropdown-item" href="{{ path('app_transaction_historique') }}"><i class="bi bi-credit-card fa-fw me-2"></i>Historique des transactions</a> </li>
@@ -255,18 +255,15 @@
 <!-- =======================
 Page content START -->
 <section class="pt-0">
-	<div class="container">
-		<div class="row">
-			<!-- Main content START -->
-			<div class="col-xl-9">
-            {% block content %}
-                    {# el page mte3ek fel block hedha #}
-            {% endblock %}
-
-			</div>
-			<!-- Main content END -->
-		</div><!-- Row END -->
-	</div>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-11 col-12 px-4">
+                {% block content %}
+                <!-- 7ot pagek lehné -->
+                {% endblock %}
+            </div>
+        </div>
+    </div>
 </section>
 <!-- =======================
 Page content END -->
@@ -352,7 +349,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     resultsBox.appendChild(li);
                 }
 
-                
+
                 resultsBox.style.display = 'block';
             } else {
                 resultsBox.style.display = 'none';
@@ -366,7 +363,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        
+
         // Show results if clicking on input and there is text
         searchInput.addEventListener('click', function() {
             if(searchInput.value.trim().length > 0) {

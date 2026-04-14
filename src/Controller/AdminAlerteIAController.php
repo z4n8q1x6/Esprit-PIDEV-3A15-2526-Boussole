@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-#[Route('/admin')]
+#[Route('/admin/alertes')]
 final class AdminAlerteIAController extends AbstractController
 {
     private EntityManagerInterface $em;
@@ -24,10 +24,17 @@ final class AdminAlerteIAController extends AbstractController
         $this->repo = $repo;
     }
 
-    #[Route('/alertes', name: 'admin_alerte_index')]
-    public function index(): Response
+    #[Route('/', name: 'admin_alerte_index')]
+    public function index(Request $request): Response
     {
-        $alertes = $this->repo->findAll();
+        $search = $request->query->get('q', '');
+        $sort = $request->query->get('sort', 'id');
+        $direction = $request->query->get('direction', 'DESC');
+
+        if (!in_array($sort, ['type_alerte', 'message', 'score_gravite', 'date_detection'])) {
+            $sort = 'id';
+        }
+        $alertes = $this->repo->searchAndSort($search, $sort, $direction);
         return $this->render('admin_alerte_ia/index.html.twig', [
             'alertes' => $alertes,
         ]);
