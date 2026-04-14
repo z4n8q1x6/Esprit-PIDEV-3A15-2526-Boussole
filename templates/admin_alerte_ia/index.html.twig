@@ -1,0 +1,215 @@
+{% extends 'back_base.html.twig' %}
+
+{% block title %}Liste des Alertes IA{% endblock %}
+
+{% block body %}
+<div class="page-content-wrapper border">
+
+    <div class="row mb-3">
+        <div class="col-12 d-sm-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-2 mb-sm-0">Liste des Alertes IA</h1>
+            <a href="{{ path('admin_alerte_pdf') }}" class="btn btn-sm btn-danger mb-0">
+                <i class="bi bi-file-pdf me-2"></i>Générer PDF
+            </a>
+        </div>
+    </div>
+
+    <div class="card bg-transparent border">
+
+        {% if app.flashes %}
+            <div class="px-4 pt-4">
+                {% for type, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="card-body">
+            <div class="mb-3">
+                <form method="get" class="d-flex gap-2">
+                    <input
+                            class="form-control form-control-sm"
+                            placeholder="Rechercher par type d'alerte..."
+                            type="text"
+                            name="q"
+                            value="{{ app.request.query.get('q') }}"
+                            >
+                            <button type="submit" class="btn btn-primary btn-sm px-3">
+                                Search
+                            </button>
+                    {% if app.request.query.get('q') is not empty %}
+                    <a href="{{ path('admin_alerte_index') }}" class="btn btn-outline-secondary">
+                        Clear
+                    </a>
+                    {% endif %}
+                </form>
+            </div>
+            <div class="table-responsive border-0">
+                <table id="table-alerte-ia-admin" class="table align-middle mb-0 table-hover" style="font-size: 0.95rem;">
+                    <thead class="table-light">
+                        {% set currentSort = app.request.query.get('sort', 'id') %}
+                        {% set currentDir = app.request.query.get('direction', 'desc') %}
+                        {% set query = app.request.query.get('q') %}
+                        <tr>
+                            <th scope="col" class="border-0 rounded-start ps-4 fw-600 text-uppercase letter-spacing" style="cursor: pointer;">
+                                {% set isType = currentSort == 'type_alerte' %}
+                                {% set nextDir = (isType and currentDir == 'asc') ? 'desc' : 'asc' %}
+
+                                <a href="{{ path('admin_alerte_index', {q: query, sort: 'type_alerte', direction: nextDir}) }}" class="text-reset text-decoration-none">
+                                    Type
+                                    {% if isType %}<i class="bi {{ currentDir == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down' }} ms-1"></i>{% endif %}
+                                </a>
+                            </th>
+                            <th scope="col" class="border-0 ps-3 fw-600 text-uppercase letter-spacing" style="cursor: pointer;">
+                                {% set isMsg = currentSort == 'message' %}
+                                {% set nextDir = (isMsg and currentDir == 'asc') ? 'desc' : 'asc' %}
+
+                                <a href="{{ path('admin_alerte_index', {q: query, sort: 'message', direction: nextDir}) }}" class="text-reset text-decoration-none">
+                                    Message
+                                    {% if isMsg %}<i class="bi {{ currentDir == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down' }} ms-1"></i>{% endif %}
+                                </a>
+                            </th>
+                            <th scope="col" class="border-0 ps-3 fw-600 text-uppercase letter-spacing text-center" style="cursor: pointer;">
+                                {% set isGrav = currentSort == 'score_gravite' %}
+                                {% set nextDir = (isGrav and currentDir == 'asc') ? 'desc' : 'asc' %}
+
+                                <a href="{{ path('admin_alerte_index', {q: query, sort: 'score_gravite', direction: nextDir}) }}" class="text-reset text-decoration-none">
+                                    Gravité
+                                    {% if isGrav %}<i class="bi {{ currentDir == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down' }} ms-1"></i>{% endif %}
+                                </a>
+                            </th>
+                            <th scope="col" class="border-0 ps-3 fw-600 text-uppercase letter-spacing text-center" style="cursor: pointer;">
+                                {% set isDate = currentSort == 'date_detection' %}
+                                {% set nextDir = (isDate and currentDir == 'asc') ? 'desc' : 'asc' %}
+
+                                <a href="{{ path('admin_alerte_index', {q: query, sort: 'date_detection', direction: nextDir}) }}" class="text-reset text-decoration-none">
+                                    Date
+                                    {% if isDate %}<i class="bi {{ currentDir == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down' }} ms-1"></i>{% endif %}
+                                </a>
+                            </th>
+                            <th scope="col" class="border-0 rounded-end text-center ps-3 fw-600 text-uppercase letter-spacing">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for alerte in alertes %}
+                            <tr class="border-bottom">
+                                <td class="ps-4 py-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="icon-sm bg-primary bg-opacity-10 text-primary rounded-circle flex-shrink-0">
+                                            <i class="bi bi-shield-exclamation"></i>
+                                        </div>
+                                        <h6 class="mb-0 fw-500">{{ alerte.type_alerte }}</h6>
+                                    </div>
+                                </td>
+
+                                <td class="text-muted ps-3 py-3">
+                                    <div style="min-width: 200px; max-width: 350px; max-height: 80px; overflow-y: auto; word-break: break-word;">
+                                        {{ alerte.message }}
+                                    </div>
+                                </td>
+
+                                <td class="text-center ps-3 py-3">
+                                    {% if alerte.score_gravite >= 8 %}
+                                        <span class="badge bg-danger rounded-pill px-3 py-2">Critique ({{ alerte.score_gravite }})</span>
+                                    {% elseif alerte.score_gravite >= 5 %}
+                                        <span class="badge bg-warning text-dark rounded-pill px-3 py-2">Moyenne ({{ alerte.score_gravite }})</span>
+                                    {% else %}
+                                        <span class="badge bg-info rounded-pill px-3 py-2">Faible ({{ alerte.score_gravite }})</span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="text-center ps-3 py-3">
+                                    <div class="small">
+                                        <span class="fw-500 d-block">{{ alerte.date_detection|date('d/m/Y') }}</span>
+                                        <span class="text-muted" style="font-size: 0.8rem;">{{ alerte.date_detection|date('H:i') }}</span>
+                                    </div>
+                                </td>
+
+                                <td class="text-center ps-3 py-3">
+                                    <button type="button" class="btn btn-sm btn-danger-soft mb-0 delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal" data-delete-url="{{ path('admin_alerte_delete', {'id': alerte.id}) }}" data-item-name="{{ alerte.type_alerte }}" data-csrf-token="{{ csrf_token('delete-item') }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="text-muted">Aucune alerte trouvée dans la base de données.</div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        <div class="card-footer bg-transparent border-top">
+            <small class="text-muted">Total: {{ alertes|length }} alertes générées par l'IA.</small>
+        </div>
+    </div>
+</div>
+
+<!-- Modern Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-light border-bottom-0">
+                <h5 class="modal-title fw-600" id="deleteModalLabel">Confirmer la suppression</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-3">
+                    <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                </div>
+                <p class="text-muted mb-2">Êtes-vous sûr de vouloir supprimer ?</p>
+                <p class="fw-600 text-dark" id="deleteItemName"></p>
+            </div>
+            <div class="modal-footer bg-light border-top-0 gap-2">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteModal = document.getElementById('deleteModal');
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    let currentDeleteUrl = null;
+    let currentCsrfToken = null;
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            currentDeleteUrl = this.dataset.deleteUrl;
+            currentCsrfToken = this.dataset.csrfToken;
+            const itemName = this.dataset.itemName;
+            document.getElementById('deleteItemName').textContent = itemName;
+        });
+    });
+
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (currentDeleteUrl && currentCsrfToken) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = currentDeleteUrl;
+
+            const tokenInput = document.createElement('input');
+            tokenInput.type = 'hidden';
+            tokenInput.name = 'token';
+            tokenInput.value = currentCsrfToken;
+
+            form.appendChild(tokenInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+});
+</script>
+
+{% endblock %}

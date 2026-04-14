@@ -1,0 +1,44 @@
+{% extends 'front_base.html.twig' %}
+{% block title %}Ajouter une Réclamation{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card border rounded-3">
+            <div class="card-header border-bottom bg-transparent">
+                <h3 class="card-header-title mb-0">Ajouter une Réclamation</h3>
+            </div>
+            <div class="card-body">
+                {{ form_start(form, {'attr': {'class': 'row g-4', 'id': 'reclamation-form', 'novalidate': 'novalidate'}}) }}
+                    <div class="col-12">
+                        {{ form_label(form.sujet, "Sujet de la réclamation", {label_attr: {class: 'form-label'}}) }}
+                        {{ form_widget(form.sujet, {attr: {
+                            class: 'form-control',
+                            placeholder: 'Ex: Problème de paiement'
+                        }}) }}
+                        <div class="text-danger small error-message">
+                            {{ form_errors(form.sujet) }}
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        {{ form_label(form.description, "Description détaillée", {label_attr: {class: 'form-label'}}) }}
+                        {{ form_widget(form.description, {attr: {
+                            class: 'form-control',
+                            rows: 6,
+                            placeholder: 'Décrivez votre problème en détail ici...'
+                        }}) }}
+                        <div class="text-danger small error-message">
+                            {{ form_errors(form.description) }}
+                        </div>
+                    </div>
+
+                    <div class="col-12 d-sm-flex justify-content-between align-items-center">
+                        <a href="{{ path('reclamation_index') }}" class="btn btn-sm btn-light mb-0">Retour à la liste</a>
+                        <button type="submit" class="btn btn-primary mb-0">Envoyer la Réclamation</button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -648,122 +648,128 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const editableCells = document.querySelectorAll('.editable-cell');
-    const editableStatuses = document.querySelectorAll('.editable-status');
+    // Use Event Delegation for all table actions
+    const usersTableBody = document.querySelector('.users-table tbody');
 
-    // 1. TEXT EDITING
-    editableCells.forEach(cell => {
-        cell.addEventListener('dblclick', function() {
-            if (this.querySelector('input')) return;
-            
-            const contentDiv = this.querySelector('.cell-content');
-            const originalValue = contentDiv.innerText.trim();
-            const tdElement = this;
+    // 1 & 2. TEXT EDITING AND STATUS TOGGLE (Double Click)
+    usersTableBody.addEventListener('dblclick', function(e) {
+        const cell = e.target.closest('.editable-cell');
+        const statusCell = e.target.closest('.editable-status');
 
-            contentDiv.style.display = 'none';
-            
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.className = 'inline-edit-input';
-            input.value = originalValue;
-            
-            tdElement.appendChild(input);
-            input.focus();
-            input.setSelectionRange(input.value.length, input.value.length);
-
-            const saveEdit = async () => {
-                const newValue = input.value.trim();
-                input.remove();
-                contentDiv.style.display = 'block';
-
-                if (newValue !== originalValue && newValue !== '') {
-                    contentDiv.innerText = newValue;
-                    
-                    const userId = tdElement.closest('tr').getAttribute('data-user-id');
-                    const field = tdElement.getAttribute('data-field');
-                    
-                    try {
-                        const response = await fetch(`/admin/user/${userId}/edit-inline`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                            body: JSON.stringify({ field: field, value: newValue })
-                        });
-                        const data = await response.json();
-                        if (data.success) {
-                            showToast('Modification enregistrée avec succès');
-                        } else {
-                            contentDiv.innerText = originalValue;
-                            showToast('Erreur lors de la modification', true);
-                        }
-                    } catch (error) {
-                        contentDiv.innerText = originalValue;
-                        showToast('Erreur serveur', true);
-                    }
-                } else {
-                    contentDiv.innerText = originalValue;
-                }
-            };
-
-            input.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') saveEdit();
-                else if (e.key === 'Escape') { input.remove(); contentDiv.style.display = 'block'; }
-            });
-            input.addEventListener('blur', saveEdit);
-        });
+        if (cell) {
+            handleTextEdit(cell);
+        } else if (statusCell) {
+            handleStatusToggle(statusCell);
+        }
     });
 
-    // 2. STATUS TOGGLE
-    editableStatuses.forEach(cell => {
-        cell.addEventListener('dblclick', async function() {
-            const tdElement = this;
-            const contentDiv = tdElement.querySelector('.cell-content');
-            const userId = tdElement.closest('tr').getAttribute('data-user-id');
-            
-            const currentStatus = tdElement.getAttribute('data-status') === '1';
-            const newStatus = !currentStatus;
-            
-            tdElement.style.opacity = '0.5';
+    async function handleTextEdit(tdElement) {
+        if (tdElement.querySelector('input')) return;
+        
+        const contentDiv = tdElement.querySelector('.cell-content');
+        const originalValue = contentDiv.innerText.trim();
 
-            try {
-                const response = await fetch(`/admin/user/${userId}/edit-inline`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
-                    body: JSON.stringify({ field: 'actif', value: newStatus })
-                });
-                const data = await response.json();
-                if (data.success) {
-                    tdElement.setAttribute('data-status', newStatus ? '1' : '0');
-                    if (newStatus) {
-                        contentDiv.innerHTML = '<span class="role-badge badge-admin">Actif</span>';
-                        document.getElementById('stat-active').innerText = parseInt(document.getElementById('stat-active').innerText) + 1;
-                        document.getElementById('stat-inactive').innerText = parseInt(document.getElementById('stat-inactive').innerText) - 1;
+        contentDiv.style.display = 'none';
+        
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'inline-edit-input';
+        input.value = originalValue;
+        
+        tdElement.appendChild(input);
+        input.focus();
+        input.setSelectionRange(input.value.length, input.value.length);
+
+        const saveEdit = async () => {
+            const newValue = input.value.trim();
+            if (!input.parentElement) return; 
+            input.remove();
+            contentDiv.style.display = 'block';
+
+            if (newValue !== originalValue && newValue !== '') {
+                contentDiv.innerText = newValue;
+                
+                const userId = tdElement.closest('tr').getAttribute('data-user-id');
+                const field = tdElement.getAttribute('data-field');
+                
+                try {
+                    const response = await fetch(`/admin/user/${userId}/edit-inline`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                        body: JSON.stringify({ field: field, value: newValue })
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        showToast('Modification enregistrée avec succès');
                     } else {
-                        contentDiv.innerHTML = '<span class="role-badge badge-inactive">Inactif</span>';
-                        document.getElementById('stat-active').innerText = parseInt(document.getElementById('stat-active').innerText) - 1;
-                        document.getElementById('stat-inactive').innerText = parseInt(document.getElementById('stat-inactive').innerText) + 1;
+                        contentDiv.innerText = originalValue;
+                        showToast('Erreur lors de la modification', true);
                     }
-                    showToast('Statut mis à jour avec succès');
-                    filterTable();
-                } else {
-                    showToast('Erreur lors de la mise à jour', true);
+                } catch (error) {
+                    contentDiv.innerText = originalValue;
+                    showToast('Erreur serveur', true);
                 }
-            } catch (error) {
-                showToast('Erreur serveur', true);
-            } finally {
-                tdElement.style.opacity = '1';
+            } else {
+                contentDiv.innerText = originalValue;
             }
-        });
-    });
+        };
 
-    // 3. SEARCH AND FILTER
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') saveEdit();
+            else if (e.key === 'Escape') { input.remove(); contentDiv.style.display = 'block'; }
+        });
+        input.addEventListener('blur', saveEdit);
+    }
+
+    async function handleStatusToggle(tdElement) {
+        const contentDiv = tdElement.querySelector('.cell-content');
+        const userId = tdElement.closest('tr').getAttribute('data-user-id');
+        
+        const currentStatus = tdElement.getAttribute('data-status') === '1';
+        const newStatus = !currentStatus;
+        
+        tdElement.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(`/admin/user/${userId}/edit-inline`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ field: 'actif', value: newStatus })
+            });
+            const data = await response.json();
+            if (data.success) {
+                tdElement.setAttribute('data-status', newStatus ? '1' : '0');
+                if (newStatus) {
+                    contentDiv.innerHTML = '<span class="role-badge badge-admin">Actif</span>';
+                    document.getElementById('stat-active').innerText = parseInt(document.getElementById('stat-active').innerText) + 1;
+                    document.getElementById('stat-inactive').innerText = parseInt(document.getElementById('stat-inactive').innerText) - 1;
+                } else {
+                    contentDiv.innerHTML = '<span class="role-badge badge-inactive">Inactif</span>';
+                    document.getElementById('stat-active').innerText = parseInt(document.getElementById('stat-active').innerText) - 1;
+                    document.getElementById('stat-inactive').innerText = parseInt(document.getElementById('stat-inactive').innerText) + 1;
+                }
+                showToast('Statut mis à jour avec succès');
+                filterTable();
+            } else {
+                showToast('Erreur lors de la mise à jour', true);
+            }
+        } catch (error) {
+            showToast('Erreur serveur', true);
+        } finally {
+            tdElement.style.opacity = '1';
+        }
+    }
+
+    // 3. SEARCH AND FILTER (Dynamic)
     const searchInput = document.getElementById('search-input');
     const statusFilter = document.getElementById('status-filter');
-    const tableRows = document.querySelectorAll('.users-table tbody tr[data-user-id]');
 
     function filterTable() {
-        const searchTerm = searchInput.value.toLowerCase();
+        const searchTerm = (searchInput.value || '').toLowerCase();
         const statusValue = statusFilter.value;
-        tableRows.forEach(row => {
+        const rows = usersTableBody.querySelectorAll('tr[data-user-id]');
+        
+        rows.forEach(row => {
             const textContent = row.innerText.toLowerCase();
             const statusCell = row.querySelector('.editable-status');
             const rowStatus = statusCell ? statusCell.getAttribute('data-status') : null;
@@ -773,24 +779,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    searchInput.addEventListener('input', filterTable);
-    statusFilter.addEventListener('change', filterTable);
+    if (searchInput) searchInput.addEventListener('input', filterTable);
+    if (statusFilter) statusFilter.addEventListener('change', filterTable);
 
-    // 4. DELETE LOGIC & MODAL
+    // 4. DELETE LOGIC & MODAL (Click Delegation)
     const deleteModal = document.getElementById('delete-modal');
-    const deleteButtons = document.querySelectorAll('.btn-delete-user');
     const btnCancelDelete = document.getElementById('btn-cancel-delete');
     const btnConfirmDelete = document.getElementById('btn-confirm-delete');
     let userToDeleteId = null;
     let rowToDelete = null;
 
-    deleteButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            userToDeleteId = this.getAttribute('data-id');
-            rowToDelete = this.closest('tr');
+    usersTableBody.addEventListener('click', function(e) {
+        const deleteBtn = e.target.closest('.btn-delete-user');
+        if (deleteBtn) {
+            userToDeleteId = deleteBtn.getAttribute('data-id');
+            rowToDelete = deleteBtn.closest('tr');
             deleteModal.style.display = 'flex';
             setTimeout(() => { deleteModal.classList.add('show'); }, 10);
-        });
+        }
     });
 
     const closeDeleteModal = () => {

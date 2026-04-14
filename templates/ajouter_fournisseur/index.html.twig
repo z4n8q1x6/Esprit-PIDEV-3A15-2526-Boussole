@@ -1,0 +1,52 @@
+{% extends 'front_base.html.twig' %}
+
+{% block title %}Boussole - Ajouter Fournisseur{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow border-0">
+                <div class="card-header bg-dark text-white py-3">
+                    <h4 class="mb-0">{% if is_edit|default(false) %}Modifier le Fournisseur{% else %}Ajouter un Fournisseur{% endif %}</h4>
+                </div>
+                <div class="card-body p-4">
+                    {% for message in app.flashes('success') %}
+                        <div class="alert alert-success">{{ message }}</div>
+                    {% endfor %}
+
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nom</label>
+                            {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+                            <small class="text-danger">{{ form_errors(form.nom) }}</small>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Matricule Fiscal</label>
+                                {{ form_widget(form.matricule_fiscal, {'attr': {'class': 'form-control'}}) }}
+                                <small class="text-danger">{{ form_errors(form.matricule_fiscal) }}</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Téléphone</label>
+                                {{ form_widget(form.telephone, {'attr': {'class': 'form-control'}}) }}
+                                <small class="text-danger">{{ form_errors(form.telephone) }}</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Franchise</label>
+                            {{ form_widget(form.franchise_id, {'attr': {'class': 'form-select'}}) }}
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">{% if is_edit|default(false) %}Enregistrer les modifications{% else %}Enregistrer le Fournisseur{% endif %}</button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

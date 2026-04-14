@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<title>Bilan index</title>
+
+{% block body %}
+    <h1>Bilan index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Mois</th>
+                <th>Annee</th>
+                <th>Total_recettes</th>
+                <th>Total_charges</th>
+                <th>Resultat_net</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for bilan in bilans %}
+            <tr>
+                <td>{{ bilan.id }}</td>
+                <td>{{ bilan.mois }}</td>
+                <td>{{ bilan.annee }}</td>
+                <td>{{ bilan.totalRecettes }}</td>
+                <td>{{ bilan.totalCharges }}</td>
+                <td>{{ bilan.resultatNet }}</td>
+                <td>
+                    <a href="{{ path('app_bilan_show', {'id': bilan.id}) }}">show</a>
+                    <a href="{{ path('app_bilan_edit', {'id': bilan.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_bilan_new') }}">Create new</a>
+{% endblock %}

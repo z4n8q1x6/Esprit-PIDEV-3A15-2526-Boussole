@@ -3,7 +3,7 @@
 
 <!-- Mirrored from eduport.webestica.com/instructor-dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 07 Nov 2023 13:09:24 GMT -->
 <head>
-	<title>{% block title %}Boussole - Dashboard Management{% endblock %}</title>
+	<title>Boussole - Dashboard Management</title>
 
 	<!-- Meta Tags -->
 	<meta charset="utf-8">
@@ -87,7 +87,6 @@
 	<!-- Theme CSS -->
 	<link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
 
-    {% block stylesheets %}{% endblock %}
 </head>
 
 <body>
@@ -127,7 +126,7 @@
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="demoMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Principale</a>
 						<ul class="dropdown-menu" aria-labelledby="demoMenu">
-							<li> <a class="dropdown-item" href="#"><i class="bi bi-bar-chart fa-fw me-2"></i>Tableau de bord</a></li>
+							<li> <a class="dropdown-item" href="{{ path('app_transaction_index') }}"><i class="bi bi-bar-chart fa-fw me-2"></i>Tableau de bord</a></li>
 							<li> <a class="dropdown-item" href="#"><i class="bi bi-shop fa-fw me-2"></i>Marketplace</a></li>
 							<li> <a class="dropdown-item" href="#"><i class="bi bi-cart3 fa-fw me-2"></i>Mon panier</a></li>
 							<li> <a class="dropdown-item" href="#"><i class="bi bi-box-seam fa-fw me-2"></i>Mes commandes</a></li>
@@ -138,9 +137,9 @@
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="pagesMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Gestion</a>
 						<ul class="dropdown-menu" aria-labelledby="pagesMenu">
-							<li> <a class="dropdown-item" href="#"><i class="fas fa-truck fa-fw me-2"></i>Fournisseur</a> </li>
-							<li> <a class="dropdown-item" href="#"><i class="bi bi-exclamation-triangle fa-fw me-2"></i>Alertes</a> </li>
-							<li> <a class="dropdown-item" href="#"><i class="fas fa-volume-up fa-fw me-2"></i>Réclamations</a> </li>
+							<li> <a class="dropdown-item" href="{{ path('app_afficher_front_fournisseur') }}"><i class="fas fa-truck fa-fw me-2"></i>Fournisseur</a> </li>
+							<li> <a class="dropdown-item" href="{{ path('alerte_index') }}"><i class="bi bi-exclamation-triangle fa-fw me-2"></i>Alertes</a> </li>
+							<li> <a class="dropdown-item" href="{{ path('reclamation_index') }}"><i class="fas fa-volume-up fa-fw me-2"></i>Réclamations</a> </li>
 						</ul>
 					</li>
 
@@ -148,10 +147,10 @@
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle" href="#" id="accounntMenu" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Finances</a>
 						<ul class="dropdown-menu" aria-labelledby="accounntMenu">
-							<li> <a class="dropdown-item" href="#"><i class="fas fa-money-bill-wave fa-fw me-2"></i>Charge</a> </li>
+							<li> <a class="dropdown-item" href="{{ path('app_afficher_front_charge') }}"><i class="fas fa-money-bill-wave fa-fw me-2"></i>Charge</a> </li>
 							<li> <a class="dropdown-item" href="#"><i class="bi bi-calendar3 fa-fw me-2"></i>Mensualité</a> </li>
 							<li> <a class="dropdown-item" href="#"><i class="fas fa-university fa-fw me-2"></i>Prêt</a> </li>
-							<li> <a class="dropdown-item" href="#"><i class="bi bi-credit-card fa-fw me-2"></i>Historique des transactions</a> </li>
+							<li> <a class="dropdown-item" href="{{ path('app_transaction_historique') }}"><i class="bi bi-credit-card fa-fw me-2"></i>Historique des transactions</a> </li>
 						</ul>
 					</li>
 
@@ -164,6 +163,8 @@
 							<li> <a class="dropdown-item" href="#"><i class="fas fa-fw fa-trash-alt me-1"></i>Delete Profile</a> </li>
 						</ul>
 					</li>
+
+					<!-- Le Nav item 5 (trois points) a été retiré -->
 				</ul>
 				<!-- Nav Main menu END -->
 
@@ -225,8 +226,8 @@
 							<img class="avatar-img rounded-circle shadow" src="{{ asset('assets/images/avatar/01.jpg') }}" alt="avatar">
 						</div>
 							<div>
-								<a class="h6" href="#">{{ app.user ? app.user.nom ~ ' ' ~ app.user.prenom : 'Utilisateur' }}</a>
-								<p class="small m-0">{{ app.user ? app.user.email : '' }}</p>
+								<a class="h6" href="#">Lori Ferguson</a>
+								<p class="small m-0">example@gmail.com</p>
 							</div>
 						</div>
 					</li>
@@ -250,18 +251,19 @@
 <main>
 
 <!-- =======================
+
+<!-- =======================
 Page content START -->
 <section class="pt-0">
-	<div class="container">
-		<div class="row">
-			<!-- Main content START -->
-			<div class="col-xl-9">
-            {% block body %}{% endblock %}
-            {% block content %}{% endblock %}
-			</div>
-			<!-- Main content END -->
-		</div><!-- Row END -->
-	</div>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-11 col-12 px-4">
+                {% block content %}
+                <!-- 7ot pagek lehné -->
+                {% endblock %}
+            </div>
+        </div>
+    </div>
 </section>
 <!-- =======================
 Page content END -->
@@ -269,11 +271,15 @@ Page content END -->
 </main>
 <!-- **************** MAIN CONTENT END **************** -->
 
+
+
 <div class="back-top"><i class="bi bi-arrow-up-short position-absolute top-50 start-50 translate-middle"></i></div>
 
 <script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
+
 <script src="{{ asset('assets/vendor/purecounterjs/dist/purecounter_vanilla.js') }}"></script>
 <script src="{{ asset('assets/vendor/apexcharts/js/apexcharts.min.js') }}"></script>
+
 <script src="{{ asset('assets/js/functions.js') }}"></script>
 
 <!-- SweetAlert2 pour Notifications Dynamiques et Script de Recherche -->
@@ -343,6 +349,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     resultsBox.appendChild(li);
                 }
 
+
                 resultsBox.style.display = 'block';
             } else {
                 resultsBox.style.display = 'none';
@@ -356,6 +363,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
+
         // Show results if clicking on input and there is text
         searchInput.addEventListener('click', function() {
             if(searchInput.value.trim().length > 0) {
@@ -365,8 +373,6 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 </script>
-
-{% block javascripts %}{% endblock %}
 
 </body>
 </html>

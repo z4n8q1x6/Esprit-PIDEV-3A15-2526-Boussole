@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+
+<title>New Bilan</title>
+
+{% block body %}
+    <h1>Create new Bilan</h1>
+
+    {{ include('bilan/_form.html.twig') }}
+
+    <a href="{{ path('app_bilan_index') }}">back to list</a>
+{% endblock %}
