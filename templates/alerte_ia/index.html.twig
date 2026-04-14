@@ -109,8 +109,8 @@
                                 </td>
 
                                 <td class="text-muted ps-3 py-3">
-                                    <div style="max-width: 350px; word-break: break-word;">
-                                        {% if alerte.message|length > 80 %}{{ alerte.message|slice(0, 80) }}...{% else %}{{ alerte.message }}{% endif %}
+                                    <div style="max-width: 350px; max-height: 80px; overflow-y: auto; word-break: break-word;">
+                                        {{ alerte.message }}
                                     </div>
                                 </td>
 
@@ -132,14 +132,9 @@
                                 </td>
 
                                 <td class="text-center ps-3 py-3">
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <button type="button" class="btn btn-sm btn-danger-soft delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal" data-delete-url="{{ path('alerte_delete', {'id': alerte.id}) }}" data-item-name="{{ alerte.type_alerte }}" data-csrf-token="{{ csrf_token('delete-item') }}">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-secondary analyse-btn" data-alerte-id="{{ alerte.id }}" data-csrf-token="{{ csrf_token('analyse-item') }}" data-type-alerte="{{ alerte.type_alerte }}">
-                                            <i class="bi bi-lightning-charge-fill"></i>
-                                        </button>
-                                    </div>
+                                    <button type="button" class="btn btn-sm btn-danger-soft delete-btn" data-bs-toggle="modal" data-bs-target="#deleteModal" data-delete-url="{{ path('alerte_delete', {'id': alerte.id}) }}" data-item-name="{{ alerte.type_alerte }}" data-csrf-token="{{ csrf_token('delete-item') }}">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                         {% else %}
@@ -203,30 +198,6 @@
     </div>
 </div>
 
-<!-- Analysis Modal -->
-<div class="modal fade" id="analysisModal" tabindex="-1" aria-labelledby="analysisModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="analysisModalLabel">Analyse d'Alerte</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="analysisContent">
-                    <div class="text-center">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Chargement...</span>
-                        </div>
-                        <p class="mt-2 text-muted">Analyse en cours...</p>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -264,85 +235,16 @@ document.addEventListener('DOMContentLoaded', function() {
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = currentDeleteUrl;
-            
+
             const tokenInput = document.createElement('input');
             tokenInput.type = 'hidden';
             tokenInput.name = 'token';
             tokenInput.value = currentCsrfToken;
-            
+
             form.appendChild(tokenInput);
             document.body.appendChild(form);
             form.submit();
         }
-    });
-
-    // Analysis modal logic
-    const analyseButtons = document.querySelectorAll('.analyse-btn');
-    const analysisModal = new bootstrap.Modal(document.getElementById('analysisModal'));
-    const analysisContent = document.getElementById('analysisContent');
-
-    analyseButtons.forEach(button => {
-        button.addEventListener('click', async function(e) {
-            e.preventDefault();
-            const alerteId = this.dataset.alerteId;
-            const csrfToken = this.dataset.csrfToken;
-            const typeAlerte = this.dataset.typeAlerte;
-
-            // Show loading state
-            analysisContent.innerHTML = `
-                <div class="text-center">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Chargement...</span>
-                    </div>
-                    <p class="mt-2 text-muted">Analyse en cours...</p>
-                </div>
-            `;
-            analysisModal.show();
-
-            try {
-                const response = await fetch(`/alertes/${alerteId}/analyse`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `token=${encodeURIComponent(csrfToken)}`
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    // Format the analysis text
-                    const analysisText = data.analysis
-                        .split('\n')
-                        .map(line => line.trim())
-                        .filter(line => line)
-                        .join('<br>');
-
-                    analysisContent.innerHTML = `
-                        <div>
-                            <h6 class="text-primary mb-3">${data.type_alerte}</h6>
-                            <div class="alert alert-info" role="alert">
-                                <strong>Analyse IA:</strong><br>
-                                ${analysisText}
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    analysisContent.innerHTML = `
-                        <div class="alert alert-danger" role="alert">
-                            <strong>Erreur:</strong> ${data.error || 'Une erreur est survenue lors de l\'analyse.'}
-                        </div>
-                    `;
-                }
-            } catch (error) {
-                analysisContent.innerHTML = `
-                    <div class="alert alert-danger" role="alert">
-                        <strong>Erreur:</strong> ${error.message || 'Une erreur réseau est survenue.'}
-                    </div>
-                `;
-                console.error('Analyse error:', error);
-            }
-        });
     });
 });
 </script>

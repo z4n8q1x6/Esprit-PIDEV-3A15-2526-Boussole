@@ -109,8 +109,8 @@
                                 </td>
 
                                 <td class="text-muted ps-3 py-3">
-                                    <div style="max-width: 350px; word-break: break-word;">
-                                        {% if alerte.message|length > 80 %}{{ alerte.message|slice(0, 80) }}...{% else %}{{ alerte.message }}{% endif %}
+                                    <div style="min-width: 200px; max-width: 350px; max-height: 80px; overflow-y: auto; word-break: break-word;">
+                                        {{ alerte.message }}
                                     </div>
                                 </td>
 
@@ -198,12 +198,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = currentDeleteUrl;
-            
+
             const tokenInput = document.createElement('input');
             tokenInput.type = 'hidden';
             tokenInput.name = 'token';
             tokenInput.value = currentCsrfToken;
-            
+
             form.appendChild(tokenInput);
             document.body.appendChild(form);
             form.submit();
