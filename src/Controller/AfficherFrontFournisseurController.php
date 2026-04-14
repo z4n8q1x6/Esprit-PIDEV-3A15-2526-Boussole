@@ -127,24 +127,54 @@ HTML;
             $news = [];
         }
 
-        // 4. Pagination manuelle simple
-        $totalFournisseurs = count($queryBuilder->getQuery()->getResult());
+        // 4. Gestion de l'épinglage (Session-based)
+        $session = $request->getSession();
+        $pinnedIds = $session->get('pinned_suppliers', []);
+        
+        // On récupère d'abord tous les résultats filtrés et triés selon les critères utilisateur
+        $allResults = $queryBuilder->getQuery()->getResult();
+        
+        // On sépare pour mettre les épinglés en haut
+        $pinnedSuppliers = [];
+        $otherSuppliers = [];
+        
+        foreach ($allResults as $f) {
+            if (in_array($f->getId(), $pinnedIds)) {
+                $pinnedSuppliers[] = $f;
+            } else {
+                $otherSuppliers[] = $f;
+            }
+        }
+        
+        // Fusion (Épinglés en premier)
+        $finalList = array_merge($pinnedSuppliers, $otherSuppliers);
+        
+        // 5. Pagination manuelle sur la liste finale réorganisée
+        $totalFournisseurs = count($finalList);
         $pagesCount = ceil($totalFournisseurs / $limit);
         
-        $fournisseurs = $queryBuilder
-            ->setFirstResult(($page - 1) * $limit)
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
+        $fournisseurs = array_slice($finalList, ($page - 1) * $limit, $limit);
 
-        // 5. Récupération de la météo (Backend PHP)
+        // 6. Détection Métier : Mobile Tunisie (Logique centralisée ici)
+        $tunisianIds = [];
+        foreach ($fournisseurs as $f) {
+            $tel = $f->getTelephone();
+            // Longueur 8 et commence par 2, 5 ou 9
+            if ($tel && strlen($tel) === 8 && in_array($tel[0], ['2', '5', '9'])) {
+                $tunisianIds[] = $f->getId();
+            }
+        }
+
+        // 7. Récupération de la météo (Backend PHP)
         $weather = $this->getWeatherData($httpClient);
 
-        // 6. Analyse IA avec DuckDuckGo (NO KEY)
+        // 8. Analyse IA avec DuckDuckGo (NO KEY)
         $ai_analysis = $this->getAIAnalysis($fournisseurs, $httpClient, $repository);
 
         return $this->render('afficher_front_fournisseur/index.html.twig', [
             'fournisseurs' => $fournisseurs,
+            'pinned_ids' => $pinnedIds,
+            'tunisian_ids' => $tunisianIds, // Nouvelle variable pour la vue
             'total' => $totalFournisseurs,
             'pagesCount' => $pagesCount,
             'currentPage' => $page,
@@ -155,6 +185,28 @@ HTML;
             'weather' => $weather,
             'ai_analysis' => $ai_analysis
         ]);
+    }
+
+    #[Route('/fournisseur/pin/{id}', name: 'app_fournisseur_pin')]
+    public function pin(int $id, Request $request): Response
+    {
+        $session = $request->getSession();
+        $pinned = $session->get('pinned_suppliers', []);
+        
+        if (in_array($id, $pinned)) {
+            // Désépingler
+            $pinned = array_diff($pinned, [$id]);
+            $this->addFlash('info', 'Fournisseur désépinglé.');
+        } else {
+            // Épingler
+            $pinned[] = $id;
+            $this->addFlash('success', 'Fournisseur épinglé en haut de liste !');
+        }
+        
+        $session->set('pinned_suppliers', $pinned);
+        
+        // Retour à la page précédente avec les mêmes paramètres
+        return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('app_afficher_front_fournisseur'));
     }
 
     private function getAIAnalysis(array $pageFournisseurs, HttpClientInterface $httpClient, FournisseurRepository $repository): array
