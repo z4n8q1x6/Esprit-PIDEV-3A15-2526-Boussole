@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-#[Route('/admin')]
+#[Route('/admin/alertes')]
 final class AdminAlerteIAController extends AbstractController
 {
     private EntityManagerInterface $em;
@@ -24,7 +24,7 @@ final class AdminAlerteIAController extends AbstractController
         $this->repo = $repo;
     }
 
-    #[Route('/alertes', name: 'admin_alerte_index')]
+    #[Route('/', name: 'admin_alerte_index')]
     public function index(Request $request): Response
     {
         $search = $request->query->get('q', '');
