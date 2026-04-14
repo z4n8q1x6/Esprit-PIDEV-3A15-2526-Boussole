@@ -38,7 +38,7 @@ final class AdminReclamationController extends AbstractController
         if ($this->isCsrfTokenValid('delete-item', $token)) {
             $this->em->remove($reclamation);
             $this->em->flush();
-            $this->addFlash('success', 'Reclamation deleted successfully.');
+            $this->addFlash('success', 'Réclamation supprimée avec succès.');
         }
         return $this->redirectToRoute('admin_reclamation_index');
     }
@@ -54,7 +54,7 @@ final class AdminReclamationController extends AbstractController
         if ($this->isCsrfTokenValid('edit-item', $token) && $statusValid) {
             $reclamation->setStatut($statut);
             $this->em->flush();
-            $this->addFlash('success', 'Reclamation edited successfully.');
+            $this->addFlash('success', 'Réclamation modifiée avec succès.');
         }
         return $this->redirectToRoute('admin_reclamation_index');
     }

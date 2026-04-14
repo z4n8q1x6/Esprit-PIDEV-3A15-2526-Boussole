@@ -289,30 +289,7 @@ Page content END -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. Système de Notifications (Toasts SweetAlert2 via app.flashes Symfony)
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 4000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                }
-            });
-
-            let iconType = '{{ label }}';
-            if (iconType === 'danger') iconType = 'error';
-
-            Toast.fire({
-                icon: iconType,
-                title: '{{ message | escape('js') }}'
-            });
-        {% endfor %}
-    {% endfor %}
+    // Le système de notifications est désormais géré automatiquement par PHP Flasher
 
     // 2. Système de Recherche (Affichage en direct sous la barre de recherche)
     const searchInput = document.getElementById('front-search-input');
@@ -377,5 +354,26 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
+<!-- SweetAlert2 Native Flashes for Standard Commits -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: '{{ label == "success" ? "success" : (label == "danger" or label == "error" ? "error" : "info") }}',
+                    title: '{{ message|e("js") }}',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                    background: '#1e293b',
+                    color: '#fff'
+                });
+            {% endfor %}
+        {% endfor %}
+    });
+</script>
 </body>
 </html>

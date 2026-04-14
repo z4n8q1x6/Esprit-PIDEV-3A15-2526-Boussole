@@ -1,0 +1,15 @@
+flasher:
+    default: sweetalert
+    auto_render: true
+    flash_bag:
+        enabled: true
+        mapping:
+            success:
+                - success
+            error:
+                - error
+                - danger
+            warning:
+                - warning
+            info:
+                - info

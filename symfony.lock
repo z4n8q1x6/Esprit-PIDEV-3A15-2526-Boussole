@@ -50,6 +50,12 @@
             "config/packages/lexik_jwt_authentication.yaml"
         ]
     },
+    "php-flasher/flasher-sweetalert-symfony": {
+        "version": "v1.15.14"
+    },
+    "php-flasher/flasher-symfony": {
+        "version": "v1.15.14"
+    },
     "php-http/discovery": {
         "version": "1.20",
         "recipe": {

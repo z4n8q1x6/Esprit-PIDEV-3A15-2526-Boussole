@@ -134,3 +134,25 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 * **Fichier modifié** : templates/bilan/bilan_pdf.html.twig
   * **Lignes exactes** : Lignes 217 - 223
   * **Description** : Intégration de la balise HTML `<img>` lisant la variable `{{ qr_code_uri }}` avec un conteneur stylisé pour afficher la signature numérique (QR code) sous la zone de résultat financier du PDF.
+
+---
+
+## Tâche 11 : Bundle Faible n°3 – Flash Bundle (Notifications & UX)
+**Date** : 14/04/2026
+
+* **Installation Requise** : `composer require php-flasher/flasher-sweetalert-symfony`
+* **Fichier créé** : `config/packages/flasher.yaml`
+  * **Description** : Création du fichier de configuration du bundle PHP Flasher. Définition de `default: sweetalert` pour forcer l'utilisation de l'adaptateur SweetAlert2 au lieu du renderer basique. Configuration du `flash_bag` mapping (success, error, warning, info).
+* **Fichiers modifiés (Templates base)** : `templates/back_base.html.twig`, `templates/front_base.html.twig`
+  * **Description** : Suppression des anciennes boucles Twig `{% for label, messages in app.flashes %}` (alertes Bootstrap vertes). Ajout de `{{ flasher_render() }}` avant `</body>` pour injecter automatiquement les pop-ups SweetAlert2 du bundle PHP Flasher.
+* **Fichiers modifiés (Contrôleurs)** : `BudgetController`, `AjouterChargeController`, `TransactionController`, `ReclamationController`, `AlerteIAController`, `AjouterFournisseurController`, `AdminReclamationController`, `AfficherFrontChargeController`, `AfficherFrontFournisseurController`
+  * **Description** : Remplacement de `$this->addFlash('success', ...)` par `sweetalert()->success('Message', 'Titre')` pour les actions classiques avec redirection (ajout, suppression via formulaire).
+* **Pages où la notification SweetAlert2 fonctionne (Back-Office)** :
+  * Gestion des Budgets (`budget/budget.html.twig`) — ajout, suppression AJAX, édition inline
+  * Reporting Financier / Bilan (`bilan/bilan.html.twig`) — suppression, suppression multiple
+  * Gestion des Charges (`afficher_back_charge/index.html.twig`) — suppression AJAX, édition inline
+  * Gestion des Fournisseurs (`afficher_back_fournisseur/index.html.twig`) — suppression AJAX, édition inline
+* **Pages où la notification SweetAlert2 fonctionne (Front-Office)** :
+  * Dashboard Entreprise (`franchise/dashboard.html.twig`) — ajout de transaction, édition inline, suppression
+  * Historique des Transactions (`franchise/historique.html.twig`) — édition inline, suppression
+* **Remarque** : Les pages qui utilisent des opérations AJAX (`fetch()` + `JsonResponse`) embarquent la librairie SweetAlert2 via CDN et appellent `Swal.mixin()` directement en JavaScript. Les pages avec des redirections HTTP classiques bénéficient du bundle PHP Flasher automatiquement via `{{ flasher_render() }}`.

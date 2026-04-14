@@ -172,15 +172,8 @@
     </div>
 </div>
 
-{# Toast notification pour les actions AJAX #}
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080">
-    <div id="actionToast" class="toast align-items-center border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body" id="toastMessage"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-</div>
+{# SweetAlert2 CDN pour notifications AJAX #}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {# Modal de confirmation de suppression #}
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -257,8 +250,7 @@
         0% { background-color: rgba(25, 135, 84, 0.3); }
         100% { background-color: transparent; }
     }
-    #actionToast.toast-success { background-color: #198754; color: #fff; }    
-    #actionToast.toast-error { background-color: #dc3545; color: #fff; }      
+      
 </style>
 
 <script>
@@ -400,14 +392,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ===== GESTION TOAST & UPDATE SOLDE =====
-    const toast = document.getElementById('actionToast');
-    const toastMessage = document.getElementById('toastMessage');
-    const bsToast = new bootstrap.Toast(toast, { delay: 3000 });
 
     function showToast(message, type) {
-        toast.className = 'toast align-items-center border-0 toast-' + type;  
-        toastMessage.textContent = message;
-        bsToast.show();
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: '#1e293b',
+            color: '#fff'
+        });
+        Toast.fire({
+            icon: type === 'error' ? 'error' : 'success',
+            title: message
+        });
     }
 
     function formatNumber(num) {
