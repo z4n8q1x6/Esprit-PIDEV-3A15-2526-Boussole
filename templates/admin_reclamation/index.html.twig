@@ -103,26 +103,24 @@
                                 </td>
 
                                 <td class="text-muted ps-3 py-3">
-                                    <div style="max-width: 300px; word-break: break-word;">
-                                        {% if reclamation.description|length > 60 %}{{ reclamation.description|slice(0, 60) }}...{% else %}{{ reclamation.description }}{% endif %}
+                                    <div style="min-width: 200px; max-width: 300px; max-height: 80px; overflow-y: auto; word-break: break-word;">
+                                        {{ reclamation.description }}
                                     </div>
                                 </td>
 
-                                <td class="ps-3 py-3">
-                                    <form method="post" action="{{ path('admin_reclamation_edit', {'id': reclamation.id}) }}" class="d-flex align-items-center gap-2">
-                                        <input type="hidden" name="token" value="{{ csrf_token('edit-item') }}">
-
-                                        <select name="statut" class="form-select form-select-sm">
-                                            <option value="EN_ATTENTE" {{ reclamation.statut == 'EN_ATTENTE' ? 'selected' }}>EN_ATTENTE</option>
-                                            <option value="EN_COURS" {{ reclamation.statut == 'EN_COURS' ? 'selected' }}>EN_COURS</option>
-                                            <option value="RESOLU" {{ reclamation.statut == 'RESOLU' ? 'selected' }}>RESOLU</option>
-                                        </select>
-
-                                        <button type="submit" class="btn btn-sm btn-light mb-0 shadow-none flex-shrink-0">
-                                            <i class="bi bi-check-lg"></i>
-                                        </button>
-                                    </form>
-                                </td>
+<td class="ps-3 py-3">
+    <form method="post" action="{{ path('admin_reclamation_edit', {'id': reclamation.id}) }}" class="d-flex align-items-center gap-2">
+        <input type="hidden" name="token" value="{{ csrf_token('edit-item') }}">
+<select name="statut" class="form-select" style="min-width: 155px; background-color: #2b2b2b; color: #fff; border: 1px solid #444; border-radius: 8px;">
+    <option value="EN_ATTENTE" {{ reclamation.statut == 'EN_ATTENTE' ? 'selected' }}>En attente</option>
+    <option value="EN_COURS" {{ reclamation.statut == 'EN_COURS' ? 'selected' }}>En cours</option>
+    <option value="RESOLU" {{ reclamation.statut == 'RESOLU' ? 'selected' }}>Résolu</option>
+</select>
+        <button type="submit" class="btn btn-sm btn-light mb-0 shadow-none flex-shrink-0">
+            <i class="bi bi-check-lg"></i>
+        </button>
+    </form>
+</td>
 
                                 <td class="text-center ps-3 py-3">
                                     <div class="small">

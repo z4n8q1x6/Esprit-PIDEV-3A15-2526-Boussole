@@ -31,7 +31,6 @@ final class ReclamationController extends AbstractController
         $search = $request->query->get('q', '');
         $sort = $request->query->get('sort', 'id');
         $direction = $request->query->get('direction', 'DESC');
-        /* $reclamations = $this->repo->findBy(['franchise_id' => $this->franchise_id]); */
 
         if (!in_array($sort, ['sujet', 'description', 'statut', 'date_creation'])) {
             $sort = 'id';

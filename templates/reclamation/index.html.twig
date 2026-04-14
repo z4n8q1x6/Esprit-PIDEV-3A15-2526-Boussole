@@ -105,9 +105,9 @@
                                     </h6>
                                 </td>
 
-                                <td class="ps-3 py-3">
-                                    <div style="max-width: 300px; word-break: break-word;">
-                                        {% if reclamation.description|length > 80 %}{{ reclamation.description|slice(0, 80) }}...{% else %}{{ reclamation.description }}{% endif %}
+                                <td class="text-muted ps-3 py-3">
+                                    <div style="min-width: 200px; max-width: 300px; max-height: 80px; overflow-y: auto; word-break: break-word;">
+                                        {{ reclamation.description }}
                                     </div>
                                 </td>
 
@@ -120,6 +120,7 @@
                                         {{ reclamation.statut }}
                                     </span>
                                 </td>
+
 
                                 <td class="ps-3 py-3">
                                     <div class="small">
@@ -190,12 +191,12 @@
              const form = document.createElement('form');
              form.method = 'POST';
              form.action = currentDeleteUrl;
-             
+
              const tokenInput = document.createElement('input');
              tokenInput.type = 'hidden';
              tokenInput.name = 'token';
              tokenInput.value = currentCsrfToken;
-             
+
              form.appendChild(tokenInput);
              document.body.appendChild(form);
              form.submit();
