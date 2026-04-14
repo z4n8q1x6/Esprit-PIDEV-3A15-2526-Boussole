@@ -14,6 +14,9 @@ use Symfony\Component\Routing\Attribute\Route;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use DateTime;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mime\Address;
 
 #[Route('/admin/bilan')]
 final class BilanController extends AbstractController
@@ -270,5 +273,68 @@ final class BilanController extends AbstractController
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
+    }
+
+    #[Route('/email/{id}', name: 'app_bilan_email', methods: ['POST', 'GET'])]
+    public function sendEmail(Bilan $bilan, MailerInterface $mailer, \Endroid\QrCode\Builder\BuilderInterface $customQrCodeBuilder): Response
+    {
+        // 1. Déterminer le destinataire
+        $franchise = $bilan->getFranchiseId();
+        $destinataire = $franchise && $franchise->getEmail() ? $franchise->getEmail() : 'franchise.test@boussole.com';
+        $franchiseNom = $franchise ? $franchise->getNom() : 'SIEGE PRINCIPAL';
+
+        // 2. Générer le PDF (recyclage de la logique exportPdf)
+        $statut = $bilan->getResultatNet() >= 0 ? 'Beneficiaire' : 'Deficitaire';
+        $qrData = sprintf(
+            "Bilan N. %d - Franchise: %s - Solde: %s TND - Statut: %s",
+            $bilan->getId(),
+            $franchiseNom,
+            ($bilan->getResultatNet() >= 0 ? '+' : '') . number_format($bilan->getResultatNet(), 3, '.', ''),
+            $statut
+        );
+
+        $result = $customQrCodeBuilder->build(
+            size: 150, margin: 5, data: $qrData,
+            foregroundColor: new \Endroid\QrCode\Color\Color(0, 212, 255),
+            backgroundColor: new \Endroid\QrCode\Color\Color(26, 31, 44)
+        );
+        $qrCodeUri = $result->getDataUri();
+
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($pdfOptions);
+
+        $html = $this->renderView('bilan/bilan_pdf.html.twig', [
+            'bilan' => $bilan,
+            'qr_code_uri' => $qrCodeUri
+        ]);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $pdfOutput = $dompdf->output();
+        $pdfFilename = "Bilan_" . $bilan->getMois() . "_" . $bilan->getAnnee() . ".pdf";
+
+        // 3. Préparer et envoyer l'e-mail
+        $emailObj = (new TemplatedEmail())
+            ->from(new Address('no-reply@boussole.com', 'Boussole Admin'))
+            ->to($destinataire)
+            ->subject('Votre Bilan Mensuel - ' . $bilan->getMois() . '/' . $bilan->getAnnee())
+            ->htmlTemplate('email/bilan_mensuel.html.twig')
+            ->context([
+                'franchiseNom' => $franchiseNom,
+                'mois' => $bilan->getMois(),
+                'annee' => $bilan->getAnnee(),
+                'recettes' => $bilan->getTotalRecettes(),
+                'charges' => $bilan->getTotalCharges(),
+                'resultat' => $bilan->getResultatNet(),
+            ])
+            ->attach($pdfOutput, $pdfFilename, 'application/pdf');
+
+        $mailer->send($emailObj);
+
+        $this->addFlash('success', 'Email de bilan envoyé avec succès à ' . $destinataire);
+
+        return $this->redirectToRoute('app_bilan_index');
     }
 }

@@ -155,4 +155,22 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 * **Pages où la notification SweetAlert2 fonctionne (Front-Office)** :
   * Dashboard Entreprise (`franchise/dashboard.html.twig`) — ajout de transaction, édition inline, suppression
   * Historique des Transactions (`franchise/historique.html.twig`) — édition inline, suppression
-* **Remarque** : Les pages qui utilisent des opérations AJAX (`fetch()` + `JsonResponse`) embarquent la librairie SweetAlert2 via CDN et appellent `Swal.mixin()` directement en JavaScript. Les pages avec des redirections HTTP classiques bénéficient du bundle PHP Flasher automatiquement via `{{ flasher_render() }}`.
+* **Remarque** : Les pages qui utilisent des opérations AJAX (`fetch()` + `JsonResponse`) embarquent la librairie SweetAlert2 via CDN et appellent `Swal.mixin()` directement en JavaScript. Les redirections HTTP classiques bénéficient de la boucle native Twig SweetAlert injectée dans les templates de base.
+
+---
+
+## Tâche 12 : API 1 - Envoi d'Emails avec Graphique Statique (Mailing Automatisé)
+**Date** : 14/04/2026
+* **Installation Requise** : `composer require symfony/mailer symfony/google-mailer`
+* **Fichier modifié** : `.env`
+  * **Lignes exactes** : 46
+  * **Description** : Modification de la variable `MAILER_DSN` pour intégrer le protocole officiel de Google Mailer (`gmail://`). Le DSN a été paramétré avec l'email et le mot de passe d'application de l'utilisateur (`gmail://siwar.raouafi1:mon_mot_de_passe_app@default`) pour outrepasser les règles de blocage SMTP standards de Google.
+* **Fichier créé** : `templates/email/bilan_mensuel.html.twig`
+  * **Lignes exactes** : Fichier complet
+  * **Description** : Création du template Twig HTML de l'email contenant le logo boussole, les statistiques de résultat, et l'intégration asynchrone dynamique de l'API externe QuickChart.io. L'URL construite en concaténant les données financières génère un "Pie Chart" statique directement encapsulé dans la balise `<img>` de l'e-mail.
+* **Fichier modifié** : `src/Controller/BilanController.php`
+  * **Lignes exactes** : 273 - 336
+  * **Description** : Ajout de l'action `sendEmail` (route `app_bilan_email`). Cette fonction récupère les données de Bilan, ré-exécute le générateur DomPDF + Endroid QrCode, injecte un objet `TemplatedEmail` configuré avec le template Twig et les variables (recettes, charges). Le PDF est joint via la méthode `$email->attach($pdfOutput, ...)` en mode binaire avant de déclencher l'envoi au franchisé.
+* **Fichier modifié** : `templates/bilan/bilan.html.twig`
+  * **Lignes exactes** : 409 - 422
+  * **Description** : Écouteur de clic JavaScript sur le bouton "Envoyer par Email" (`.btn-email`). Action de redirection dynamique vers l'endpoint `/admin/bilan/email/${selectedRowId}` avec protection empêchant le déclenchement en l'absence de `selectedRowId`.

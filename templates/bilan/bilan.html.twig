@@ -408,6 +408,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
+        // -- ACTION BতারাTON ENVOYER EMAIL --
+        const btnEmail = document.querySelector('.btn-email');
+        if (btnEmail) {
+            btnEmail.addEventListener('click', () => {
+                if (!selectedRowId) {
+                    Toast.fire({ icon: 'warning', title: 'Veuillez sélectionner une ligne d\'abord.' });
+                    return;
+                }
+                
+                // Envoyer l'email (Redirection vers le contrôleur qui s'occupe de l'envoi)
+                window.location.href = `/admin/bilan/email/${selectedRowId}`;
+            });
+        }
+
         // 3. INLINE EDIT (DOUBLE CLICK)
         table.addEventListener('dblclick', (e) => {
             const cell = e.target.closest('.editable-cell');
