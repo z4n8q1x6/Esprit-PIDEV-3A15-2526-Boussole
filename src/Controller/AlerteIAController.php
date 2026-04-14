@@ -17,6 +17,7 @@ use Gemini\Enums\ResponseMimeType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 
+#[Route('/alertes')]
 final class AlerteIAController extends AbstractController
 {
     private EntityManagerInterface $em;
@@ -29,7 +30,7 @@ final class AlerteIAController extends AbstractController
         $this->repo = $repo;
     }
 
-    #[Route('/alertes', name: 'alerte_index')]
+    #[Route('/', name: 'alerte_index')]
     public function index(Request $request): Response
     {
         $search = $request->query->get('q', '');
@@ -68,10 +69,11 @@ final class AlerteIAController extends AbstractController
         $prompt = $this->buildPrompt($financialData, date('n'), date('Y'));
 
         $request = $client
-            ->generativeModel(model: 'gemini-2.5-flash')
+            ->generativeModel(model: 'gemini-2.5-flash-lite')
             ->withGenerationConfig(
                 generationConfig: new GenerationConfig(
                     responseMimeType: ResponseMimeType::APPLICATION_JSON,
+                    temperature: 1.2,
                     responseSchema: new Schema(
                         type: DataType::OBJECT,
                         properties: [
@@ -85,7 +87,7 @@ final class AlerteIAController extends AbstractController
             )
             ->generateContent($prompt);
         $data = (array) $request->json();
-        
+
         $data['score_gravite'] = (float) $data['score_gravite'];
 
         $alerte = $serializer->denormalize(
