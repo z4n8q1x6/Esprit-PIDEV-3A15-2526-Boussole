@@ -89,7 +89,11 @@
 
             <div class="chart-container">
                 <p><em>Aperçu visuel de vos finances :</em></p>
-                <img src="https://quickchart.io/chart?c={type:'doughnut',data:{labels:['Recettes','Dépenses'],datasets:[{data:[{{ recettes|abs }},{{ charges|abs }}],backgroundColor:['%2310b981','%23ef4444']}]},options:{plugins:{legend:{position:'bottom'}}}}" alt="Graphique Bilan Mensuel">
+                {% if recettes == 0 and charges == 0 %}
+                    <p style="color: #777; font-style: italic; border: 1px dashed #ccc; padding: 20px;">Aucune transaction enregistrée pour ce mois.</p>
+                {% else %}
+                    <img src="https://quickchart.io/chart?c={type:'bar',data:{labels:['Finances'],datasets:[{label:'Recettes',data:[{{ recettes|abs }}],backgroundColor:'%2310b981'},{label:'Dépenses',data:[{{ charges|abs }}],backgroundColor:'%23ef4444'}]},options:{scales:{y:{beginAtZero:true}}}}" alt="Graphique Bilan Mensuel">
+                {% endif %}
             </div>
 
             <p>Le document détaillé est disponible en pièce jointe (format PDF).</p>
