@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Transaction;
 use App\Entity\Budget_previsionnel;
+use App\Service\CurrencyConverterService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,7 +15,7 @@ use Symfony\UX\Chartjs\Model\Chart;
 class DashboardSiegeController extends AbstractController
 {
     #[Route('/admin/dashboard', name: 'app_siege_dashboard')]
-    public function index(EntityManagerInterface $em, ChartBuilderInterface $chartBuilder): Response
+    public function index(EntityManagerInterface $em, ChartBuilderInterface $chartBuilder, CurrencyConverterService $currencyConverter): Response
     {
         $transactions = $em->getRepository(Transaction::class)->findAll();
 
@@ -165,6 +166,9 @@ class DashboardSiegeController extends AbstractController
             ]
         ]);
 
+        // --- API 2 : Conversion du solde TND → EUR + USD en temps réel ---
+        $conversion = $currencyConverter->convertirDepuisTND($solde);
+
         return $this->render('dashboard_siege/index.html.twig', [
             'revenus' => $revenus,
             'depenses' => $depenses,
@@ -172,6 +176,7 @@ class DashboardSiegeController extends AbstractController
             'chart' => $chart,
             'taux_revenus' => $tauxRevenus,
             'taux_depenses' => $tauxDepenses,
+            'conversion' => $conversion,
         ]);
     }
 

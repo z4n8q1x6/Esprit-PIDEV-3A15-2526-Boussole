@@ -174,3 +174,31 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 * **Fichier modifié** : `templates/bilan/bilan.html.twig`
   * **Lignes exactes** : 409 - 422
   * **Description** : Écouteur de clic JavaScript sur le bouton "Envoyer par Email" (`.btn-email`). Action de redirection dynamique vers l'endpoint `/admin/bilan/email/${selectedRowId}` avec protection empêchant le déclenchement en l'absence de `selectedRowId`.
+
+---
+
+## Tâche 13 : API 2 – Taux de Change en Temps Réel (Finance Internationale)
+**Date** : 15/04/2026
+
+* **Installation Requise** : `composer require symfony/http-client`
+* **Fichier modifié** : `.env`
+  * **Lignes exactes** : Lignes 54 - 56
+  * **Description** : Ajout de la variable d'environnement `EXCHANGE_RATE_API_KEY=YOUR_API_KEY_HERE` dans un bloc dédié `###> exchangerate-api ###`. Cette clé est obtenue gratuitement sur https://www.exchangerate-api.com/ et permet l'authentification auprès de l'API de taux de change.
+* **Fichier créé** : `src/Service/CurrencyConverterService.php`
+  * **Lignes exactes** : Fichier complet (1 - 73)
+  * **Description** : Création du service métier de conversion de devises. Injection de `HttpClientInterface` dans le constructeur. Méthode `convertirDepuisTND(float $montantTND)` qui effectue une requête HTTP GET vers `https://v6.exchangerate-api.com/v6/{API_KEY}/latest/TND`, décode la réponse JSON, extrait les taux EUR et USD simultanément, et retourne un tableau `['EUR' => ['montant', 'taux'], 'USD' => ['montant', 'taux']]`. Retourne `null` en cas d'erreur.
+* **Fichier modifié** : `config/services.yaml`
+  * **Lignes exactes** : Lignes 25 - 27
+  * **Description** : Déclaration explicite du service `App\Service\CurrencyConverterService` avec injection de l'argument `$exchangeRateApiKey` lié à la variable d'environnement `%env(EXCHANGE_RATE_API_KEY)%`.
+* **Fichier modifié** : `src/Controller/TransactionController.php`
+  * **Lignes exactes** : Lignes 14 (Import), 26 (Signature), 84 - 85 (Appel service), 93 (Variable Twig)
+  * **Description** : Import et injection de `CurrencyConverterService` dans la méthode `index()` du Dashboard Franchise. Appel à `$currencyConverter->convertirDepuisTND($solde)` pour récupérer les équivalents EUR et USD. Passage de la variable `conversion` à la vue Twig.
+* **Fichier modifié** : `src/Controller/DashboardSiegeController.php`
+  * **Lignes exactes** : Lignes 7 (Import), 18 (Signature), 168 - 169 (Appel service), 176 (Variable Twig)
+  * **Description** : Import et injection de `CurrencyConverterService` dans la méthode `index()` du Dashboard Siège. Même logique de conversion TND → EUR + USD appliquée au solde total du réseau.
+* **Fichier modifié** : `templates/franchise/dashboard.html.twig`
+  * **Lignes exactes** : Lignes 28 - 46
+  * **Description** : Dans la carte "SOLDE DISPONIBLE", affichage conditionnel sous le montant TND : icône `bi-currency-exchange` (jaune) + « soit ≈ X XXX,XX € » en cyan, et icône `bi-currency-dollar` (vert) + « soit ≈ X XXX,XX $ » en vert. Tooltip sur chaque ligne affichant le taux du jour. Fallback « Conversion EUR/USD indisponible » si l'API échoue.
+* **Fichier modifié** : `templates/dashboard_siege/index.html.twig`
+  * **Lignes exactes** : Lignes 25 - 44
+  * **Description** : Dans la carte "SOLDE TOTAL" du Dashboard Siège, même affichage conditionnel EUR + USD que sur le Dashboard Franchise. Style adapté au thème clair du back-office (texte `#6c757d`).

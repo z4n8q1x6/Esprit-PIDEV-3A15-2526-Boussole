@@ -16,12 +16,44 @@
 <!-- KPI (Statistiques globales du réseau) -->
 <div class="row g-4 mb-4">
     <!-- CARTE SOLDE TOTAL -->
-    <div class="col-md-4">
-        <div class="card card-body border p-4 h-100 shadow" style="border-radius: 12px;">
-            <h6 class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">SOLDE TOTAL</h6>
+    <div class="col-md-4" style="z-index: 50;">
+        <div class="card card-body border p-4 h-100 shadow" style="border-radius: 12px; position: relative; background: #22252a; border-color: #333 !important; z-index: 50; overflow: visible !important;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <h6 class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">SOLDE TOTAL</h6>
+                {% if conversion is not null %}
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="currencyDropdownSiege" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.85rem; padding: 4px 12px; border-color: #444; color: #a0aec0;">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="currencyDropdownSiege" style="background: #1a1f2c; border-color: #333; min-width: 100px;">
+                        {% for code, data in conversion %}
+                        <li>
+                            <a class="dropdown-item currency-option-siege {% if code == 'EUR' %}active{% endif %}" href="#"
+                               data-devise="{{ code }}"
+                               data-montant="{{ data.montant|number_format(2, ',', ' ') }}"
+                               data-symbole="{{ data.symbole }}"
+                               data-taux="{{ data.taux }}"
+                               style="color: #ccc; font-size: 0.9rem; padding: 6px 16px;">
+                                {{ code }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
             <h2 class="mb-0 fw-bold" style="color: #00e5ff;">
                 {{ solde|number_format(2, ',', ' ') }} TND
             </h2>
+            {% if conversion is not null %}
+                <div class="mt-2" id="conversionDisplaySiege" style="color: #a0aec0; font-size: 0.95rem; font-style: italic;">
+                    (soit ≈ <span id="convertedAmountSiege" style="color: #00e5ff;">{{ conversion.EUR.montant|number_format(2, ',', ' ') }} {{ conversion.EUR.symbole }}</span>)
+                </div>
+            {% else %}
+                <small class="text-muted mt-2 d-block" style="font-size: 0.8rem;">
+                    <i class="bi bi-exclamation-circle"></i> Conversion indisponible
+                </small>
+            {% endif %}
         </div>
     </div>
     
@@ -152,6 +184,33 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.borderBottom = '2px solid #00e5ff';
         });
     });
+
+    // ===== GESTION DU MENU DEROULANT DES DEVISES (SIEGE) =====
+    const currencyOptionsSiege = document.querySelectorAll('.currency-option-siege');
+    const convertedAmountSpanSiege = document.getElementById('convertedAmountSiege');
+
+    currencyOptionsSiege.forEach(function(option) {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Retirer la classe active de tous les liens
+            currencyOptionsSiege.forEach(function(opt) { opt.classList.remove('active'); });
+            
+            // Ajouter la classe active au lien cliqué
+            this.classList.add('active');
+
+            // Récupérer les données
+            const devise = this.getAttribute('data-devise');
+            const montant = this.getAttribute('data-montant');
+            const symbole = this.getAttribute('data-symbole');
+
+            // Mettre à jour l'affichage
+            if (convertedAmountSpanSiege) {
+                convertedAmountSpanSiege.textContent = montant + ' ' + symbole;
+            }
+        });
+    });
+
 });
 </script>
 {% endblock %}

@@ -11,6 +11,7 @@ use App\Form\BudgetPrevisionnelType;
 use App\Repository\TransactionRepository;
 use App\Repository\BilanRepository;
 use App\Repository\Budget_previsionnelRepository;
+use App\Service\CurrencyConverterService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,7 +24,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class TransactionController extends AbstractController
 {
     #[Route(name: 'app_transaction_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, EntityManagerInterface $entityManager, TransactionRepository $transactionRepo): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, TransactionRepository $transactionRepo, CurrencyConverterService $currencyConverter): Response
     {
         $transaction = new Transaction();
         $transaction->setDate(new \DateTime());
@@ -80,12 +81,16 @@ final class TransactionController extends AbstractController
             if ($lastObjectif) { $objectifRevenu = $lastObjectif->getMontant_cible(); }
         }
 
+        // --- API 2 : Conversion du solde TND → EUR + USD en temps réel ---
+        $conversion = $currencyConverter->convertirDepuisTND($solde);
+
         return $this->render('franchise/dashboard.html.twig',[
             'transactions' => $derniersMouvements,
             'form' => $form->createView(),
             'solde' => $solde,
             'limiteDepenses' => $limiteDepenses,
             'objectifRevenu' => $objectifRevenu,
+            'conversion' => $conversion,
         ]);
     }
 

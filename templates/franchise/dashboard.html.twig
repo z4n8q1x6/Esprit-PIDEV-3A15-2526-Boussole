@@ -19,13 +19,44 @@
 <!-- KPI (Statistiques en haut) -->
 <div class="row g-4 mb-4">
     <!-- CARTE SOLDE DISPONIBLE (DYNAMIQUE) -->
-    <div class="col-md-4">
-        <div class="card card-body bg-dark border border-secondary p-4 h-100 shadow">
-            <h6 class="text-muted mb-2">SOLDE DISPONIBLE</h6>
+    <div class="col-md-4" style="z-index: 50;">
+        <div class="card card-body bg-dark border border-secondary p-4 h-100 shadow" style="position: relative; z-index: 50; overflow: visible !important;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <h6 class="text-muted mb-2">SOLDE DISPONIBLE</h6>
+                {% if conversion is not null %}
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="currencyDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.85rem; padding: 4px 12px; border-color: #444; color: #a0aec0;">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="currencyDropdown" style="background: #1a1f2c; border-color: #333; min-width: 100px;">
+                        {% for code, data in conversion %}
+                        <li>
+                            <a class="dropdown-item currency-option {% if code == 'EUR' %}active{% endif %}" href="#"
+                               data-devise="{{ code }}"
+                               data-montant="{{ data.montant|number_format(2, ',', ' ') }}"
+                               data-symbole="{{ data.symbole }}"
+                               data-taux="{{ data.taux }}"
+                               style="color: #ccc; font-size: 0.9rem; padding: 6px 16px;">
+                                {{ code }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
             <h2 id="soldeDisplay" class="mb-0 fw-bold {% if solde < 0 %}text-danger{% else %}text-info{% endif %}">
                 {{ solde|number_format(2, ',', ' ') }} TND
             </h2>
-            <small class="text-muted">Mis à jour en temps réel</small>
+            {% if conversion is not null %}
+                <div class="mt-2" id="conversionDisplay" style="color: #a0aec0; font-size: 0.95rem;">
+                    (soit ≈ <span id="convertedAmount" style="color: #00e5ff;">{{ conversion.EUR.montant|number_format(2, ',', ' ') }} {{ conversion.EUR.symbole }}</span>)
+                </div>
+            {% else %}
+                <small class="text-muted mt-1 d-block" style="font-size: 0.8rem;">
+                    <i class="bi bi-exclamation-circle"></i> Conversion indisponible
+                </small>
+            {% endif %}
         </div>
     </div>
     
@@ -482,6 +513,39 @@ document.addEventListener('DOMContentLoaded', function() {
             showToast('Erreur réseau.', 'error');
             deleteModal.hide();
             deleteId = null;
+        });
+    });
+
+    // ===== GESTION DU MENU DEROULANT DES DEVISES =====
+    const currencyOptions = document.querySelectorAll('.currency-option');
+    const convertedAmountSpan = document.getElementById('convertedAmount');
+
+    currencyOptions.forEach(function(option) {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Retirer la classe active de tous les liens
+            currencyOptions.forEach(function(opt) { opt.classList.remove('active'); });
+            
+            // Ajouter la classe active au lien cliqué
+            this.classList.add('active');
+
+            // Récupérer les données
+            const devise = this.getAttribute('data-devise');
+            const montant = this.getAttribute('data-montant');
+            const symbole = this.getAttribute('data-symbole');
+            const taux = this.getAttribute('data-taux');
+
+            // Mettre à jour l'affichage
+            if (convertedAmountSpan) {
+                convertedAmountSpan.textContent = montant + ' ' + symbole;
+            }
+            
+            // Mettre à jour le texte du tooltip parent
+            const conversionDisplay = document.getElementById('conversionDisplay');
+            if (conversionDisplay) {
+                conversionDisplay.setAttribute('title', 'Taux : 1 TND = ' + taux + ' ' + devise);
+            }
         });
     });
 
