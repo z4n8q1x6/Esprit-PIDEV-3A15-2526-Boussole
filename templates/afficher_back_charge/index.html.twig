@@ -6,7 +6,7 @@
 <div class="container mt-4">
     {# En-tête avec titre + bouton Ajouter #}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0 fw-bold text-dark">Gestion des Charges</h2>
+        <h2 class="mb-0 fw-bold back-page-title">Gestion des Charges</h2>
         <div class="d-flex gap-2">
             <a href="{{ path('app_afficher_back_charge_mail') }}" class="btn btn-mail-modern">
                 <i class="fas fa-envelope me-2"></i> Mail
@@ -169,6 +169,16 @@
 ">Modification enregistrée !</div>
 
 <style>
+/* Style pour titres contrastés en mode sombre */
+.back-page-title {
+    color: #1a1a1a;
+    transition: color 0.3s ease;
+}
+
+[data-bs-theme="dark"] .back-page-title {
+    color: #f8f9fa !important;
+}
+
 .editable-cell {
     padding: 4px 8px;
     margin: -4px -8px;

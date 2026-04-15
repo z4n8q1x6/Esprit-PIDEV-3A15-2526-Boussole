@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Fournisseur;
+use App\Entity\Franchises;
 use App\Repository\FournisseurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,6 +32,13 @@ class AfficherFrontFournisseurController extends AbstractController
         $franchise = $fournisseur->getFranchiseId() ? $fournisseur->getFranchiseId()->getNom() : 'Indépendant';
         $id = $fournisseur->getId();
 
+        // Logo Base64
+        $logoPath = $this->getParameter('kernel.project_dir') . '/public/assets/images/logoboussole.png';
+        $logoBase64 = '';
+        if (file_exists($logoPath)) {
+            $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+        }
+
         $html = <<<HTML
 <!DOCTYPE html>
 <html>
@@ -38,10 +46,11 @@ class AfficherFrontFournisseurController extends AbstractController
     <meta charset="UTF-8">
     <style>
         body { font-family: 'Helvetica', sans-serif; color: #333; margin: 0; padding: 0; }
-        .header { background: #198754; color: white; padding: 40px 20px; text-align: center; }
-        .header h1 { margin: 0; font-size: 28px; text-transform: uppercase; letter-spacing: 2px; }
+        .header { background: #1d3b53; color: white; padding: 30px 20px; text-align: center; }
+        .header img { height: 60px; margin-bottom: 10px; }
+        .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
         .content { padding: 40px; }
-        .document-title { color: #198754; font-size: 20px; font-weight: bold; border-bottom: 2px solid #20c997; margin-bottom: 30px; padding-bottom: 10px; }
+        .document-title { color: #1d3b53; font-size: 20px; font-weight: bold; border-bottom: 2px solid #0d6efd; margin-bottom: 30px; padding-bottom: 10px; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
         th { text-align: left; color: #6c757d; font-size: 13px; text-transform: uppercase; padding: 15px 10px; border-bottom: 1px solid #eee; width: 35%; }
         td { padding: 20px 10px; border-bottom: 1px solid #f8f9fa; font-size: 16px; color: #212529; }
@@ -51,6 +60,7 @@ class AfficherFrontFournisseurController extends AbstractController
 </head>
 <body>
     <div class="header">
+        <img src="{$logoBase64}" alt="Logo">
         <h1>BOUSSOLE</h1>
         <p>Fiche Partenaire Officielle</p>
     </div>
@@ -63,7 +73,7 @@ class AfficherFrontFournisseurController extends AbstractController
             <tr><th>Franchise associée</th><td>{$franchise}</td></tr>
         </table>
         <div class="info-box">
-            <strong style="color: #198754; display: block; margin-bottom: 10px;">Note de Conformité</strong>
+            <strong style="color: #1d3b53; display: block; margin-bottom: 10px;">Note de Conformité</strong>
             Ce partenaire est enregistré dans le réseau Boussole. Les informations portées sur cette fiche sont extraites de notre base de données certifiée et ont été validées lors de la dernière mise à jour du dossier.
         </div>
     </div>
@@ -127,33 +137,12 @@ HTML;
             $news = [];
         }
 
-        // 4. Gestion de l'épinglage (Session-based)
-        $session = $request->getSession();
-        $pinnedIds = $session->get('pinned_suppliers', []);
-        
-        // On récupère d'abord tous les résultats filtrés et triés selon les critères utilisateur
+        // 4. Pagination
         $allResults = $queryBuilder->getQuery()->getResult();
-        
-        // On sépare pour mettre les épinglés en haut
-        $pinnedSuppliers = [];
-        $otherSuppliers = [];
-        
-        foreach ($allResults as $f) {
-            if (in_array($f->getId(), $pinnedIds)) {
-                $pinnedSuppliers[] = $f;
-            } else {
-                $otherSuppliers[] = $f;
-            }
-        }
-        
-        // Fusion (Épinglés en premier)
-        $finalList = array_merge($pinnedSuppliers, $otherSuppliers);
-        
-        // 5. Pagination manuelle sur la liste finale réorganisée
-        $totalFournisseurs = count($finalList);
+        $totalFournisseurs = count($allResults);
         $pagesCount = ceil($totalFournisseurs / $limit);
         
-        $fournisseurs = array_slice($finalList, ($page - 1) * $limit, $limit);
+        $fournisseurs = array_slice($allResults, ($page - 1) * $limit, $limit);
 
         // 6. Détection Métier : Mobile Tunisie (Logique centralisée ici)
         $tunisianIds = [];
@@ -171,10 +160,25 @@ HTML;
         // 8. Analyse IA avec DuckDuckGo (NO KEY)
         $ai_analysis = $this->getAIAnalysis($fournisseurs, $httpClient, $repository);
 
+        // 9. GESTION DE LA CORBEILLE (Logiciel Métier Avancé)
+        $trash = $session->get('supplier_trash', []);
+        $now = time();
+        $hasChanged = false;
+
+        // Auto-purge PHP : On nettoie la session pour les items de plus de 24 heures (86400s)
+        foreach ($trash as $id => $item) {
+            if (($now - $item['deleted_at']) > 86400) {
+                unset($trash[$id]);
+                $hasChanged = true;
+            }
+        }
+        if ($hasChanged) {
+            $session->set('supplier_trash', $trash);
+        }
+
         return $this->render('afficher_front_fournisseur/index.html.twig', [
             'fournisseurs' => $fournisseurs,
-            'pinned_ids' => $pinnedIds,
-            'tunisian_ids' => $tunisianIds, // Nouvelle variable pour la vue
+            'tunisian_ids' => $tunisianIds,
             'total' => $totalFournisseurs,
             'pagesCount' => $pagesCount,
             'currentPage' => $page,
@@ -183,31 +187,11 @@ HTML;
             'currentDirection' => $direction,
             'news' => $news,
             'weather' => $weather,
-            'ai_analysis' => $ai_analysis
+            'ai_analysis' => $ai_analysis,
+            'trash' => $trash // On envoie la corbeille à la vue
         ]);
     }
 
-    #[Route('/fournisseur/pin/{id}', name: 'app_fournisseur_pin')]
-    public function pin(int $id, Request $request): Response
-    {
-        $session = $request->getSession();
-        $pinned = $session->get('pinned_suppliers', []);
-        
-        if (in_array($id, $pinned)) {
-            // Désépingler
-            $pinned = array_diff($pinned, [$id]);
-            $this->addFlash('info', 'Fournisseur désépinglé.');
-        } else {
-            // Épingler
-            $pinned[] = $id;
-            $this->addFlash('success', 'Fournisseur épinglé en haut de liste !');
-        }
-        
-        $session->set('pinned_suppliers', $pinned);
-        
-        // Retour à la page précédente avec les mêmes paramètres
-        return $this->redirect($request->headers->get('referer') ?: $this->generateUrl('app_afficher_front_fournisseur'));
-    }
 
     private function getAIAnalysis(array $pageFournisseurs, HttpClientInterface $httpClient, FournisseurRepository $repository): array
     {
@@ -335,11 +319,75 @@ HTML;
     }
 
     #[Route('/fournisseur/delete/{id}', name: 'app_fournisseur_delete', methods: ['POST', 'GET'])]
-    public function delete(Fournisseur $fournisseur, EntityManagerInterface $em): Response
+    public function delete(Fournisseur $fournisseur, EntityManagerInterface $em, Request $request): Response
     {
+        $session = $request->getSession();
+        $trash = $session->get('supplier_trash', []);
+
+        // SAUVEGARDE DANS LA CORBEILLE (Backup Session)
+        $trash[$fournisseur->getId()] = [
+            'id' => $fournisseur->getId(),
+            'nom' => $fournisseur->getNom(),
+            'matricule' => $fournisseur->getMatriculeFiscal(),
+            'telephone' => $fournisseur->getTelephone(),
+            'franchise_id' => $fournisseur->getFranchiseId() ? $fournisseur->getFranchiseId()->getId() : null,
+            'franchise_nom' => $fournisseur->getFranchiseId() ? $fournisseur->getFranchiseId()->getNom() : 'Indépendant',
+            'deleted_at' => time()
+        ];
+
+        $session->set('supplier_trash', $trash);
+
+        // SUPPRESSION RÉELLE DE LA BASE
         $em->remove($fournisseur);
         $em->flush();
-        $this->addFlash('success', 'Fournisseur supprimé avec succès.');
+
+        $this->addFlash('success', 'Fournisseur supprimé et déplacé dans la corbeille (24h).');
+        return $this->redirectToRoute('app_afficher_front_fournisseur');
+    }
+
+    #[Route('/fournisseur/restore/{id}', name: 'app_fournisseur_restore')]
+    public function restore(int $id, Request $request, EntityManagerInterface $em): Response
+    {
+        $session = $request->getSession();
+        $trash = $session->get('supplier_trash', []);
+
+        if (isset($trash[$id])) {
+            $data = $trash[$id];
+            
+            // Recréation de l'entité avec les données sauvegardées
+            $fournisseur = new Fournisseur();
+            $fournisseur->setId($data['id']); // Utilisation du setId (manual ID)
+            $fournisseur->setNom($data['nom']);
+            $fournisseur->setMatriculeFiscal($data['matricule']);
+            $fournisseur->setTelephone($data['telephone']);
+
+            if ($data['franchise_id']) {
+                $franchise = $em->getRepository(Franchises::class)->find($data['franchise_id']);
+                if ($franchise) {
+                    $fournisseur->setFranchiseId($franchise);
+                }
+            }
+
+            $em->persist($fournisseur);
+            $em->flush();
+
+            // Retrait de la corbeille
+            unset($trash[$id]);
+            $session->set('supplier_trash', $trash);
+
+            $this->addFlash('success', 'Fournisseur restauré avec succès !');
+        }
+
+        return $this->redirectToRoute('app_afficher_front_fournisseur');
+    }
+
+    #[Route('/fournisseur/empty_trash', name: 'app_fournisseur_empty_trash')]
+    public function emptyTrash(Request $request): Response
+    {
+        $session = $request->getSession();
+        $session->set('supplier_trash', []);
+        
+        $this->addFlash('info', 'La corbeille a été vidée.');
         return $this->redirectToRoute('app_afficher_front_fournisseur');
     }
 }

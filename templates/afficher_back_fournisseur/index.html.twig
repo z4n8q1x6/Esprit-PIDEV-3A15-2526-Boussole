@@ -6,7 +6,7 @@
 <div class="container mt-4">
     {# En-tête avec titre + bouton Ajouter #}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0 fw-bold text-dark">Gestion des Fournisseurs</h2>
+        <h2 class="mb-0 fw-bold back-page-title">Gestion des Fournisseurs</h2>
         <div class="d-flex gap-2">
             <a href="{{ path('app_afficher_back_fournisseur_mail') }}" class="btn btn-mail-modern">
                 <i class="fas fa-envelope me-2"></i> Mail
@@ -196,21 +196,30 @@ th[data-sort]:hover {
 }
 
 .btn-mail-modern {
-    background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
     color: white !important;
     border: none;
     border-radius: 50px;
     padding: 10px 24px;
     font-weight: 600;
-    box-shadow: 0 4px 15px rgba(28, 200, 138, 0.2);
+    box-shadow: 0 4px 15px rgba(78, 115, 223, 0.2);
     transition: all 0.3s ease;
     text-decoration: none;
     display: inline-block;
 }
 .btn-mail-modern:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(28, 200, 138, 0.3);
+    box-shadow: 0 6px 20px rgba(78, 115, 223, 0.3);
     filter: brightness(1.1);
+}
+
+.back-page-title {
+    color: #1a1a1a;
+    transition: color 0.3s ease;
+}
+
+[data-bs-theme="dark"] .back-page-title {
+    color: #f8f9fa !important;
 }
 
 .btn-delete-modern {

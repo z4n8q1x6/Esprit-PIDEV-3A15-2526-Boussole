@@ -7,9 +7,19 @@
     {# En-tête avec titre + bouton Ajouter #}
     <div class="d-flex justify-content-between align-items-center mb-5">
         <h2 class="fw-bold main-page-title mb-0">Nos Partenaires Fournisseurs</h2>
-        <a href="{{ path('app_ajouter_fournisseur') }}" class="btn btn-add-modern">
-            <i class="fas fa-plus-circle me-2"></i> Ajouter un fournisseur
-        </a>
+        <div class="d-flex gap-2">
+            <button class="btn btn-trash-toggle position-relative" data-bs-toggle="modal" data-bs-target="#trashModal">
+                <i class="fas fa-trash"></i>
+                {% if trash|length > 0 %}
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ trash|length }}
+                    </span>
+                {% endif %}
+            </button>
+            <a href="{{ path('app_ajouter_fournisseur') }}" class="btn btn-add-modern">
+                <i class="fas fa-plus-circle me-2"></i> Ajouter un fournisseur
+            </a>
+        </div>
     </div>
 
     {# Widget Météo Flottant #}
@@ -145,9 +155,7 @@
     <div class="row g-4">
         {% for f in fournisseurs %}
             <div class="col-md-4">
-                <div class="card h-100 supplier-card-modern {% if f.id in pinned_ids %}is-pinned-card{% endif %}" 
-                     data-id="{{ f.id }}" 
-                     data-pinned="{% if f.id in pinned_ids %}1{% else %}0{% endif %}">
+                <div class="card h-100 supplier-card-modern" data-id="{{ f.id }}">
                     <div class="card-header-accent"></div>
                     <div class="card-body p-4">
                         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -167,11 +175,6 @@
                             </div>
 
                             <div class="d-flex gap-2">
-                                {% if f.id in pinned_ids %}
-                                    <span class="badge badge-pinned shadow-sm" title="Fournisseur Épinglé">
-                                        <i class="fas fa-thumbtack"></i>
-                                    </span>
-                                {% endif %}
                                 <span class="badge bg-soft-primary px-3 py-2 rounded-pill">Actif</span>
                             </div>
                         </div>
@@ -194,7 +197,7 @@
                         <a href="{{ path('app_modifier_fournisseur', {'id': f.id}) }}" class="btn btn-outline-warning btn-action flex-grow-1">
                             <i class="fas fa-edit me-1"></i> Modifier
                         </a>
-                        <a href="{{ path('app_fournisseur_pdf', {'id': f.id}) }}" class="btn btn-outline-success btn-action flex-grow-1">
+                        <a href="{{ path('app_fournisseur_pdf', {'id': f.id}) }}" class="btn btn-outline-info btn-action flex-grow-1">
                             <i class="fas fa-file-pdf me-1"></i> PDF
                         </a>
                         <a href="{{ path('app_fournisseur_delete', {'id': f.id}) }}" 
@@ -689,86 +692,101 @@
 }
 .tn-flag-wrapper:hover { transform: scale(1.2); }
 
-.badge-pinned {
-    background: #FFD700;
-    color: #856404;
-    font-size: 0.7rem;
-    padding: 8px;
+/* Styles pour la Corbeille */
+.btn-trash-toggle {
+    background: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
     border-radius: 50%;
+    width: 48px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: pin-pulse 2s infinite;
+    transition: all 0.3s ease;
 }
-
-@keyframes pin-pulse {
-    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
-    70% { transform: scale(1.05); box-shadow: 0 0 0 6px rgba(255, 215, 0, 0); }
-    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+.btn-trash-toggle:hover {
+    background: #e9ecef;
+    color: #dc3545;
+    transform: rotate(15deg);
 }
-
-.is-pinned-card {
-    border: 2px solid #FFD700 !important;
+.trash-item {
+    transition: all 0.3s ease;
+    border-left: 4px solid #dc3545 !important;
 }
-
-/* Menu Contextuel Moderne */
-.custom-context-menu {
-    position: fixed;
-    z-index: 2000;
-    width: 200px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    border: 1px solid rgba(0,0,0,0.05);
-    padding: 8px 0;
-    display: none;
-    animation: menu-pop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.trash-item:hover {
+    transform: translateX(5px);
+    background: #fff;
 }
-
-@keyframes menu-pop {
-    0% { transform: scale(0.9); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+.countdown-timer {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
 }
-
-.context-menu-item {
-    padding: 10px 18px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: #333;
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-decoration: none !important;
-}
-
-.context-menu-item:hover {
-    background: #f8f9fc;
-    color: #0d6efd;
-    padding-left: 22px;
-}
-
-.context-menu-item i {
-    width: 20px;
-    text-align: center;
-    font-size: 1rem;
-}
-
-.context-divider {
-    height: 1px;
-    background: #eee;
-    margin: 5px 0;
-}
-
 </style>
 
-{# Structure du Menu Contextuel #}
-<div id="supplier-context-menu" class="custom-context-menu">
-    <div class="context-menu-item" id="pin-action-btn">
-        <i class="fas fa-thumbtack"></i>
-        <span id="pin-text">Épingler ce partenaire</span>
+
+<div class="modal fade" id="trashModal" tabindex="-1" aria-labelledby="trashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header bg-dark text-white border-0 py-4" style="border-radius: 20px 20px 0 0;">
+                <h5 class="modal-title fw-bold" id="trashModalLabel">
+                    <i class="fas fa-trash-restore me-2 text-warning"></i> Corbeille Temporaire
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" style="background: #f8f9fa;">
+                {% if trash|length > 0 %}
+                    <div class="alert alert-info border-0 shadow-sm mb-4 small">
+                        <i class="fas fa-info-circle me-2"></i> Les fournisseurs sont conservés ici pendant <strong>24 heures</strong> avant d'être définitivement effacés.
+                    </div>
+                    
+                    <div class="trash-list">
+                        {% for id, item in trash %}
+                            <div class="trash-item card mb-3 border-0 shadow-sm p-3" data-id="{{ id }}" data-deleted-at="{{ item.deleted_at }}">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5">
+                                        <h6 class="fw-bold mb-1">{{ item.nom }}</h6>
+                                        <div class="text-muted small">
+                                            <i class="fas fa-id-card me-1"></i> {{ item.matricule }} • 
+                                            <i class="fas fa-building me-1"></i> {{ item.franchise_nom }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <div class="timer-container">
+                                            <div class="countdown-timer fw-bold text-danger" id="timer-{{ id }}">
+                                                --:--
+                                            </div>
+                                            <div class="progress mt-1" style="height: 4px;">
+                                                <div class="progress-bar bg-danger" id="progress-{{ id }}" role="progressbar" style="width: 100%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <a href="{{ path('app_fournisseur_restore', {id: id}) }}" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                                            <i class="fas fa-undo-alt me-1"></i> Restaurer
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-trash-alt fa-3x text-muted mb-3 opacity-25"></i>
+                        <h6 class="text-muted">Votre corbeille est vide.</h6>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer border-0 p-4">
+                <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Fermer</button>
+                {% if trash|length > 0 %}
+                    <a href="{{ path('app_fournisseur_empty_trash') }}" class="btn btn-danger rounded-pill px-4" onclick="return confirm('Voulez-vous vider toute la corbeille ?')">
+                        Vider la corbeille
+                    </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 
@@ -786,41 +804,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 5000);
     }
 
-    // 2. Gestion du Menu Contextuel (Métier de Clic Droit)
-    const contextMenu = document.getElementById('supplier-context-menu');
-    const pinBtn = document.getElementById('pin-action-btn');
-    let currentSupplierId = null;
-
-    document.querySelectorAll('.supplier-card-modern').forEach(card => {
-        card.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            currentSupplierId = card.getAttribute('data-id');
-            const isPinned = card.getAttribute('data-pinned') === '1';
-
-            // Mise à jour du texte
-            document.getElementById('pin-text').innerText = isPinned ? 'Désépingler' : 'Épingler ce partenaire';
-
-            // Positionnement du menu
-            contextMenu.style.display = 'block';
-            contextMenu.style.left = e.clientX + 'px';
-            contextMenu.style.top = e.clientY + 'px';
+    // 4. LOGIQUE DE LA CORBEILLE (Minuteurs)
+    const trashItems = document.querySelectorAll('.trash-item');
+    
+    function updateTimers() {
+        const now = Math.floor(Date.now() / 1000);
+        
+        trashItems.forEach(item => {
+            const id = item.getAttribute('data-id');
+            const deletedAt = parseInt(item.getAttribute('data-deleted-at'));
+            const expiry = deletedAt + 86400; // 24 heures
+            const remaining = expiry - now;
+            
+            const timerEl = document.getElementById(`timer-${id}`);
+            const progressEl = document.getElementById(`progress-${id}`);
+            
+            if (remaining <= 0) {
+                window.location.reload();
+                return;
+            }
+            
+            const hours = Math.floor(remaining / 3600);
+            const minutes = Math.floor((remaining % 3600) / 60);
+            
+            if (timerEl) {
+                timerEl.innerText = `${hours.toString().padStart(2, '0')}h : ${minutes.toString().padStart(2, '0')}m`;
+            }
+            
+            if (progressEl) {
+                const percent = (remaining / 86400) * 100;
+                progressEl.style.width = `${percent}%`;
+            }
         });
-    });
+    }
 
-    // Cacher le menu au clic ailleurs
-    document.addEventListener('click', () => {
-        contextMenu.style.display = 'none';
-    });
-
-    // Action Épingler
-    pinBtn.addEventListener('click', () => {
-        if (currentSupplierId) {
-            window.location.href = `/fournisseur/pin/${currentSupplierId}`;
-        }
-    });
-
-    // 3. Script Météo (Désactivé : Migré vers PHP)
-    // La météo est désormais gérée par le contrôleur Symfony pour une meilleure intégration.
+    if (trashItems.length > 0) {
+        setInterval(updateTimers, 1000);
+        updateTimers();
+    }
 });
 
 function toggleAIReport() {

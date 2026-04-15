@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Part\DataPart;
+use Symfony\Component\Mime\Part\File;
 
 #[Route('/admin')]
 final class AfficherBackFournisseurController extends AbstractController
@@ -61,6 +63,11 @@ final class AfficherBackFournisseurController extends AbstractController
             ->subject('Répertoire Complet des Fournisseurs - Boutique Boussole')
             ->html($htmlContent);
 
+        $logoPath = $this->getParameter('kernel.project_dir') . '/public/assets/images/logoboussole.png';
+        if (file_exists($logoPath)) {
+            $email->addPart((new DataPart(new File($logoPath), 'logo_boussole', 'image/png'))->asInline());
+        }
+
         try {
             $mailer->send($email);
             $this->addFlash('success', 'La liste des fournisseurs a été envoyée avec succès à ' . $recipient);
@@ -77,10 +84,10 @@ final class AfficherBackFournisseurController extends AbstractController
         foreach ($fournisseurs as $f) {
             $franchiseName = $f['franchise_id']['nom'] ?? 'N/A';
             $rows .= "<tr>
-                <td style='padding: 12px; border-bottom: 1px solid #ddd;'><strong>{$f['nom']}</strong></td>
-                <td style='padding: 12px; border-bottom: 1px solid #ddd;'><span style='background: #eee; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13px;'>{$f['matricule_fiscal']}</span></td>
-                <td style='padding: 12px; border-bottom: 1px solid #ddd; color: #4e73df; font-weight: 500;'>{$f['telephone']}</td>
-                <td style='padding: 12px; border-bottom: 1px solid #ddd;'>{$franchiseName}</td>
+                <td style='padding: 12px; border-bottom: 1px solid #eee;'><strong>{$f['nom']}</strong></td>
+                <td style='padding: 12px; border-bottom: 1px solid #eee;'><span style='background: #f8f9fc; padding: 4px 8px; border-radius: 4px; font-family: monospace; font-size: 13px; color: #1d3b53; border: 1px solid #e3e6f0;'>{$f['matricule_fiscal']}</span></td>
+                <td style='padding: 12px; border-bottom: 1px solid #eee; color: #4e73df; font-weight: bold;'>{$f['telephone']}</td>
+                <td style='padding: 12px; border-bottom: 1px solid #eee;'>{$franchiseName}</td>
             </tr>";
         }
 
@@ -90,31 +97,40 @@ final class AfficherBackFournisseurController extends AbstractController
         return "
         <!DOCTYPE html>
         <html>
-        <body style=\"font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f4f7f6;\">
-            <div style=\"max-width: 800px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);\">
-                <div style=\"background: #1cc88a; color: #fff; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;\">
-                    <h1 style=\"margin: 0; font-size: 24px;\">Répertoire des Fournisseurs</h1>
+        <body style=\"font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f0f2f5;\">
+            <div style=\"max-width: 800px; margin: 30px auto; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);\">
+                <div style=\"background: #1d3b53; padding: 40px 20px; text-align: center; color: #fff;\">
+                    <img src=\"cid:logo_boussole\" alt=\"Boussole Logo\" style=\"height: 70px; margin-bottom: 20px;\">
+                    <h1 style=\"margin: 0; font-size: 26px; text-transform: uppercase; letter-spacing: 2px;\">Répertoire Fournisseurs</h1>
+                    <p style=\"margin: 10px 0 0; opacity: 0.8; font-size: 14px;\">Rapport Officiel - Plateforme Boussole</p>
                 </div>
-                <div style=\"padding: 20px;\">
-                    <p>Bonjour,</p>
-                    <p>Voici la liste actuelle des fournisseurs référencés dans votre plateforme <strong>Boussole</strong>.</p>
-                    <table style=\"width: 100%; border-collapse: collapse; margin-top: 20px;\">
+                <div style=\"padding: 40px;\">
+                    <p style=\"font-size: 16px;\">Bonjour,</p>
+                    <p style=\"font-size: 16px;\">Veuillez trouver ci-dessous l'état actuel des fournisseurs référencés dans votre gestion de franchise.</p>
+                    
+                    <table style=\"width: 100%; border-collapse: collapse; margin-top: 30px;\">
                         <thead>
-                            <tr style=\"background-color: #f8f9fc; color: #1cc88a;\">
-                                <th style=\"padding: 12px; text-align: left; border-bottom: 2px solid #e3e6f0;\">Nom du Fournisseur</th>
-                                <th style=\"padding: 12px; text-align: left; border-bottom: 2px solid #e3e6f0;\">Matricule Fiscal</th>
-                                <th style=\"padding: 12px; text-align: left; border-bottom: 2px solid #e3e6f0;\">Téléphone</th>
-                                <th style=\"padding: 12px; text-align: left; border-bottom: 2px solid #e3e6f0;\">Franchise</th>
+                            <tr style=\"background-color: #f8f9fc; color: #1d3b53;\">
+                                <th style=\"padding: 15px 12px; text-align: left; border-bottom: 2px solid #1d3b53; font-size: 13px; text-transform: uppercase;\">Entreprise</th>
+                                <th style=\"padding: 15px 12px; text-align: left; border-bottom: 2px solid #1d3b53; font-size: 13px; text-transform: uppercase;\">Matricule</th>
+                                <th style=\"padding: 15px 12px; text-align: left; border-bottom: 2px solid #1d3b53; font-size: 13px; text-transform: uppercase;\">Téléphone</th>
+                                <th style=\"padding: 15px 12px; text-align: left; border-bottom: 2px solid #1d3b53; font-size: 13px; text-transform: uppercase;\">Franchise</th>
                             </tr>
                         </thead>
                         <tbody>
                             {$rows}
                         </tbody>
                     </table>
-                    <p style=\"margin-top: 20px;\"><strong>Total enregistré :</strong> {$count} fournisseurs</p>
+                    
+                    <div style=\"margin-top: 35px; padding: 20px; background: #f8f9fc; border-radius: 8px; border-left: 5px solid #1d3b53;\">
+                        <p style=\"margin: 0; font-size: 15px; color: #1d3b53;\">
+                            <strong>Statistiques :</strong> Un total de <strong>{$count}</strong> fournisseurs sont actuellement actifs dans le système.
+                        </p>
+                    </div>
                 </div>
-                <div style=\"padding: 20px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #eee; margin-top: 20px;\">
-                    <p>&copy; {$year} Boussole - Gestion de Franchise. Tous droits réservés.</p>
+                <div style=\"padding: 30px; text-align: center; font-size: 12px; color: #adb5bd; background: #fafafa; border-top: 1px solid #f0f0f0;\">
+                    <p style=\"margin-bottom: 5px;\">&copy; {$year} <strong>Boussole</strong> - Écosystème de Gestion Intégré.</p>
+                    <p style=\"margin-top: 0;\">Ceci est un message automatique, merci de ne pas y répondre.</p>
                 </div>
             </div>
         </body>

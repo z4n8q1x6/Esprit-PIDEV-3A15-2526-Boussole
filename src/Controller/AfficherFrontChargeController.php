@@ -32,6 +32,13 @@ class AfficherFrontChargeController extends AbstractController
         $status = $charge->getStatusValidation();
         $id = $charge->getId();
 
+        // Logo Base64
+        $logoPath = $this->getParameter('kernel.project_dir') . '/public/assets/images/logoboussole.png';
+        $logoBase64 = '';
+        if (file_exists($logoPath)) {
+            $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+        }
+
         $html = <<<HTML
 <!DOCTYPE html>
 <html>
@@ -39,8 +46,9 @@ class AfficherFrontChargeController extends AbstractController
     <meta charset="UTF-8">
     <style>
         body { font-family: 'Helvetica', sans-serif; color: #333; margin: 0; padding: 0; }
-        .header { background: #1d3b53; color: white; padding: 40px 20px; text-align: center; }
-        .header h1 { margin: 0; font-size: 28px; text-transform: uppercase; letter-spacing: 2px; }
+        .header { background: #1d3b53; color: white; padding: 30px 20px; text-align: center; }
+        .header img { height: 60px; margin-bottom: 10px; }
+        .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
         .content { padding: 40px; }
         .document-title { color: #1d3b53; font-size: 20px; font-weight: bold; border-bottom: 2px solid #0d6efd; margin-bottom: 30px; padding-bottom: 10px; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
@@ -53,6 +61,7 @@ class AfficherFrontChargeController extends AbstractController
 </head>
 <body>
     <div class="header">
+        <img src="{$logoBase64}" alt="Logo">
         <h1>BOUSSOLE</h1>
         <p>Rapport de Charge Certifié</p>
     </div>
