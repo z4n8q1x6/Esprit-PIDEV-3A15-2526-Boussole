@@ -5,7 +5,7 @@
 {% block content %}
 <div class="row mb-4">
     <div class="col-12">
-        <h1 class="h3 mb-0">Tableau de bord</h1>
+        <h1 class="h3 mb-0">Vue d'ensemble</h1>
         <p class="text-muted">Bienvenue sur votre espace de gestion</p>
     </div>
 </div>
@@ -20,15 +20,15 @@
 <div class="row g-4 mb-4">
     <!-- CARTE SOLDE DISPONIBLE (DYNAMIQUE) -->
     <div class="col-md-4" style="z-index: 50;">
-        <div class="card card-body bg-dark border border-secondary p-4 h-100 shadow" style="position: relative; z-index: 50; overflow: visible !important;">
+        <div class="card card-body border p-4 h-100 shadow" style="position: relative; z-index: 50; overflow: visible !important;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <h6 class="text-muted mb-2">SOLDE DISPONIBLE</h6>
                 {% if conversion is not null %}
                 <div class="dropdown">
-                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="currencyDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.85rem; padding: 4px 12px; border-color: #444; color: #a0aec0;">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="currencyDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.85rem; padding: 4px 12px; border-color: #444; color: inherit;">
                         <i class="bi bi-three-dots"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="currencyDropdown" style="background: #1a1f2c; border-color: #333; min-width: 100px;">
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="currencyDropdown" style="min-width: 100px;">
                         {% for code, data in conversion %}
                         <li>
                             <a class="dropdown-item currency-option {% if code == 'EUR' %}active{% endif %}" href="#"
@@ -36,7 +36,7 @@
                                data-montant="{{ data.montant|number_format(2, ',', ' ') }}"
                                data-symbole="{{ data.symbole }}"
                                data-taux="{{ data.taux }}"
-                               style="color: #ccc; font-size: 0.9rem; padding: 6px 16px;">
+                               style="font-size: 0.9rem; padding: 6px 16px;">
                                 {{ code }}
                             </a>
                         </li>
@@ -61,16 +61,16 @@
     </div>
     
     <div class="col-md-4">
-        <div class="card card-body bg-dark border border-secondary p-4 h-100 shadow">
+        <div class="card card-body border p-4 h-100 shadow">
             <h6 class="text-muted mb-2">LIMITE DÉPENSES</h6>
             <h2 class="text-warning mb-0 fw-bold">{{ limiteDepenses|number_format(2, ',', ' ') }} TND</h2>
             <small class="text-muted">Dernière limite configurée</small>
         </div>
     </div>
     <div class="col-md-4">
-        <div class="card card-body bg-dark border border-secondary p-4 h-100 shadow">
+        <div class="card card-body border p-4 h-100 shadow">
             <h6 class="text-muted mb-2">OBJECTIF REVENU</h6>
-            <h2 class="text-white mb-0 fw-bold">{{ objectifRevenu|number_format(2, ',', ' ') }} TND</h2>
+            <h2 class="mb-0 fw-bold">{{ objectifRevenu|number_format(2, ',', ' ') }} TND</h2>
             <small class="text-muted">Dernier objectif configuré</small>
         </div>
     </div>
@@ -79,32 +79,32 @@
 <div class="row g-4">
     <!-- FORMULAIRE NOUVELLE TRANSACTION -->
     <div class="col-lg-4">
-        <div class="card bg-dark border border-secondary shadow h-100">
-            <div class="card-header bg-transparent border-bottom border-secondary p-4">
-                <h5 class="card-header-title text-white mb-0">Nouvelle Transaction</h5>
+        <div class="card border shadow h-100">
+            <div class="card-header bg-transparent border-bottom p-4">
+                <h5 class="card-header-title mb-0">Nouvelle Transaction</h5>
             </div>
             <div class="card-body p-4">
                 {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
                     <div class="mb-3">
-                        <label class="form-label text-light">Date</label>
-                        {{ form_widget(form.date, {'attr': {'class': 'form-control bg-transparent text-light border-secondary'}}) }}
+                        <label class="form-label">Date</label>
+                        {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
                         <div class="text-danger small">{{ form_errors(form.date) }}</div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-light">Montant (TND)</label>
-                        {{ form_widget(form.montant, {'attr': {'class': 'form-control bg-transparent text-light border-secondary', 'placeholder': '0.00'}}) }}
+                        <label class="form-label">Montant (TND)</label>
+                        {{ form_widget(form.montant, {'attr': {'class': 'form-control', 'placeholder': '0.00'}}) }}
                         <div class="text-danger small">{{ form_errors(form.montant) }}</div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-light">Type</label>
+                        <label class="form-label">Type</label>
                         {{ form_widget(form.type) }}
                         <div class="text-danger small">{{ form_errors(form.type) }}</div>
                     </div>
                     <div class="mb-4">
-                        <label class="form-label text-light">Description</label>
+                        <label class="form-label">Description</label>
                         {{ form_widget(form.description, {
                             'attr': {
-                                'class': 'form-control bg-transparent text-light border-secondary',
+                                'class': 'form-control',
                                 'placeholder': 'Ex: Vente du jour',
                                 'id': 'description_input'
                             }
@@ -123,15 +123,15 @@
 
     <!-- TABLEAU DERNIERS MOUVEMENTS -->
     <div class="col-lg-8">
-        <div class="card bg-dark border border-secondary shadow h-100">
-            <div class="card-header bg-transparent border-bottom border-secondary p-4">
-                <h5 class="card-header-title text-white mb-0">Derniers Mouvements</h5>
+        <div class="card border shadow h-100">
+            <div class="card-header bg-transparent border-bottom p-4">
+                <h5 class="card-header-title mb-0">Derniers Mouvements</h5>
                 <small class="text-muted">Double-cliquez sur une cellule pour la modifier</small>
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
-                    <table class="table table-dark table-hover table-borderless align-middle mb-0" id="transactionsTable">
-                        <thead class="border-bottom border-secondary">
+                    <table class="table table-hover table-borderless align-middle mb-0" id="transactionsTable">
+                        <thead class="border-bottom">
                             <tr>
                                 <th scope="col" class="text-muted">DATE</th>
                                 <th scope="col" class="text-muted">TYPE</th>
