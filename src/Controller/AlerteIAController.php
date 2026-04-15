@@ -130,11 +130,7 @@ final class AlerteIAController extends AbstractController
             . "- Charges rejetées: %d\n\n"
             . "ACTIVITÉ:\n"
             . "- Transactions ce mois: %d\n\n"
-            . "Détecte les anomalies et risques financiers. Formule une alerte basée sur ces données.\n\n"
-            . "Retourne un objet JSON avec exactement ces champs:\n"
-            . "- type_alerte: String (max 35 caractères)\n"
-            . "- message: String (100-1000 caractères)\n"
-            . "- score_gravite: Number (0-10)",
+            . "Détecte les anomalies et risques financiers. Formule une alerte basée sur ces données.\n\n",
             $month,
             $year,
             $financialData['totalRecettes'],

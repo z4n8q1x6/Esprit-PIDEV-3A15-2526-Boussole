@@ -9,8 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\AlerteiasRepository;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Gemini;
 
 #[Route('/admin/alertes')]
 final class AdminAlerteIAController extends AbstractController
@@ -73,5 +75,96 @@ final class AdminAlerteIAController extends AbstractController
         // Output the generated PDF to Browser
         $dompdf->stream();
         return $this->redirectToRoute('admin_alerte_index');
+    }
+
+    #[Route('/escalation-advisor', name: 'admin_alerte_escalation', methods: ['POST'])]
+    public function escalationAdvisor(Request $request): Response
+    {
+        $token = $request->getPayload()->get('token');
+        if (!$this->isCsrfTokenValid('escalation-item', $token)) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'Invalid CSRF token',
+            ], 403);
+        }
+
+        $alertes = $this->repo->findAll();
+
+        if (empty($alertes)) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'Aucune alerte à analyser.',
+            ]);
+        }
+
+        $alertSummary = "Voici toutes les alertes actuelles pour toutes les franchises :\n\n";
+
+        foreach ($alertes as $alerte) {
+            $franchiseName = "Unknown";
+            try {
+                $franchise = $alerte->getFranchise_id();
+                if ($franchise) {
+                    $franchiseName = $franchise->getNom();
+                }
+            } catch (\Exception $e) {
+                // Keep franchise name as "Unknown"
+            }
+
+            $alertSummary .= sprintf(
+                "- Franchise %s | Type: %s | Severity: %.1f/10\n  Message: %s\n\n",
+                $franchiseName,
+                $alerte->getType_alerte(),
+                $alerte->getScore_gravite(),
+                $alerte->getMessage()
+            );
+        }
+
+        $prompt = <<<PROMPT
+            $alertSummary
+
+            Vous êtes un conseiller expert en gestion de crise. Analysez ces alertes et identifiez les 3 plus critiques.
+
+            RÈGLES STRICTES :
+            - Sélectionnez UNIQUEMENT les 3 alertes les plus urgentes
+            - Basez-vous sur le score de gravité ET le type de risque
+            - Soyez ultra-concis, chaque action max 1 ligne
+            - Aucun texte supplémentaire en dehors du format demandé
+
+            FORMAT OBLIGATOIRE (respectez exactement) :
+
+            🚨 TOP 3 ALERTES CRITIQUES
+            ━━━━━━━━━━━━━━━━━━━━━━━━
+
+            🔴 #1 — [TYPE ALERTE] (Gravité [X]/10)
+            ├─ Franchise : [nom]
+            └─ Action : [action immédiate et précise]
+
+            🟡 #2 — [TYPE ALERTE] (Gravité [X]/10)
+            ├─ Franchise : [nom]
+            └─ Action : [action cette semaine]
+
+            🟢 #3 — [TYPE ALERTE] (Gravité [X]/10)
+            ├─ Franchise : [nom]
+            └─ Action : [action ce mois]
+
+            ━━━━━━━━━━━━━━━━━━━━━━━━
+            PROMPT;
+
+        try {
+            $apiKey = getenv('GOOGLE_API_KEY');
+            $client = Gemini::client($apiKey);
+            $result = $client->generativeModel(model: 'gemini-3-flash-preview')->generateContent($prompt);
+            $analysisText = $result->text();
+
+            return new JsonResponse([
+                'success' => true,
+                'analysis' => $analysisText,
+            ]);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'Erreur lors de la génération du rapport d\'escalade.',
+            ]);
+        }
     }
 }
