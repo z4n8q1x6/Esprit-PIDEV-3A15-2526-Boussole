@@ -128,13 +128,32 @@
     </div>
     
     <div class="tab-pane fade" id="tab-radar" role="tabpanel">
-        <div class="card border shadow" style="border-radius: 12px;">
-            <div class="card-body p-4 text-center">
-                <p class="text-muted mb-0 py-5">Radar de performance en cours de développement...</p>
+        <div class="card bg-dark border-secondary shadow" style="border-radius: 12px;">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h5 class="mb-1 text-white"><i class="bi bi-robot text-info me-2"></i>Analyse IA : Typologie des franchises</h5>
+                        <p class="text-muted small mb-0">L'Intelligence Artificielle (K-Means) regroupe automatiquement vos franchises selon leurs équilibres financiers.</p>
+                    </div>
+                </div>
+
+                {% if hasClusters %}
+                    <div style="height: 480px;">
+                        {{ render_chart(scatterChart) }}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-exclamation-triangle display-4 text-warning mb-3"></i>
+                        <h5 class="text-white">Données insuffisantes</h5>
+                        <p class="text-muted">L'IA nécessite au moins 3 franchises avec des données de chiffre d'affaires pour créer les groupes.</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
 </div>
+
+
 
 {% endblock %}
 
@@ -157,6 +176,38 @@ document.addEventListener('DOMContentLoaded', function() {
             // Configuration globale
             Chart.defaults.color = '#a1a1a8';
             Chart.defaults.font.family = "'Inter', sans-serif";
+
+            // Surcharge IA KMeans Scatter chart
+            if (payload.type === 'scatter') {
+                payload.options.plugins = payload.options.plugins || {};
+                payload.options.plugins.tooltip = {
+                    backgroundColor: 'rgba(26, 32, 44, 0.95)',
+                    titleColor: '#00e5ff',
+                    bodyColor: '#ffffff',
+                    borderColor: '#00e5ff',
+                    borderWidth: 2,
+                    padding: 16,
+                    titleFont: { size: 14, family: "'Inter', sans-serif" },
+                    bodyFont: { size: 14, family: "'Inter', sans-serif" },
+                    bodySpacing: 8,
+                    boxPadding: 8,
+                    callbacks: {
+                        label: function(context) {
+                            let dataset = context.dataset;
+                            let index = context.dataIndex;
+                            if (dataset.franchises && dataset.franchises[index]) {
+                                let f = dataset.franchises[index];
+                                return [
+                                    '📍 Franchise: ' + f.nom,
+                                    '💰 Recettes: ' + parseFloat(f.recettes).toLocaleString('fr-FR') + ' TND',
+                                    '📉 Dépenses: ' + parseFloat(f.depenses).toLocaleString('fr-FR') + ' TND'
+                                ];
+                            }
+                            return 'Point: (' + context.raw.x + ', ' + context.raw.y + ')';
+                        }
+                    }
+                };
+            }
 
             new Chart(canvas, {
                 type: payload.type,

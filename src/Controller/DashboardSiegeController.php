@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Transaction;
 use App\Entity\Budget_previsionnel;
 use App\Service\CurrencyConverterService;
+use App\Service\AiClusteringService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,7 @@ use Symfony\UX\Chartjs\Model\Chart;
 class DashboardSiegeController extends AbstractController
 {
     #[Route('/admin/dashboard', name: 'app_siege_dashboard')]
-    public function index(EntityManagerInterface $em, ChartBuilderInterface $chartBuilder, CurrencyConverterService $currencyConverter): Response
+    public function index(EntityManagerInterface $em, ChartBuilderInterface $chartBuilder, CurrencyConverterService $currencyConverter, AiClusteringService $aiClustering): Response
     {
         $transactions = $em->getRepository(Transaction::class)->findAll();
 
@@ -169,14 +170,65 @@ class DashboardSiegeController extends AbstractController
         // --- API 2 : Conversion du solde TND → EUR + USD en temps réel ---
         $conversion = $currencyConverter->convertirDepuisTND($solde);
 
+        // --- Mission IA : K-Means Clustering ---
+        $aiData = $em->getRepository(Transaction::class)->getFinancialDataForClustering();
+        $clustersData = $aiClustering->analyzeFranchisePerformances($aiData);
+
+        // Création du graphique Scatter
+        $scatterChart = clone $chart; // Base model to avoid null issues if not supported
+        if(class_exists('\Symfony\UX\Chartjs\Model\Chart')) {
+            $scatterChart = $chartBuilder->createChart(Chart::TYPE_SCATTER);
+            $scatterChart->setData([
+                'datasets' => $clustersData
+            ]);
+            $scatterChart->setOptions([
+                'responsive' => true,
+                'maintainAspectRatio' => false,
+                'plugins' => [
+                    'tooltip' => [
+                        'callbacks' => [
+                            // Custom tooltip could be added via raw JS or simple fallback here
+                            // In raw JS later
+                        ]
+                    ],
+                    'legend' => [
+                        'labels' => [
+                            'color' => '#a0aec0'
+                        ]
+                    ]
+                ],
+                'scales' => [
+                    'x' => [
+                        'title' => [
+                            'display' => true,
+                            'text' => 'Total Recettes (TND)',
+                            'color' => '#a0aec0'
+                        ],
+                        'ticks' => [ 'color' => '#a0aec0' ]
+                    ],
+                    'y' => [
+                        'title' => [
+                            'display' => true,
+                            'text' => 'Total Dépenses (TND)',
+                            'color' => '#a0aec0'
+                        ],
+                        'grid' => [ 'color' => '#1e293b' ],
+                        'ticks' => [ 'color' => '#a0aec0' ]
+                    ]
+                ]
+            ]);
+        }
+
         return $this->render('dashboard_siege/index.html.twig', [
             'revenus' => $revenus,
             'depenses' => $depenses,
             'solde' => $solde,
             'chart' => $chart,
+            'scatterChart' => $scatterChart,
             'taux_revenus' => $tauxRevenus,
             'taux_depenses' => $tauxDepenses,
             'conversion' => $conversion,
+            'hasClusters' => !empty($clustersData)
         ]);
     }
 

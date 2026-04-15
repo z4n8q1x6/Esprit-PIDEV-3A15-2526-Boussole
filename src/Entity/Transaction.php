@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Entity\Franchises;
 use Symfony\Component\Validator\Constraints as Assert; // <-- IMPORT OBLIGATOIRE POUR LE CONTRÔLE DE SAISIE
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: \App\Repository\TransactionRepository::class)]
 class Transaction
 {
 

@@ -202,3 +202,24 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 * **Fichier modifié** : `templates/dashboard_siege/index.html.twig`
   * **Lignes exactes** : Lignes 25 - 44
   * **Description** : Dans la carte "SOLDE TOTAL" du Dashboard Siège, même affichage conditionnel EUR + USD que sur le Dashboard Franchise. Style adapté au thème clair du back-office (texte `#6c757d`).
+
+## Tâche 14 : Algorithme K-Means (Clustering Financier)
+**Date** : 15/04/2026
+* **Fichier modifié** : `composer.json`
+  * **Lignes exactes** : N/A (ajouté via terminal)
+  * **Description** : Installation de la librairie d'Intelligence Artificielle `php-ai/php-ml` pour le clustering K-Means.
+* **Fichier modifié** : `src/Repository/TransactionRepository.php`
+  * **Lignes exactes** : Lignes 80 - 110
+  * **Description** : Ajout de la méthode `getFinancialDataForClustering()` qui agrège et retourne le total des recettes et le total des dépenses par franchise pour l'analyse IA.
+* **Fichier créé** : `src/Service/AiClusteringService.php`
+  * **Lignes exactes** : Complet (Lignes 1 - 90)
+  * **Description** : Création du service IA. Prends les données financières, exécute l'algorithme K-Means paramétré sur 3 clusters, analyse les centroids, et labellise intelligemment les clusters en "Performants", "Équilibrés", et "À risque" selon le bénéfice moyen de chaque cluster. Formatage des données en DataSet pour ChartJS.
+* **Fichier modifié** : `src/Controller/DashboardSiegeController.php`
+  * **Lignes exactes** : Lignes 8, 17, 170 - 220
+  * **Description** : Import et utilisation du `AiClusteringService`. Récupération des données depuis le repository, génération du clustering complet, et création dynamique d'un `Chart::TYPE_SCATTER` (Nuage de points) envoyé par la suite à la vue Twig sous la variable `scatterChart`.
+* **Fichier modifié** : `src/Service/AiClusteringService.php`
+  * **Lignes exactes** : Lignes 100 - 105
+  * **Description** : Ajout de la taille des bulles (`pointRadius: 6` et `pointHoverRadius: 8`) pour le Scatter Chart afin d'améliorer la visibilité des données.
+* **Fichier modifié** : `templates/dashboard_siege/index.html.twig`
+  * **Lignes exactes** : Lignes 153 - 183
+  * **Description** : Ajout d'un script Javascript interceptant l'événement `chartjs:pre-connect` de Symfony UX pour personnaliser avec du style et des données dynamiques les tooltips (infobulles) du nuage de points (Affichage du nom de la franchise, ses recettes et ses dépenses au survol).
