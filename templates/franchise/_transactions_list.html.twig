@@ -1,0 +1,107 @@
+{# Partiel AJAX : Tableau + KPIs — rechargé dynamiquement sans refresh #}
+
+{# KPIs #}
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card card-body border p-3 text-center h-100 shadow" style="border-radius: 12px;">
+            <h6 class="text-muted mb-2">Nombre Transactions</h6>
+            <h3 id="kpi-nb" class="text-info mb-0 fw-bold">{{ nombreTransactions }}</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-body border p-3 text-center h-100 shadow" style="border-radius: 12px;">
+            <h6 class="text-muted mb-2">Total Recettes</h6>
+            <h3 id="kpi-recettes" class="text-success mb-0 fw-bold">{{ totalRecettes|number_format(2, ',', ' ') }} TND</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-body border p-3 text-center h-100 shadow" style="border-radius: 12px;">
+            <h6 class="text-muted mb-2">Total Charges</h6>
+            <h3 id="kpi-charges" class="text-danger mb-0 fw-bold">{{ totalCharges|number_format(2, ',', ' ') }} TND</h3>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-body border p-3 text-center h-100 shadow" style="border-radius: 12px;">
+            <h6 class="text-muted mb-2">Solde Filtré</h6>
+            <h3 id="soldeDisplay" class="{% if soldeFiltre < 0 %}text-danger{% else %}text-info{% endif %} mb-0 fw-bold">{{ soldeFiltre|number_format(2, ',', ' ') }} TND</h3>
+        </div>
+    </div>
+</div>
+
+{# Tableau #}
+<div class="table-responsive" style="border-radius: 12px; padding: 1rem;">
+    <table class="table table-hover table-borderless align-middle mb-0" id="transactionsTable">
+        <thead class="border-bottom">
+            <tr>
+                <th>
+                    <a href="#" class="text-muted text-decoration-none sort-header" data-sort="date">
+                        DATE
+                        {% if currentSort == 'date' %}
+                            <i class="bi bi-caret-{{ currentDirection == 'ASC' ? 'up' : 'down' }}-fill text-info ms-1"></i>
+                        {% else %}
+                            <i class="bi bi-chevron-expand ms-1" style="font-size: 0.7rem; opacity: 0.4;"></i>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="#" class="text-muted text-decoration-none sort-header" data-sort="type">
+                        TYPE
+                        {% if currentSort == 'type' %}
+                            <i class="bi bi-caret-{{ currentDirection == 'ASC' ? 'up' : 'down' }}-fill text-info ms-1"></i>
+                        {% else %}
+                            <i class="bi bi-chevron-expand ms-1" style="font-size: 0.7rem; opacity: 0.4;"></i>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="#" class="text-muted text-decoration-none sort-header" data-sort="description">
+                        DESCRIPTION
+                        {% if currentSort == 'description' %}
+                            <i class="bi bi-caret-{{ currentDirection == 'ASC' ? 'up' : 'down' }}-fill text-info ms-1"></i>
+                        {% else %}
+                            <i class="bi bi-chevron-expand ms-1" style="font-size: 0.7rem; opacity: 0.4;"></i>
+                        {% endif %}
+                    </a>
+                </th>
+                <th>
+                    <a href="#" class="text-muted text-decoration-none sort-header" data-sort="montant">
+                        MONTANT (TND)
+                        {% if currentSort == 'montant' %}
+                            <i class="bi bi-caret-{{ currentDirection == 'ASC' ? 'up' : 'down' }}-fill text-info ms-1"></i>
+                        {% else %}
+                            <i class="bi bi-chevron-expand ms-1" style="font-size: 0.7rem; opacity: 0.4;"></i>
+                        {% endif %}
+                    </a>
+                </th>
+                <th class="text-muted" style="width: 50px;"></th>
+            </tr>
+        </thead>
+        <tbody id="transactionsTableBody">
+        {% for tx in transactions %}
+            <tr data-id="{{ tx.id }}" class="tx-row">
+                <td class="editable-cell" data-field="date" data-value="{{ tx.date|date('Y-m-d') }}">{{ tx.date|date('Y-m-d') }}</td>
+                <td>
+                    {% if tx.type == 'RECETTE' %}
+                        <span class="text-success"><i class="bi bi-arrow-up-right"></i> {{ tx.type }}</span>
+                    {% else %}
+                        <span class="text-danger"><i class="bi bi-arrow-down-right"></i> {{ tx.type }}</span>
+                    {% endif %}
+                </td>
+                <td class="editable-cell" data-field="description" data-value="{{ tx.description }}">{{ tx.description }}</td>
+                <td class="editable-cell" data-field="montant" data-value="{{ tx.montant }}" style="{% if tx.type == 'RECETTE' %}color: #198754{% else %}color: #dc3545{% endif %}; font-weight: bold;">
+                    {{ tx.montant|number_format(2, ',', ' ') }} TND
+                </td>
+                <td class="text-end">
+                    <span class="delete-icon" title="Supprimer" data-id="{{ tx.id }}" style="cursor:pointer; opacity:0; transition: opacity 0.2s;">
+                        <i class="bi bi-trash3 text-danger"></i>
+                    </span>
+                </td>
+            </tr>
+        {% else %}
+            <tr id="emptyDefaultRow">
+                <td colspan="5" class="text-center text-muted py-4">Aucune transaction trouvée</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -223,3 +223,15 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 * **Fichier modifié** : `templates/dashboard_siege/index.html.twig`
   * **Lignes exactes** : Lignes 153 - 183
   * **Description** : Ajout d'un script Javascript interceptant l'événement `chartjs:pre-connect` de Symfony UX pour personnaliser avec du style et des données dynamiques les tooltips (infobulles) du nuage de points (Affichage du nom de la franchise, ses recettes et ses dépenses au survol).
+
+## Tâche 15 : Recherche et Tri Multicritères avec AJAX (Historique Transactions)
+**Date** : 15/04/2026
+* **Fichier créé** : `templates/franchise/_transactions_list.html.twig`
+  * **Lignes exactes** : Lignes 1 - 88
+  * **Description** : Création du template partiel contenant les 4 KPIs (Nombre, Recettes, Charges, Solde) et le tableau des transactions. Ce fichier est renvoyé en tant que fragment HTML par le contrôleur lors des requêtes AJAX, évitant tout rechargement complet de page.
+* **Fichier modifié** : `src/Controller/TransactionController.php`
+  * **Lignes exactes** : Lignes 170 - 192
+  * **Description** : Ajout de la détection AJAX (`X-Requested-With: XMLHttpRequest`). Si la requête est AJAX, seul le partiel `_transactions_list.html.twig` est renvoyé via `renderView()` au lieu de la page complète.
+* **Fichier modifié** : `templates/franchise/historique.html.twig`
+  * **Lignes exactes** : Lignes 79 - 84 (Partiel), 167 - 460 (JavaScript)
+  * **Description** : Remplacement du tableau inline et des KPIs par un `<div id="transactions-container">` incluant le partiel. Réécriture complète du JavaScript : remplacement de tous les `form.submit()` par des appels `fetch()` avec `URLSearchParams`. Ajout d'un système de debounce (300ms) sur la recherche textuelle. Les en-têtes de colonnes déclenchent le tri via AJAX. Les fonctions `bindSortHeaders()`, `bindEditableCells()` et `bindDeleteIcons()` sont ré-attachées dynamiquement après chaque rechargement du contenu.

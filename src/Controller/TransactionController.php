@@ -169,7 +169,7 @@ final class TransactionController extends AbstractController
 
         $soldeFiltre = $totalRecettes - $totalCharges;
 
-        return $this->render('franchise/historique.html.twig',[
+        $templateVars = [
             'transactions' => $transactions,
             'nombreTransactions' => count($transactions),
             'totalRecettes' => $totalRecettes,
@@ -182,7 +182,15 @@ final class TransactionController extends AbstractController
             'currentEnd' => $dateEnd,
             'currentSort' => $sort,
             'currentDirection' => $direction
-        ]);
+        ];
+
+        // --- AJAX : renvoyer uniquement le fragment HTML (partiel) ---
+        if ($request->headers->get('X-Requested-With') === 'XMLHttpRequest') {
+            $html = $this->renderView('franchise/_transactions_list.html.twig', $templateVars);
+            return new Response($html);
+        }
+
+        return $this->render('franchise/historique.html.twig', $templateVars);
     }
     // =========================================================================
 
