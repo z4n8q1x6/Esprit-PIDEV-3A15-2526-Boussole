@@ -62,7 +62,7 @@ final class AlerteIAController extends AbstractController
     #[Route('/new', name: 'alerte_new', methods: ['POST'])]
     public function new(Request $request, SerializerInterface $serializer): Response
     {
-        $token = $request->request->get('token');
+        $token = $request->getPayload()->get('token');
         if (!$this->isCsrfTokenValid('generate-alerte', $token)) {
             return new JsonResponse(['success' => false, 'error' => 'Invalid CSRF token'], 403);
         }
@@ -79,7 +79,6 @@ final class AlerteIAController extends AbstractController
                 ->withGenerationConfig(
                     generationConfig: new GenerationConfig(
                         responseMimeType: ResponseMimeType::APPLICATION_JSON,
-                        temperature: 1.2,
                         responseSchema: new Schema(
                             type: DataType::OBJECT,
                             properties: [

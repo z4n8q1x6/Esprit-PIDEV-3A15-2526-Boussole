@@ -1,0 +1,97 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<div class="container-fluid p-4">
+    <div class="card bg-dark text-white border-0 shadow">
+        <div class="card-header border-secondary bg-transparent d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="mb-0"><i class="fas fa-file-pdf text-danger me-2"></i>Archives des Rapports</h2>
+                <small class="text-muted">Instantanés PDF des alertes système (Cloudinary)</small>
+            </div>
+            <a href="{{ path('admin_alerte_index') }}" class="btn btn-outline-light btn-sm">
+                <i class="fas fa-arrow-left"></i> Retour aux Alertes
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover align-middle">
+                    <thead class="text-secondary text-uppercase small">
+                        <tr>
+                            <th>Date de Génération</th>
+                            <th>Volume</th>
+                            <th>Statut</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in reports %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ report.generatedAt|date('d/m/Y') }}</div>
+                                    <div class="small text">{{ report.generatedAt|date('H:i') }}</div>
+                                </td>
+                                <td>
+                                    <span class="badge rounded-pill bg-info text-dark">
+                                        {{ report.alertCount }} alertes
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="text-success small"><i class="fas fa-check-circle"></i> Stocké</span>
+                                </td>
+                                <td class="text-end">
+                                    {# Preview Button: Triggers JavaScript #}
+                                    <button class="btn btn-sm btn-primary"
+                                            onclick="previewPdf('{{ report.url }}')"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#pdfModal">
+                                        <i class="fas fa-eye"></i> Aperçu
+                                    </button>
+
+                                    {# Download Button: Forces download #}
+                                    <a href="{{ report.url }}" download="Rapport_{{ report.generatedAt|date('Y-m-d') }}.pdf" class="btn btn-sm btn-outline-secondary ms-1">
+                                        <i class="fas fa-download"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-muted">
+                                    Aucun rapport archivé pour le moment.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# Modal for PDF Preview #}
+<div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content bg-dark border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-white">Visualisation du Rapport</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0" style="height: 80vh;">
+                <iframe id="pdfFrame" src="" width="100%" height="100%" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function previewPdf(url) {
+    const pdfFrame = document.getElementById('pdfFrame');
+    // Clear the previous source to show it's loading
+    pdfFrame.src = "";
+
+    // Use the Google Viewer wrapper to bypass download headers
+    const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`;
+    pdfFrame.src = viewerUrl;
+}
+</script>
+
