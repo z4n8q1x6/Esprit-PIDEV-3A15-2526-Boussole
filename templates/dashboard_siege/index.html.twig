@@ -110,6 +110,11 @@
             Radar de Performance
         </a>
     </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link text-muted pb-3" data-bs-toggle="tab" href="#tab-ranking" role="tab" style="border: none; background: transparent;">
+            <i class="bi bi-star-fill text-warning me-1"></i> Classement Financier
+        </a>
+    </li>
 </ul>
 
 <!-- Cible pour le contenu des onglets -->
@@ -148,6 +153,56 @@
                         <p class="text-muted">L'IA nécessite au moins 3 franchises avec des données de chiffre d'affaires pour créer les groupes.</p>
                     </div>
                 {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="tab-pane fade" id="tab-ranking" role="tabpanel">
+        <div class="card border shadow" style="border-radius: 12px;">
+            <div class="card-body p-4">
+                <h5 class="mb-1">Classement et Performance par Franchise</h5>
+                <p class="text-muted small mb-4">Évaluation logarithmique mensuelle basée sur les limites de dépenses et objectifs de revenus.</p>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="text-muted" style="font-size: 0.85rem; text-transform: uppercase;">
+                            <tr>
+                                <th>Franchise</th>
+                                <th class="text-end">Recettes</th>
+                                <th class="text-end">Dépenses</th>
+                                <th class="text-end">Résultat Net</th>
+                                <th class="text-center">Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for f in franchisesRanking|sort((a, b) => b.solde <=> a.solde) %}
+                            <tr>
+                                <td class="fw-bold" style="color: #e2e8f0;">{{ f.nom }}</td>
+                                <td class="text-end" style="color: #00ff88;">{{ f.revenus|number_format(2, ',', ' ') }}</td>
+                                <td class="text-end text-danger">{{ f.depenses|number_format(2, ',', ' ') }}</td>
+                                <td class="text-end fw-bold {{ f.solde >= 0 ? 'text-info' : 'text-danger' }}">
+                                    {{ f.solde >= 0 ? '+' : '' }}{{ f.solde|number_format(2, ',', ' ') }}
+                                </td>
+                                <td class="text-center">
+                                    {% if f.rating == 'A' %}
+                                        <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 14px; font-weight: bold; width: 35px;">A</span>
+                                    {% elseif f.rating == 'B' %}
+                                        <span class="badge" style="background: rgba(234, 179, 8, 0.15); color: #facc15; font-size: 14px; font-weight: bold; width: 35px;">B</span>
+                                    {% elseif f.rating == 'C' %}
+                                        <span class="badge" style="background: rgba(249, 115, 22, 0.15); color: #fb923c; font-size: 14px; font-weight: bold; width: 35px;">C</span>
+                                    {% else %}
+                                        <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 14px; font-weight: bold; width: 35px;">D</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">Aucune franchise trouvée.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

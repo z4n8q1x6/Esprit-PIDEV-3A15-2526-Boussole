@@ -12,11 +12,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
+use App\Service\FinancialRatingService;
 
 class DashboardSiegeController extends AbstractController
 {
     #[Route('/admin/dashboard', name: 'app_siege_dashboard')]
-    public function index(EntityManagerInterface $em, ChartBuilderInterface $chartBuilder, CurrencyConverterService $currencyConverter, AiClusteringService $aiClustering): Response
+    public function index(EntityManagerInterface $em, ChartBuilderInterface $chartBuilder, CurrencyConverterService $currencyConverter, AiClusteringService $aiClustering, FinancialRatingService $ratingService): Response
     {
         $transactions = $em->getRepository(Transaction::class)->findAll();
 
@@ -219,6 +220,41 @@ class DashboardSiegeController extends AbstractController
             ]);
         }
 
+        // --- KPIs Détaillés de chaque franchise pour le classement ---
+        // On récupère toutes les franchises via les aiData ou un findAll
+        $franchisesToRank = [];
+        $moisEnCours = (int) (new \DateTime())->format('n');
+        $anneeEnCours = (int) (new \DateTime())->format('Y');
+        
+        $allFranchises = $em->getRepository(\App\Entity\Franchises::class)->findAll();
+        foreach ($allFranchises as $f) {
+            $fRevenus = 0;
+            $fDepenses = 0;
+            
+            // On calcule sommairement leur CA pour l'affichage (depuis les transactions déjà chargées pour éviter 100 requêtes DB)
+            foreach ($transactions as $t) {
+                if ($t->getFranchise_id() === $f) {
+                    if ($t->getType() === 'RECETTE') {
+                        $fRevenus += $t->getMontant();
+                    } elseif ($t->getType() === 'DEPENSE') {
+                        $fDepenses += $t->getMontant();
+                    }
+                }
+            }
+            
+            $fSolde = $fRevenus - $fDepenses;
+            $rating = $ratingService->evaluateFranchise($f, $moisEnCours, $anneeEnCours);
+
+            $franchisesToRank[] = [
+                'id' => $f->getId(),
+                'nom' => $f->getNom(),
+                'revenus' => $fRevenus,
+                'depenses' => $fDepenses,
+                'solde' => $fSolde,
+                'rating' => $rating
+            ];
+        }
+
         return $this->render('dashboard_siege/index.html.twig', [
             'revenus' => $revenus,
             'depenses' => $depenses,
@@ -228,7 +264,8 @@ class DashboardSiegeController extends AbstractController
             'taux_revenus' => $tauxRevenus,
             'taux_depenses' => $tauxDepenses,
             'conversion' => $conversion,
-            'hasClusters' => !empty($clustersData)
+            'hasClusters' => !empty($clustersData),
+            'franchisesRanking' => $franchisesToRank
         ]);
     }
 

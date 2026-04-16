@@ -4,7 +4,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 1 : Ajout de la fonctionnalité d'export PDF pour les bilans
+## Tâche 1 : [Bundle] Ajout de la fonctionnalité d'export PDF pour les bilans
 **Date** : 13 Avril 2026
 
 * **Fichier créé** : 	emplates/bilan/bilan_pdf.html.twig
@@ -16,7 +16,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 2 : Sélection multiple et suppression de bilans
+## Tâche 2 : [Métier Avancé] Sélection multiple et suppression de bilans
 **Date** : 13 Avril 2026
 
 * **Fichier modifié** : 	emplates/bilan/bilan.html.twig
@@ -28,7 +28,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 3 : Correction de la liaison du bouton PDF et des bugs d'export
+## Tâche 3 : [Correction] Correction de la liaison du bouton PDF et des bugs d'export
 **Date** : 13 Avril 2026
 
 * **Fichier modifié** : 	emplates/bilan/bilan.html.twig
@@ -43,7 +43,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 4 : Personnalisation visuelle du PDF (Thème Boussole)
+## Tâche 4 : [UI/UX] Personnalisation visuelle du PDF (Thème Boussole)
 **Date** : 13 Avril 2026
 
 * **Fichier modifié** : 	emplates/bilan/bilan_pdf.html.twig
@@ -52,7 +52,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 5 : Implémentation du Graphique Interactif (Chart.js via Symfony UX)
+## Tâche 5 : [Bundle] Implémentation du Graphique Interactif (Chart.js via Symfony UX)
 **Date** : 13 Avril 2026
 
 * **Installation Requise** : Lancement de composer require symfony/ux-chartjs.
@@ -71,7 +71,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
   * **Description** : [Ce qui a changé]
 -->---
 
-## Tâche 6 : Correction de l'Affichage de Chart.js sans AssetMapper
+## Tâche 6 : [Correction] Correction de l'Affichage de Chart.js sans AssetMapper
 **Date** : 13 Avril 2026
 
 * **Fichier modifié** : 	emplates/dashboard_siege/index.html.twig
@@ -85,7 +85,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 7 : Personnalisation PDF et application dynamique des couleurs
+## Tâche 7 : [UI/UX] Personnalisation PDF et application dynamique des couleurs
 **Date** : 13/04/2026
 * **Fichier modifié** : templates/bilan/bilan_pdf.html.twig
   * **Lignes exactes** : Lignes 1 - 213 (Refonte complète)
@@ -93,7 +93,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 8 : Correction de la synchronisation Charge → Transaction (Dashboard & Historique)
+## Tâche 8 : [Correction] Correction de la synchronisation Charge → Transaction (Dashboard & Historique)
 **Date** : 13/04/2026
 
 * **Fichier modifié** : src/Controller/AjouterChargeController.php
@@ -105,7 +105,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 9 : Bundle Faible n°1 – Graphiques Statistiques (Chart.js)
+## Tâche 9 : [Bundle] Bundle Faible n°1 – Graphiques Statistiques (Chart.js)
 **Date** : 13/04/2026
 
 * **Installation Requise** : `composer require symfony/ux-chartjs` (Bundle Symfony UX Chartjs)
@@ -124,7 +124,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 10 : Bundle Faible n°2 – Génération de QR Code (Signature Numérique)
+## Tâche 10 : [Bundle] Bundle Faible n°2 – Génération de QR Code (Signature Numérique)
 **Date** : 13/04/2026
 
 * **Installation Requise** : `composer require endroid/qr-code-bundle`
@@ -137,7 +137,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 11 : Bundle Faible n°3 – Flash Bundle (Notifications & UX)
+## Tâche 11 : [Bundle] Bundle Faible n°3 – Flash Bundle (Notifications & UX)
 **Date** : 14/04/2026
 
 * **Installation Requise** : `composer require php-flasher/flasher-sweetalert-symfony`
@@ -159,7 +159,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 12 : API 1 - Envoi d'Emails avec Graphique Statique (Mailing Automatisé)
+## Tâche 12 : [API] API 1 - Envoi d'Emails avec Graphique Statique (Mailing Automatisé)
 **Date** : 14/04/2026
 * **Installation Requise** : `composer require symfony/mailer symfony/google-mailer`
 * **Fichier modifié** : `.env`
@@ -177,7 +177,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 13 : API 2 – Taux de Change en Temps Réel (Finance Internationale)
+## Tâche 13 : [API] API 2 – Taux de Change en Temps Réel (Finance Internationale)
 **Date** : 15/04/2026
 
 * **Installation Requise** : `composer require symfony/http-client`
@@ -203,7 +203,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
   * **Lignes exactes** : Lignes 25 - 44
   * **Description** : Dans la carte "SOLDE TOTAL" du Dashboard Siège, même affichage conditionnel EUR + USD que sur le Dashboard Franchise. Style adapté au thème clair du back-office (texte `#6c757d`).
 
-## Tâche 14 : Algorithme K-Means (Clustering Financier)
+## Tâche 14 : [IA] Algorithme K-Means (Clustering Financier)
 **Date** : 15/04/2026
 * **Fichier modifié** : `composer.json`
   * **Lignes exactes** : N/A (ajouté via terminal)
@@ -224,7 +224,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
   * **Lignes exactes** : Lignes 153 - 183
   * **Description** : Ajout d'un script Javascript interceptant l'événement `chartjs:pre-connect` de Symfony UX pour personnaliser avec du style et des données dynamiques les tooltips (infobulles) du nuage de points (Affichage du nom de la franchise, ses recettes et ses dépenses au survol).
 
-## Tâche 15 : Recherche et Tri Multicritères avec AJAX (Historique Transactions)
+## Tâche 15 : [Métier Avancé] Recherche et Tri Multicritères avec AJAX (Historique Transactions)
 **Date** : 15/04/2026
 * **Fichier créé** : `templates/franchise/_transactions_list.html.twig`
   * **Lignes exactes** : Lignes 1 - 88
@@ -259,7 +259,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 | **Actions en masse / Suppression** | `templates/franchise/historique.html.twig` | L416-L450 | Liaisons `bindDeleteIcons()` et modal Bootstrap. Envoi d'une requête DELETE invisible et relance instantanée du `updateTable()`. |
 | **Contrôleur (Réponses AJAX)** | `src/Controller/TransactionController.php` | L170-L240 | Traitement des appels asynchrones : renvoi soit de JSON (`['success' => true]`), soit du fichier fragmentaire `_transactions_list` si la requête contient `XMLHttpRequest`. |
 
-## Tâche 16 : Consolidation Financière & Clôture Mensuelle (Métier Avancé)
+## Tâche 16 : [Métier Avancé] Consolidation Financière & Clôture Mensuelle
 **Date** : 16/04/2026
 * **Fichier modifié** : `src/Entity/Transaction.php`
   * **Lignes exactes** : Lignes 47 - 48, 106 - 120
@@ -282,7 +282,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 17 : Bundle Consistant – Export Excel Personnalisé de l'Historique
+## Tâche 17 : [Bundle] Bundle Consistant – Export Excel Personnalisé de l'Historique
 **Date** : 16/04/2026
 * **Installation Requise** : `composer require phpoffice/phpspreadsheet`
 * **Fichier modifié** : `src/Controller/TransactionController.php`
@@ -295,7 +295,7 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 
 ---
 
-## Tâche 18 : Notification Préventive de "Rupture de Budget" (Événements Symfony)
+## Tâche 18 : [Métier Avancé] Notification Préventive de "Rupture de Budget" (Événements Symfony)
 **Date** : 16/04/2026
 * **Installation Requise** : Aucune (utilisation des Événements natifs de Symfony / Doctrine).
 * **Fichier créé** : `src/EventSubscriber/BudgetAlertSubscriber.php`
@@ -309,3 +309,22 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
     5. Si `pourcentage >= 90%` → Injecte un message Flash `warning` via `RequestStack` : *"⚠️ Attention : Vous avez consommé X% de votre budget autorisé ce mois"*.
     6. Si `pourcentage >= 100%` → Injecte un message Flash `error` : *"🚨 DÉPASSEMENT DE BUDGET !"*.
   * **Mécanisme de notification** : Utilise `$request->getSession()->getFlashBag()->add()` pour stocker le message dans la session. Ce message est ensuite rendu automatiquement par le bundle PHP Flasher (SweetAlert2) déjà intégré via `{{ flasher_render() }}` dans les templates de base.
+
+---
+
+## Tâche 19 : [Métier Avancé] Algorithme d'Évaluation (Rating) Financier
+**Date** : 16/04/2026
+* **Installation Requise** : Aucune (Logique PHP pure, Mathématique et Service).
+* **Fichier créé** : `src/Service/FinancialRatingService.php`
+  * **Description** : Création du service métier de notation selon les règles métier exigées par la direction financière. La méthode `evaluateFranchise` récupère toutes les transactions du mois pour une franchise, calcule son résultat net, et le compare aux différents budgets alloués.
+  * **Traitement Mathématique** :
+    1. Score initial = 0
+    2. Règle 1 : `(Recettes - Dépenses) > 0` ➔ +40 points
+    3. Règle 2 : `Recettes >= Objectif Revenu` ➔ +30 points
+    4. Règle 3 : `Dépenses <= Limite Dépense` ➔ +30 points
+  * **Attribution logique** : Retourne strictement `A` (100%), `B` (>=70%), `C` (>=40%), ou `D` (<40%).
+* **Fichier modifié** : `src/Controller/DashboardSiegeController.php`
+  * **Lignes exactes** : Signature `index()` modifiée.
+  * **Description** : Injection de dépendance de `FinancialRatingService`. Boucle sur toutes les entreprises pour récupérer leur chiffre d'affaires et leur assigner une note financière en temps réel calculée sur le comportement du mois en cours. Création du tableau `$franchisesToRank` transmis à Twig.
+* **Fichier modifié** : `templates/dashboard_siege/index.html.twig`
+  * **Description** : Création d'un tout nouvel onglet ("Classement Financier") qui vient s'ajouter aux statistiques globales. Développement d'un tableau d'analyse "Top/Flop", trié par Résultat Net, affichant les recettes, dépenses et intégrant la fameuse colonne **"Rating"**. Affichage des badges visuels aux couleurs strictes (Vert pour A, Jaune pour B, Orange pour C, Rouge pour D), centralisant l'expérience pour le Directeur Financier au sein de *son* module.
