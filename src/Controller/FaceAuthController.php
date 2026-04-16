@@ -16,8 +16,10 @@ class FaceAuthController extends AbstractController
      * The capture is now done during user creation in AdminUserController.
      */
     #[Route('/login/face', name: 'app_login_face', methods: ['POST'])]
-    public function login(): void
+    public function login(): JsonResponse
     {
-        // Intercepted by FaceAuthenticator
+        // This is normally intercepted by FaceAuthenticator.
+        // If it reaches here, it means authentication was not triggered or failed.
+        return new JsonResponse(['success' => false, 'error' => 'Authentication not handled by security layer.'], 401);
     }
 }

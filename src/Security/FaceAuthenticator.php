@@ -5,7 +5,6 @@ namespace App\Security;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
@@ -44,35 +43,36 @@ class FaceAuthenticator extends AbstractAuthenticator
             throw new CustomUserMessageAuthenticationException('Données de visage manquantes.');
         }
 
-        return new SelfValidatingPassport(
-            new UserBadge('face_auth', function() use ($imageBase64) {
-                // Search for the face in Face++ cloud
-                $matchingToken = $this->faceppService->searchFace($imageBase64);
-                
-                if (!$matchingToken) {
-                    throw new CustomUserMessageAuthenticationException('Visage non reconnu (Cloud).');
-                }
+        // 1. Search for the face in Face++ cloud
+        $matchingToken = $this->faceppService->searchFace($imageBase64);
+        
+        if (!$matchingToken) {
+            throw new CustomUserMessageAuthenticationException('Visage non reconnu (Cloud).');
+        }
 
-                $user = $this->entityManager->getRepository(Utilisateur::class)->findOneBy(['face_token' => $matchingToken]);
+        // 2. Find the user in our database
+        $user = $this->entityManager->getRepository(Utilisateur::class)->findOneBy(['face_token' => $matchingToken]);
 
-                if (!$user) {
-                    throw new CustomUserMessageAuthenticationException('Token reconnu mais aucun utilisateur associé.');
-                }
+        if (!$user) {
+            throw new CustomUserMessageAuthenticationException('Token reconnu mais aucun utilisateur associé.');
+        }
 
-                if (!$user->isActif()) {
-                    throw new CustomUserMessageAuthenticationException('Compte désactivé.');
-                }
+        if (!$user->getActif()) {
+            throw new CustomUserMessageAuthenticationException('Compte désactivé.');
+        }
 
-                return $user;
-            })
-        );
+        // 3. Return a Passport with the REAL user identifier (email)
+        return new SelfValidatingPassport(new UserBadge($user->getUserIdentifier()));
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
+        $user = $token->getUser();
+        $request->getSession()->getFlashBag()->add('success', 'Bienvenue ! (' . $user->getUserIdentifier() . ')');
+
         return new JsonResponse([
             'success' => true,
-            'redirect' => $this->router->generate('app_home')
+            'redirect' => $this->router->generate('app_front_home')
         ]);
     }
 

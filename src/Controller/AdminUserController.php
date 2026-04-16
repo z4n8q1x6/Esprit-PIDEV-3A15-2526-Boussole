@@ -66,15 +66,16 @@ final class AdminUserController extends AbstractController
     #[Route('/admin/user/{id}/delete', name: 'app_admin_user_delete', methods: ['DELETE'])]
     public function delete(Utilisateur $utilisateur, EntityManagerInterface $entityManager): \Symfony\Component\HttpFoundation\JsonResponse
     {
-        $franchise = $utilisateur->getIdFranchise();
-        if ($franchise) {
-            $entityManager->remove($franchise);
-        }
-        
-        $entityManager->remove($utilisateur);
-        $entityManager->flush();
+        try {
+            // Detach user from franchise (don't delete the franchise, it has other data)
+            $utilisateur->setId_franchise(null);
+            $entityManager->remove($utilisateur);
+            $entityManager->flush();
 
-        return $this->json(['success' => true]);
+            return $this->json(['success' => true]);
+        } catch (\Exception $e) {
+            return $this->json(['success' => false, 'message' => 'Erreur lors de la suppression: ' . $e->getMessage()], 500);
+        }
     }
 
     #[Route('/admin/user/new', name: 'app_admin_user_new', methods: ['POST'])]
@@ -151,13 +152,20 @@ final class AdminUserController extends AbstractController
         $utilisateur->setId_franchise($franchise);
 
         // Handle Face Biometrics with Face++
-        if (!empty($data['face_image'])) {
-            $faceToken = $faceppService->detectFace($data['face_image']);
-            if ($faceToken) {
-                if ($faceppService->addFaceToFaceSet($faceToken)) {
+        try {
+            if (!empty($data['face_image'])) {
+                $faceToken = $faceppService->detectFace($data['face_image']);
+                if ($faceToken) {
+                    // ALWAYS save the token to the database first
                     $utilisateur->setFace_token($faceToken);
+                    // Wait 2s to respect Face++ free tier 1 QPS limit
+                    sleep(2);
+                    // Then try to add to FaceSet (for search during login)
+                    $faceppService->addFaceToFaceSet($faceToken);
                 }
             }
+        } catch (\Exception $e) {
+            error_log('Biometric enrollment failed: ' . $e->getMessage());
         }
 
         // Generate password (8 chars, readable)

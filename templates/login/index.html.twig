@@ -6,90 +6,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
         body { 
             position: relative; display: flex; align-items: center; justify-content: center; min-height: 100vh;
-            background-color: #0f172a; overflow: hidden;
+            background-color: var(--bg-dark); overflow: hidden; color: white;
         }
         
-        /* Particles Canvas */
         #particles-canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;
         }
 
-        /* Layout Container */
+        /* --- Main Animation Container --- */
         .layout-wrapper {
             position: relative; z-index: 2;
-            display: flex; width: 1000px; max-width: 95%; min-height: 600px;
-            background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px);
-            border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1); overflow: hidden;
-            animation: fadeIn 0.6s ease-out;
+            display: flex; width: 1050px; max-width: 95%; min-height: 650px;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(25px);
+            border-radius: 28px; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.8);
+            border: 1px solid var(--glass-border); overflow: hidden;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 1.2s cubic-bezier(0.7, 0, 0.3, 1);
         }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        /* Left Side: Branding / Logo */
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(40px) scale(0.97); } 
+            to { opacity: 1; transform: translateY(0) scale(1); } 
+        }
+
+        /* Pane Switching Logic */
+        .layout-wrapper.flipped {
+            flex-direction: row-reverse;
+        }
+
+        /* Branding Section */
         .branding-section {
-            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 40px; text-align: center; color: white;
-            background: linear-gradient(135deg, rgba(30, 60, 114, 0.7) 0%, rgba(42, 82, 152, 0.9) 100%);
+            flex: 1.2; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 60px; text-align: center; position: relative; z-index: 10;
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.45) 0%, rgba(15, 23, 42, 0.3) 100%);
+            border-right: 1px solid var(--glass-border);
+            transition: all 1.2s cubic-bezier(0.7, 0, 0.3, 1);
         }
-        .branding-section .logo-placeholder { margin-bottom: 20px; }
-        .branding-section h1 { font-size: 36px; font-weight: 700; margin-bottom: 10px; letter-spacing: 1px; }
-        .branding-section p { font-size: 16px; color: #e2e8f0; line-height: 1.5; max-width: 300px; }
-
-        /* Right Side: Login form */
-        .login-section {
-            width: 450px; background: #ffffff; padding: 50px 45px;
-            display: flex; flex-direction: column; justify-content: center;
+        .layout-wrapper.flipped .branding-section {
+            border-right: none;
+            border-left: 1px solid var(--glass-border);
         }
         
-        .login-header { margin-bottom: 25px; }
-        .login-header h2 { font-size: 26px; font-weight: 700; color: #1e293b; margin-bottom: 5px; }
-        .login-header p { font-size: 14px; color: #64748b; }
-
-        .form-group { margin-bottom: 18px; }
-        .form-group label { display: block; font-size: 13.5px; font-weight: 600; color: #475569; margin-bottom: 6px; }
-        .form-control {
-            width: 100%; padding: 12px 15px; font-size: 15px; border: 1.5px solid #e2e8f0;
-            border-radius: 8px; transition: all 0.3s ease; color: #1e293b;
+        .branding-section h1 { 
+            font-size: 44px; font-weight: 800; margin-bottom: 15px; letter-spacing: -1px;
+            background: linear-gradient(to bottom, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        .form-control:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+        .branding-section p { font-size: 17px; color: #94a3b8; line-height: 1.6; max-width: 320px; }
+
+        /* Auth Sections (Login & Forgot) */
+        .auth-forms-container {
+            flex: 1; position: relative; width: 480px; background: rgba(255, 255, 255, 0.01);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        .auth-pane {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            padding: 60px 50px; display: flex; flex-direction: column; justify-content: center;
+            transition: all 1.0s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0; visibility: hidden; pointer-events: none;
+        }
+
+        /* Active Pane States */
+        .auth-pane.active {
+            opacity: 1; visibility: visible; pointer-events: auto;
+            transform: translateX(0) scale(1);
+        }
+        
+        .pane-login { transform: translateX(-30px); }
+        .pane-forgot { transform: translateX(30px); }
+
+        .auth-header { margin-bottom: 35px; }
+        .auth-header h2 { font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #f8fafc; }
+        .auth-header p { font-size: 15px; color: #64748b; }
+
+        .form-group { margin-bottom: 22px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #94a3b8; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .form-control {
+            width: 100%; padding: 14px 18px; font-size: 15px; background: rgba(0, 0, 0, 0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white;
+            transition: all 0.3s ease;
+        }
+        .form-control:focus { 
+            outline: none; border-color: var(--primary); background: rgba(0, 0, 0, 0.3);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
         
         .btn-submit {
-            width: 100%; padding: 13px; background: linear-gradient(to right, #1e3c72, #2a5298);
-            border: none; border-radius: 8px; color: white; font-size: 15px; font-weight: 600;
-            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 10px;
+            width: 100%; padding: 15px; background: var(--primary);
+            border: none; border-radius: 12px; color: white; font-size: 15px; font-weight: 700;
+            cursor: pointer; transition: all 0.3s; margin-top: 10px;
         }
-        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(30, 60, 114, 0.25); }
+        .btn-submit:hover { transform: translateY(-2px); background: #2563eb; box-shadow: 0 15px 30px -10px var(--primary-glow); }
         
-        .alert { padding: 12px 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
-        .alert-error { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
-        .alert-success { background-color: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .alert { padding: 15px; border-radius: 12px; margin-bottom: 25px; font-size: 14px; border: 1px solid transparent; }
+        .alert-error { background: rgba(239, 68, 68, 0.1); color: #f87171; border-color: rgba(239, 68, 68, 0.2); }
+        .alert-success { background: rgba(34, 197, 94, 0.1); color: #4ade80; border-color: rgba(34, 197, 94, 0.2); }
         
-        .forgot-password { display: block; text-align: right; margin-top: 12px; font-size: 13px; color: #3b82f6; text-decoration: none; font-weight: 500; }
-        .forgot-password:hover { text-decoration: underline; }
-        
-        .divider { display: flex; align-items: center; text-align: center; margin: 25px 0; color: #94a3b8; font-size: 13px; font-weight: 500; }
-        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
-        .divider:not(:empty)::before { margin-right: .5em; }
-        .divider:not(:empty)::after { margin-left: .5em; }
+        .divider { display: flex; align-items: center; text-align: center; margin: 30px 0; color: #475569; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
+        .divider:not(:empty)::before { margin-right: 1.5em; }
+        .divider:not(:empty)::after { margin-left: 1.5em; }
         
         .btn-social {
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 8px;
-            font-size: 14.5px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; text-decoration: none;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        .btn-google { background-color: #fff; color: #475569; border: 1px solid #e2e8f0; }
-        .btn-google:hover { background-color: #f8fafc; border-color: #cbd5e1; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .btn-faceid { background-color: #0f172a; color: #fff; border: 1px solid #0f172a; }
-        .btn-faceid:hover { background-color: #1e293b; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .btn-google { background: rgba(255, 255, 255, 0.03); color: #e2e8f0; }
+        .btn-google:hover { background: rgba(255, 255, 255, 0.08); }
+        .btn-faceid { background: #1e293b; color: #fff; }
         .btn-social svg { width: 20px; height: 20px; }
 
         @media screen and (max-width: 800px) {
-            .layout-wrapper { flex-direction: column; height: auto; max-width: 450px; }
-            .branding-section { padding: 30px; display:none; /* hide on small devices or show small version */ }
-            .login-section { width: 100%; padding: 40px 30px; }
+            .branding-section { display:none; }
+            .auth-forms-container { width: 100%; }
+            .auth-pane { padding: 40px 30px; }
         }
     </style>
 </head>
@@ -97,303 +141,257 @@
 
 <canvas id="particles-canvas"></canvas>
 
-<div class="layout-wrapper">
-    <!-- Section Gauche : Logo et Branding -->
+<div class="layout-wrapper" id="auth-wrapper">
+    <!-- Branding Section (Sliding) -->
     <div class="branding-section">
-        <div class="logo-placeholder">
-            <!-- Icône Boussole par défaut (jusqu'à ce que vous mettiez votre vrai logo) -->
-            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
-            </svg>
+        <div id="branding-content">
+            <div style="margin-bottom:25px; color: var(--primary);">
+                <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                </svg>
+            </div>
+            <h1>Boussole</h1>
+            <p>Accédez à votre plateforme d'orientation et de gestion de manière sécurisée et innovante.</p>
         </div>
-        <h1>Boussole</h1>
-        <p>Votre plateforme d'orientation et d'opportunités. Connectez-vous pour explorer de nouveaux horizons.</p>
+
+        <div id="face-camera-container" style="display:none; text-align:center;">
+            <div style="position:relative; display:inline-block; border-radius:20px; overflow:hidden; border:4px solid rgba(59, 130, 246, 0.3); box-shadow:0 0 40px rgba(59, 130, 246, 0.4);">
+                <video id="face-preview-video" autoplay muted playsinline style="width:320px; height:240px; object-fit:cover; transform:scaleX(-1);"></video>
+                <div id="face-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:rgba(15, 23, 42, 0.2);">
+                    <span id="face-countdown" style="font-size:54px; font-weight:800; color:#fff; text-shadow:0 0 20px rgba(0,0,0,0.5);"></span>
+                </div>
+            </div>
+            <p id="face-status-text" style="color:#94a3b8; margin-top:15px; font-size:14px; font-weight:500;">Positionnez votre visage au centre...</p>
+        </div>
     </div>
 
-    <!-- Section Droite : Formulaire -->
-    <div class="login-section">
-        <div class="login-header">
-            <h2>Bienvenue</h2>
-            <p>Accédez à votre espace personnel</p>
+    <!-- Forms Container (Static but holds sliding panes) -->
+    <div class="auth-forms-container">
+        
+        <!-- LOGIN PANE -->
+        <div class="auth-pane pane-login active" id="pane-login">
+            <div class="auth-header">
+                <h2>Bienvenue</h2>
+                <p>Veuillez vous authentifier</p>
+            </div>
+
+            {% if error %}
+                <div class="alert alert-error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+            {% endif %}
+
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label == 'success' ? 'success' : 'error' }}">{{ message }}</div>
+                {% endfor %}
+            {% endfor %}
+
+            <form method="post">
+                <div class="form-group">
+                    <label for="username">Email Professionnel</label>
+                    <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" placeholder="nom@boussole.tn" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" name="_password" id="password" class="form-control" placeholder="••••••••" required>
+                </div>
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <button type="submit" class="btn-submit">Se connecter maintenant</button>
+                <a href="javascript:void(0)" id="go-to-forgot" style="display:block; text-align:center; margin-top:15px; font-size:13px; color:#64748b; text-decoration:none; font-weight:500;">Mot de passe oublié ?</a>
+            </form>
+
+            <div class="divider">ou</div>
+
+            <a href="javascript:void(0)" id="start-faceid" class="btn-social btn-faceid">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+                Utiliser FaceID
+            </a>
+
+            <a href="{{ path('connect_google_start') }}" class="btn-social btn-google">
+                <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20c11.045 0 20-8.955 20-20 0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4c-7.682 0-14.344 4.337-17.694 10.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303c-.792 2.237-2.231 4.166-4.087 5.571l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+                Google Auth
+            </a>
         </div>
 
-        {% if error %}
-            <div class="alert alert-error">
-                {{ error.messageKey|trans(error.messageData, 'security') }}
+        <!-- FORGOT PASSWORD PANE -->
+        <div class="auth-pane pane-forgot" id="pane-forgot">
+            <div class="auth-header">
+                <h2>Accès perdu ?</h2>
+                <p>Entrez votre email pour réinitialiser votre compte</p>
             </div>
-        {% endif %}
-
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="alert alert-{{ label == 'success' ? 'success' : 'error' }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endfor %}
-
-        <form method="post">
-            <div class="form-group">
-                <label for="username">Email</label>
-                <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" autocomplete="email" placeholder="exemple@email.com" required autofocus>
-            </div>
-
-            <div class="form-group">
-                <label for="password">Mot de passe</label>
-                <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" placeholder="••••••••" required>
-            </div>
-
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-
-            <button type="submit" class="btn-submit">Se connecter</button>
             
-            <a href="{{ path('app_forgot_password') }}" class="forgot-password">Mot de passe oublié ?</a>
-        </form>
+            <form id="forgot-form" method="post" action="{{ path('app_forgot_password') }}">
+                <div class="form-group">
+                    <label for="forgot-email">Email Professionnel</label>
+                    <input type="email" name="email" id="forgot-email" class="form-control" placeholder="nom@boussole.tn" required>
+                </div>
+                <button type="submit" class="btn-submit" id="btn-forgot-submit">Réinitialiser l'accès</button>
+                <a href="javascript:void(0)" id="back-to-login" style="display:block; text-align:center; margin-top:20px; font-size:13px; color:#64748b; text-decoration:none; font-weight:500;">← Retour à la connexion</a>
+            </form>
+        </div>
 
-        <div class="divider">ou continuer avec</div>
-
-        <a href="{{ path('connect_google_start') }}" class="btn-social btn-google">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
-                <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
-                <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
-                <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
-            </svg>
-            S'authentifier avec Google
-        </a>
-
-        <a href="javascript:void(0)" id="start-faceid" class="btn-social btn-faceid">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
-                <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
-                <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
-                <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
-                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-                <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                <line x1="15" y1="9" x2="15.01" y2="9"></line>
-            </svg>
-            S'authentifier avec FaceID
-        </a>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // Logic for Floating Particles Background
+    // --- Particles ---
     const canvas = document.getElementById('particles-canvas');
     const ctx = canvas.getContext('2d');
-    
     let particlesArray;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    window.addEventListener('resize', function() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        init();
-    });
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
 
     class Particle {
-        constructor(x, y, directionX, directionY, size, color) {
-            this.x = x;
-            this.y = y;
-            this.directionX = directionX;
-            this.directionY = directionY;
-            this.size = size;
-            this.color = color;
-        }
-        draw() {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-            ctx.fillStyle = '#3b82f6';
-            ctx.fill();
-        }
+        constructor(x, y, dx, dy, size) { this.x = x; this.y = y; this.dx = dx; this.dy = dy; this.size = size; }
+        draw() { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fillStyle = 'rgba(59, 130, 246, 0.8)'; ctx.fill(); }
         update() {
-            if (this.x > canvas.width || this.x < 0) {
-                this.directionX = -this.directionX;
-            }
-            if (this.y > canvas.height || this.y < 0) {
-                this.directionY = -this.directionY;
-            }
-            this.x += this.directionX;
-            this.y += this.directionY;
-            this.draw();
+            if (this.x > canvas.width || this.x < 0) this.dx = -this.dx;
+            if (this.y > canvas.height || this.y < 0) this.dy = -this.dy;
+            this.x += this.dx; this.y += this.dy; this.draw();
         }
     }
 
     function init() {
-        particlesArray = [];
-        let numberOfParticles = (canvas.height * canvas.width) / 9000;
-        for (let i = 0; i < numberOfParticles; i++) {
-            let size = (Math.random() * 2) + 1;
-            let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-            let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-            let directionX = (Math.random() * 1) - 0.5;
-            let directionY = (Math.random() * 1) - 0.5;
-            let color = '#3b82f6';
-            particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+        particlesArray = []; n = (canvas.width * canvas.height) / 9000;
+        for (let i = 0; i < n; i++) {
+            let size = Math.random() * 2 + 1;
+            particlesArray.push(new Particle(Math.random()*canvas.width, Math.random()*canvas.height, Math.random()*0.6-0.3, Math.random()*0.6-0.3, size));
         }
     }
 
     function connect() {
-        let opacityValue = 1;
         for (let a = 0; a < particlesArray.length; a++) {
             for (let b = a; b < particlesArray.length; b++) {
-                let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x))
-                + ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
-                if (distance < (canvas.width / 7) * (canvas.height / 7)) {
-                    opacityValue = 1 - (distance / 20000);
-                    ctx.strokeStyle = 'rgba(59, 130, 246,' + opacityValue + ')';
-                    ctx.lineWidth = 1;
-                    ctx.beginPath();
+                let dist = ((particlesArray[a].x - particlesArray[b].x) ** 2) + ((particlesArray[a].y - particlesArray[b].y) ** 2);
+                if (dist < (canvas.width / 7) * (canvas.height / 7)) {
+                    ctx.strokeStyle = `rgba(59, 130, 246, ${1 - (dist / 25000)})`;
+                    ctx.lineWidth = 1; ctx.beginPath();
                     ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
-                    ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
-                    ctx.stroke();
+                    ctx.lineTo(particlesArray[b].x, particlesArray[b].y); ctx.stroke();
                 }
             }
         }
     }
 
-    function animate() {
-        requestAnimationFrame(animate);
-        ctx.clearRect(0, 0, innerWidth, innerHeight);
-        for (let i = 0; i < particlesArray.length; i++) {
-            particlesArray[i].update();
-        }
-        connect();
-    }
+    function animate() { requestAnimationFrame(animate); ctx.clearRect(0,0,canvas.width,canvas.height); particlesArray.forEach(p => p.update()); connect(); }
+    init(); animate();
+    window.addEventListener('resize', () => { canvas.width = innerWidth; canvas.height = innerHeight; init(); });
 
-    init();
-    animate();
+    // --- Pane Swap Logic ---
+    const wrapper = document.getElementById('auth-wrapper');
+    const goToForgot = document.getElementById('go-to-forgot');
+    const backToLogin = document.getElementById('back-to-login');
+    const paneLogin = document.getElementById('pane-login');
+    const paneForgot = document.getElementById('pane-forgot');
 
-    // --- FaceID Logic ---
-    const faceIdBtn = document.getElementById('start-faceid');
-    const FACE_MODEL_URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
-    let faceModelsLoaded = false;
+    goToForgot.addEventListener('click', () => {
+        wrapper.classList.add('flipped');
+        paneLogin.classList.remove('active');
+        paneForgot.classList.add('active');
+    });
 
-    async function loadFaceModels() {
-        if (faceModelsLoaded) return;
+    backToLogin.addEventListener('click', () => {
+        wrapper.classList.remove('flipped');
+        paneForgot.classList.remove('active');
+        paneLogin.classList.add('active');
+    });
+
+    // --- Forgot Password AJAX ---
+    const forgotForm = document.getElementById('forgot-form');
+    forgotForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('btn-forgot-submit');
+        const originalText = btn.textContent;
+        btn.textContent = 'Envoi en cours...';
+        btn.disabled = true;
+
+        const formData = new FormData(forgotForm);
         try {
-            await Promise.all([
-                faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL),
-                faceapi.nets.faceLandmark68Net.loadFromUri(FACE_MODEL_URL),
-                faceapi.nets.faceRecognitionNet.loadFromUri(FACE_MODEL_URL)
-            ]);
-            faceModelsLoaded = true;
-        } catch (e) {
-            console.error('Face models failed to load', e);
-        }
-    }
-
-    faceIdBtn.addEventListener('click', async () => {
-        faceIdBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Initialisation...';
-        await loadFaceModels();
-        
-        // Create a temporary hidden video element
-        const tempVideo = document.createElement('video');
-        tempVideo.style.display = 'none';
-        tempVideo.autoplay = true;
-        tempVideo.muted = true;
-        tempVideo.playsInline = true;
-        document.body.appendChild(tempVideo);
-
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-            tempVideo.srcObject = stream;
-            
-            tempVideo.onloadedmetadata = () => {
-                tempVideo.play();
-                faceIdBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Scan en cours...';
-                
-                let attempts = 0;
-                const maxAttempts = 10;
-                let captured = false;
-
-                const interval = setInterval(async () => {
-                    attempts++;
-                    
-                    // Simple capture for Face++ (capped resolution for API reliability)
-                    const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 640;
-                    const MAX_HEIGHT = 480;
-                    let width = tempVideo.videoWidth || 640;
-                    let height = tempVideo.videoHeight || 480;
-
-                    if (width > height) {
-                        if (width > MAX_WIDTH) {
-                            height *= MAX_WIDTH / width;
-                            width = MAX_WIDTH;
-                        }
-                    } else {
-                        if (height > MAX_HEIGHT) {
-                            width *= MAX_HEIGHT / height;
-                            height = MAX_HEIGHT;
-                        }
-                    }
-
-                    canvas.width = width;
-                    canvas.height = height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(tempVideo, 0, 0, width, height);
-                    const base64Image = canvas.toDataURL('image/jpeg', 0.8);
-
-                    if (base64Image) {
-                        captured = true;
-                        clearInterval(interval);
-                        
-                        fetch("{{ path('app_login_face') }}", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ image: base64Image })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success) {
-                                window.location.href = data.redirect;
-                            } else {
-                                alert(data.error || 'Authentification échouée');
-                                resetFaceButton();
-                                // Stop camera on error too
-                                stream.getTracks().forEach(t => t.stop());
-                                tempVideo.remove();
-                            }
-                        });
-
-                        // Stop camera
-                        stream.getTracks().forEach(t => t.stop());
-                        tempVideo.remove();
-                    } else if (attempts >= maxAttempts) {
-                        clearInterval(interval);
-                        alert("Impossible de capturer l'image.");
-                        resetFaceButton();
-                        stream.getTracks().forEach(t => t.stop());
-                        tempVideo.remove();
-                    }
-                }, 1000);
-            };
-
+            const res = await fetch(forgotForm.action, {
+                method: 'POST',
+                body: formData
+            });
+            // Since Symfony might redirect, we just show success based on the result
+            Swal.fire({
+                icon: 'success',
+                title: 'Email envoyé',
+                text: 'Si cet email est reconnu, vous recevrez un nouveau mot de passe.',
+                background: '#1e293b',
+                color: '#fff',
+                confirmButtonColor: '#3b82f6'
+            });
+            backToLogin.click();
         } catch (err) {
-            console.error('Camera error:', err);
-            alert("Veuillez autoriser l'accès à la caméra.");
-            resetFaceButton();
-            if (tempVideo) tempVideo.remove();
+            Swal.fire({ icon: 'error', title: 'Erreur', text: 'Impossible de traiter la demande.' });
+        } finally {
+            btn.textContent = originalText;
+            btn.disabled = false;
         }
     });
 
-    function resetFaceButton() {
-        faceIdBtn.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
-                <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
-                <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
-                <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
-                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-                <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                <line x1="15" y1="9" x2="15.01" y2="9"></line>
-            </svg>
-            S'authentifier avec FaceID`;
+    // --- FaceID Logic ---
+    const faceIdBtn = document.getElementById('start-faceid');
+    const brandingContent = document.getElementById('branding-content');
+    const cameraContainer = document.getElementById('face-camera-container');
+    const previewVideo = document.getElementById('face-preview-video');
+    const faceCountdown = document.getElementById('face-countdown');
+    const faceStatusText = document.getElementById('face-status-text');
+    let faceStream = null;
+
+    function resetFaceUI() {
+        faceIdBtn.textContent = 'Utiliser FaceID';
+        cameraContainer.style.display = 'none';
+        brandingContent.style.display = 'block';
+        if (faceStream) { faceStream.getTracks().forEach(t => t.stop()); faceStream = null; }
     }
+
+    faceIdBtn.addEventListener('click', async () => {
+        if (faceStream) { resetFaceUI(); return; }
+        faceIdBtn.textContent = 'Patientez...';
+        try {
+            faceStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            previewVideo.srcObject = faceStream;
+            brandingContent.style.display = 'none';
+            cameraContainer.style.display = 'block';
+            faceIdBtn.textContent = '✕ Annuler';
+            faceStatusText.textContent = 'Analyse de la position...';
+
+            for (let i = 3; i >= 1; i--) {
+                faceCountdown.textContent = i;
+                await new Promise(r => setTimeout(r, 1000));
+                if (!faceStream) return;
+            }
+            faceCountdown.textContent = '📸';
+            faceStatusText.textContent = 'Authentification IA...';
+
+            const canvasMap = document.createElement('canvas');
+            canvasMap.width = previewVideo.videoWidth; canvasMap.height = previewVideo.videoHeight;
+            canvasMap.getContext('2d').drawImage(previewVideo, 0, 0);
+            const image = canvasMap.toDataURL('image/jpeg', 0.8);
+
+            const res = await fetch("{{ path('app_login_face') }}", {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ image })
+            });
+
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                const data = await res.json();
+                if (data.success) {
+                    faceStatusText.textContent = '✅ Bienvenue !';
+                    window.location.href = data.redirect;
+                } else {
+                    faceStatusText.textContent = '❌ ' + (data.error || 'Non reconnu');
+                    setTimeout(resetFaceUI, 2000);
+                }
+            } else {
+                window.location.href = "{{ path('app_front_home') }}";
+            }
+        } catch (e) {
+            alert("Erreur webcam : " + e.message);
+            resetFaceUI();
+        }
+    });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 </body>
 </html>

@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class FacePlusPlusService
 {
@@ -11,18 +10,15 @@ class FacePlusPlusService
 
     public function __construct(
         private HttpClientInterface $httpClient,
-        private \Psr\Log\LoggerInterface $logger,
         private string $faceppKey,
         private string $faceppSecret,
         private string $faceppFaceSet
     ) {}
 
-    /**
-     * Detect a face from a base64 image and return the first face_token.
-     */
     public function detectFace(string $base64Image): ?string
     {
         $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $base64Image);
+        $logFile = 'C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/log/facepp_debug.log';
 
         try {
             $response = $this->httpClient->request('POST', self::BASE_URL . 'detect', [
@@ -36,23 +32,23 @@ class FacePlusPlusService
             ]);
 
             $data = $response->toArray(false);
+            file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Detect Response: " . json_encode($data) . "\n", FILE_APPEND);
+
             if (isset($data['faces'][0]['face_token'])) {
                 return $data['faces'][0]['face_token'];
             }
 
-            $this->logger->error('Face++ Detect failed: ' . json_encode($data));
+            error_log('Face++ Detect failed: ' . json_encode($data));
             return null;
         } catch (\Exception $e) {
-            $this->logger->error('Face++ Detect Exception: ' . $e->getMessage());
+            file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Detect Exception: " . $e->getMessage() . "\n", FILE_APPEND);
             return null;
         }
     }
 
-    /**
-     * Add a face_token to the global FaceSet.
-     */
     public function addFaceToFaceSet(string $faceToken): bool
     {
+        $logFile = 'C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/log/facepp_debug.log';
         try {
             $response = $this->httpClient->request('POST', self::BASE_URL . 'faceset/addface', [
                 'body' => [
@@ -64,12 +60,13 @@ class FacePlusPlusService
             ]);
 
             $data = $response->toArray(false);
+            file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "AddFace Response: " . json_encode($data) . "\n", FILE_APPEND);
             
             // If FaceSet doesn't exist, create it and try again
             if (isset($data['error_message']) && (str_contains($data['error_message'], 'FACESET_NOT_FOUND') || str_contains($data['error_message'], 'INVALID_OUTER_ID'))) {
-                $this->logger->info('FaceSet not found, attempting to create: ' . $this->faceppFaceSet);
                 $this->createFaceSet();
-                // Avoid infinite recursion by checking a static flag if needed, but here we just try once more
+                sleep(1); // Wait 1s to avoid CONCURRENCY_LIMIT_EXCEEDED on free tier
+                
                 $response = $this->httpClient->request('POST', self::BASE_URL . 'faceset/addface', [
                     'body' => [
                         'api_key' => $this->faceppKey,
@@ -79,16 +76,17 @@ class FacePlusPlusService
                     ]
                 ]);
                 $data = $response->toArray(false);
+                file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "AddFace (Retry) Response: " . json_encode($data) . "\n", FILE_APPEND);
             }
 
             if (($data['face_added'] ?? 0) > 0) {
                 return true;
             }
 
-            $this->logger->error('Face++ AddFace failed: ' . json_encode($data));
+            error_log('Face++ AddFace failed: ' . json_encode($data));
             return false;
         } catch (\Exception $e) {
-            $this->logger->error('Face++ AddFace Exception: ' . $e->getMessage());
+            file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "AddFace Exception: " . $e->getMessage() . "\n", FILE_APPEND);
             return false;
         }
     }
@@ -100,6 +98,7 @@ class FacePlusPlusService
     public function searchFace(string $base64Image, float $threshold = 80.0): ?string
     {
         $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $base64Image);
+        $logFile = 'C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/log/facepp_debug.log';
 
         try {
             $response = $this->httpClient->request('POST', self::BASE_URL . 'search', [
@@ -112,6 +111,7 @@ class FacePlusPlusService
             ]);
 
             $data = $response->toArray(false);
+            file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Search Response: " . json_encode($data) . "\n", FILE_APPEND);
 
             if (isset($data['results'][0])) {
                 $result = $data['results'][0];
@@ -121,10 +121,10 @@ class FacePlusPlusService
             }
             
             if (isset($data['error_message'])) {
-                $this->logger->error('Face++ Search failed: ' . json_encode($data));
+                error_log('Face++ Search failed: ' . json_encode($data));
             }
         } catch (\Exception $e) {
-            $this->logger->error('Face++ Search Exception: ' . $e->getMessage());
+            file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Search Exception: " . $e->getMessage() . "\n", FILE_APPEND);
         }
 
         return null;
@@ -142,7 +142,7 @@ class FacePlusPlusService
                 ]
             ]);
         } catch (\Exception $e) {
-            // Ignore if already exists
+            // Ignore errors here
         }
     }
 }
