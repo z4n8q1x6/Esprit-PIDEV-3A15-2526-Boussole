@@ -155,25 +155,25 @@
  </div>
 
  <!-- Generate Alert Modal -->
- <div class="modal fade" id="generateModal" tabindex="-1" aria-labelledby="generateModalLabel" aria-hidden="true">
-     <div class="modal-dialog modal-dialog-centered">
-         <div class="modal-content border-0 shadow-lg">
-             <div class="modal-header bg-light border-bottom-0">
-                 <h5 class="modal-title fw-600" id="generateModalLabel">Générer une Alerte IA</h5>
-                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-             </div>
-             <div class="modal-body text-center py-5">
-                 <div class="mb-3">
-                     <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                         <span class="visually-hidden">Chargement...</span>
-                     </div>
-                 </div>
-                 <p class="fw-500 text-dark mb-2">Génération en cours...</p>
-                 <p class="text-muted small">L'IA analyse vos données financières</p>
-             </div>
-         </div>
-     </div>
- </div>
+<div class="modal fade" id="generateModal" tabindex="-1" aria-labelledby="generateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-light border-bottom-0">
+                <h5 class="modal-title fw-600" id="generateModalLabel">Générer une Alerte IA</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-5" id="generateModalBody">
+                <div class="mb-3">
+                    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                </div>
+                <p class="fw-500 text-dark mb-2">Génération en cours...</p>
+                <p class="text-muted small">L'IA analyse vos données financières</p>
+            </div>
+        </div>
+    </div>
+</div>
 
  <!-- Modern Delete Confirmation Modal -->
  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -188,7 +188,7 @@
                     <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
                 </div>
                 <p class="text-muted mb-2">Êtes-vous sûr de vouloir supprimer ?</p>
-                <p class="fw-600 text-dark" id="deleteItemName"></p>
+                <p class="fw-600 text" id="deleteItemName"></p>
             </div>
             <div class="modal-footer bg-light border-top-0 gap-2">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
@@ -203,17 +203,62 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Generate modal logic
     const generateBtn = document.getElementById('generateBtn');
-    const generateModal = new bootstrap.Modal(document.getElementById('generateModal'));
+    const generateModalElement = document.getElementById('generateModal');
+    const generateModalBody = document.getElementById('generateModalBody');
 
-    generateBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        generateModal.show();
+    // Ensure elements exist before adding listeners
+    if (generateBtn && generateModalElement && generateModalBody) {
+        const generateModal = new bootstrap.Modal(generateModalElement);
 
-        // Navigate to generation URL after modal shows
-        setTimeout(() => {
-            window.location.href = '{{ path("alerte_new") }}';
-        }, 500);
-    });
+        generateBtn.addEventListener('click', async function() {
+            // Reset and Show modal with spinner
+            generateModalBody.innerHTML = `
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="fw-500 text mb-2">Génération en cours...</p>
+                <p class="text-muted small">L'IA génère une alerte, veuillez patienter...</p>
+            `;
+            generateModal.show();
+
+            try {
+                const response = await fetch('{{ path("alerte_new") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: `token=${encodeURIComponent('{{ csrf_token("generate-alerte") }}')}`
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    generateModalBody.innerHTML = `
+                        <div class="text-success mb-3">
+                            <i class="bi bi-check-circle" style="font-size: 3rem;"></i>
+                        </div>
+                        <p class="fw-600 text">Succès !</p>
+                        <p class="text-muted">Alerte générée avec succès. Redirection...</p>
+                    `;
+
+                    setTimeout(() => {
+                        window.location.href = '{{ path("alerte_index") }}';
+                    }, 1500);
+
+                } else {
+                    throw new Error(data.error || 'Une erreur est survenue.');
+                }
+
+            } catch (error) {
+                generateModalBody.innerHTML = `
+                    <div class="text-danger mb-3">
+                        <i class="bi bi-exclamation-octagon" style="font-size: 3rem;"></i>
+                    </div>
+                    <p class="fw-600 text">Erreur</p>
+                    <p class="text-muted small">${error.message}</p>
+                    <button type="button" class="btn btn-outline-secondary btn-sm mt-3" data-bs-dismiss="modal">Fermer</button>
+                `;
+            }
+        });
+    }
 
     // Delete modal logic
     const deleteModal = document.getElementById('deleteModal');

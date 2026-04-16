@@ -8,9 +8,14 @@
     <div class="row mb-3">
         <div class="col-12 d-sm-flex justify-content-between align-items-center">
             <h1 class="h3 mb-2 mb-sm-0">Liste des Alertes IA</h1>
-            <a href="{{ path('admin_alerte_pdf') }}" class="btn btn-sm btn-danger mb-0">
-                <i class="bi bi-file-pdf me-2"></i>Générer PDF
-            </a>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-info mb-0" id="prioritiesBtn" data-csrf-token="{{ csrf_token('escalation-item') }}">
+                    <i class="bi bi-exclamation-square me-2"></i>Priorités
+                </button>
+                <a href="{{ path('admin_alerte_pdf') }}" class="btn btn-sm btn-danger mb-0">
+                    <i class="bi bi-file-pdf me-2"></i>Générer PDF
+                </a>
+            </div>
         </div>
     </div>
 
@@ -39,7 +44,7 @@
                             name="q"
                             value="{{ app.request.query.get('q') }}"
                             >
-                            <button type="submit" class="btn btn-primary btn-sm px-3">
+                            <button type="submit" class="btn btn-primary btn-sm px-3 d-inline-flex align-items-center justify-content-center">
                                 Search
                             </button>
                     {% if app.request.query.get('q') is not empty %}
@@ -167,11 +172,36 @@
                     <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
                 </div>
                 <p class="text-muted mb-2">Êtes-vous sûr de vouloir supprimer ?</p>
-                <p class="fw-600 text-dark" id="deleteItemName"></p>
+                <p class="fw-600 text" id="deleteItemName"></p>
             </div>
             <div class="modal-footer bg-light border-top-0 gap-2">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Supprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Escalation Advisory Modal -->
+<div class="modal fade" id="escalationModal" tabindex="-1" aria-labelledby="escalationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-600" id="escalationModalLabel">Rapport d'Escalade</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="escalationContent">
+                    <div class="text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Chargement...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Analyse en cours...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
             </div>
         </div>
     </div>
@@ -193,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+     document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
         if (currentDeleteUrl && currentCsrfToken) {
             const form = document.createElement('form');
             form.method = 'POST';
@@ -207,6 +237,70 @@ document.addEventListener('DOMContentLoaded', function() {
             form.appendChild(tokenInput);
             document.body.appendChild(form);
             form.submit();
+        }
+    });
+
+    // Escalation advisor logic
+    const prioritiesBtn = document.getElementById('prioritiesBtn');
+    const escalationModal = new bootstrap.Modal(document.getElementById('escalationModal'));
+    const escalationContent = document.getElementById('escalationContent');
+
+    prioritiesBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        const csrfToken = this.dataset.csrfToken;
+
+        // Show loading state
+        escalationContent.innerHTML = `
+            <div class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+                <p class="mt-2 text-muted">Analyse en cours...</p>
+            </div>
+        `;
+        escalationModal.show();
+
+        try {
+            const response = await fetch('/admin/alertes/escalation-advisor', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `token=${encodeURIComponent(csrfToken)}`
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Format the analysis text with line breaks
+                const analysisText = data.analysis
+                    .split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line)
+                    .join('<br>');
+
+                escalationContent.innerHTML = `
+                    <div>
+                        <div class="alert alert-warning" role="alert">
+                            <strong>Rapport d'Escalade:</strong><br>
+                            ${analysisText}
+                        </div>
+                    </div>
+                `;
+            } else {
+                escalationContent.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Erreur:</strong> ${data.error || 'Une erreur est survenue lors de l\'analyse.'}
+                    </div>
+                `;
+            }
+        } catch (error) {
+            escalationContent.innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    <strong>Erreur:</strong> ${error.message || 'Une erreur réseau est survenue.'}
+                </div>
+            `;
+            console.error('Escalation error:', error);
         }
     });
 });

@@ -145,17 +145,9 @@ final class AdminUserController extends AbstractController
         $hashedPassword = $passwordHasher->hashPassword($utilisateur, $randomPassword);
         $utilisateur->setMot_de_passe($hashedPassword);
 
-        try {
-            $entityManager->persist($franchise);
-            $entityManager->persist($utilisateur);
-            $entityManager->flush();
-        } catch (\Exception $e) {
-            $msg = "Une erreur est survenue lors de l'enregistrement.";
-            if (str_contains($e->getMessage(), 'Duplicate entry') && str_contains($e->getMessage(), 'email')) {
-                $msg = "Cette adresse email est déjà utilisée.";
-            }
-            return $this->json(['success' => false, 'errors' => [$msg, $e->getMessage()]], 500);
-        }
+        $entityManager->persist($franchise);
+        $entityManager->persist($utilisateur);
+        $entityManager->flush();
 
         return $this->json([
             'success' => true,

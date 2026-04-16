@@ -16,6 +16,7 @@ use Gemini\Enums\DataType;
 use Gemini\Enums\ResponseMimeType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 #[Route('/alertes')]
 final class AlerteIAController extends AbstractController
@@ -58,47 +59,59 @@ final class AlerteIAController extends AbstractController
         return $this->redirectToRoute('alerte_index');
     }
 
-    #[Route('/new', name: 'alerte_new')]
-    public function new(SerializerInterface $serializer): Response
+    #[Route('/new', name: 'alerte_new', methods: ['POST'])]
+    public function new(Request $request, SerializerInterface $serializer): Response
     {
-        $apiKey = getenv('GOOGLE_API_KEY');
-        $client = Gemini::client($apiKey);
+        $token = $request->request->get('token');
+        if (!$this->isCsrfTokenValid('generate-alerte', $token)) {
+            return new JsonResponse(['success' => false, 'error' => 'Invalid CSRF token'], 403);
+        }
 
-        $financialData = $this->repo->getFinancialData($this->franchise_id, date('n'), date('Y'));
+        try {
+            $apiKey = getenv('GOOGLE_API_KEY');
+            $client = Gemini::client($apiKey);
 
-        $prompt = $this->buildPrompt($financialData, date('n'), date('Y'));
+            $financialData = $this->repo->getFinancialData($this->franchise_id, date('n'), date('Y'));
+            $prompt = $this->buildPrompt($financialData, date('n'), date('Y'));
 
-        $request = $client
-            ->generativeModel(model: 'gemini-2.5-flash-lite')
-            ->withGenerationConfig(
-                generationConfig: new GenerationConfig(
-                    responseMimeType: ResponseMimeType::APPLICATION_JSON,
-                    temperature: 1.2,
-                    responseSchema: new Schema(
-                        type: DataType::OBJECT,
-                        properties: [
-                            'type_alerte' => new Schema(type: DataType::STRING, maxLength: 35),
-                            'message' => new Schema(type: DataType::STRING, minLength: 100, maxLength: 1000),
-                            'score_gravite' => new Schema(type: DataType::NUMBER, minimum: 0.0, maximum: 10.0),
-                        ],
-                        required: ['type_alerte', 'message', 'score_gravite'],
+            $result = $client
+                ->generativeModel(model: 'gemini-2.5-flash-lite')
+                ->withGenerationConfig(
+                    generationConfig: new GenerationConfig(
+                        responseMimeType: ResponseMimeType::APPLICATION_JSON,
+                        temperature: 1.2,
+                        responseSchema: new Schema(
+                            type: DataType::OBJECT,
+                            properties: [
+                                'type_alerte' => new Schema(type: DataType::STRING, maxLength: 35),
+                                'message' => new Schema(type: DataType::STRING, minLength: 100, maxLength: 1000),
+                                'score_gravite' => new Schema(type: DataType::NUMBER, minimum: 0.0, maximum: 10.0),
+                            ],
+                            required: ['type_alerte', 'message', 'score_gravite'],
+                        )
                     )
                 )
-            )
-            ->generateContent($prompt);
-        $data = (array) $request->json();
+                ->generateContent($prompt);
 
-        $data['score_gravite'] = (float) $data['score_gravite'];
+            $data = (array) $result->json();
+            $data['score_gravite'] = (float) $data['score_gravite'];
 
-        $alerte = $serializer->denormalize(
-            $data,
-            Alerteias::class,
-        );
-        $franchise = $this->em->getRepository(Franchises::class)->find($this->franchise_id);
-        $alerte->setFranchise_id($franchise);
-        $this->em->persist($alerte);
-        $this->em->flush();
-        return $this->redirectToRoute('alerte_index');
+            $alerte = $serializer->denormalize($data, Alerteias::class);
+
+            $franchise = $this->em->getRepository(Franchises::class)->find($this->franchise_id);
+            $alerte->setFranchise_id($franchise);
+
+            $this->em->persist($alerte);
+            $this->em->flush();
+
+            return new JsonResponse(['success' => true]);
+
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'Erreur technique: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     private function buildPrompt(array $financialData, int $month, int $year): string
@@ -117,11 +130,7 @@ final class AlerteIAController extends AbstractController
             . "- Charges rejetées: %d\n\n"
             . "ACTIVITÉ:\n"
             . "- Transactions ce mois: %d\n\n"
-            . "Détecte les anomalies et risques financiers. Formule une alerte basée sur ces données.\n\n"
-            . "Retourne un objet JSON avec exactement ces champs:\n"
-            . "- type_alerte: String (max 35 caractères)\n"
-            . "- message: String (100-1000 caractères)\n"
-            . "- score_gravite: Number (0-10)",
+            . "Détecte les anomalies et risques financiers. Formule une alerte basée sur ces données.\n\n",
             $month,
             $year,
             $financialData['totalRecettes'],
