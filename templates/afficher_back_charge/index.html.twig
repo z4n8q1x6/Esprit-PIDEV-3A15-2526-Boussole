@@ -474,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var value = this.value;
             var id    = this.closest('tr').getAttribute('data-id');
 
-            fetch('/afficher_back_charge/edit/' + id, {
+            fetch('/admin/afficher_back_charge/edit/' + id, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 body: JSON.stringify({ field: field, value: value })

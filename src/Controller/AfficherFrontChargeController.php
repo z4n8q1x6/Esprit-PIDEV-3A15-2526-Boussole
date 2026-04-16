@@ -163,6 +163,57 @@ HTML;
             elseif ($type === 'CHARGES_EXCEPTIONNELLES') $statsType['Exceptionnelle']++;
         }
 
+        // --- NOUVEAU METIER AVANCÉ : Score de Priorité Financière ---
+        $today = new \DateTime();
+        $seuilUrgence = 490; // Seuil proposé : 490
+        $hasUrgence = false;
+        $allScoredCharges = [];
+
+        foreach ($allCharges as $c) {
+            $dateCharge = $c['date_charge'] ?? null;
+            if (is_string($dateCharge)) {
+                $dateCharge = new \DateTime($dateCharge);
+            }
+            
+            $days = 0;
+            if ($dateCharge instanceof \DateTimeInterface) {
+                // Calcul de l'ancienneté (différence absolue en jours)
+                $days = $today->diff($dateCharge)->days;
+            }
+
+            $score = $days;
+            $statusStr = mb_strtolower($c['status_validation'] ?? '', 'UTF-8');
+            
+            // Si "valide", on multiplie par 40% (x1.4)
+            // Si "en attente", on multiplie par 20% (x1.2)
+            // Sinon le score reste le même
+            if (str_contains($statusStr, 'valid')) {
+                $score = $score * 1.4;
+            } elseif (str_contains($statusStr, 'attente')) {
+                $score = $score * 1.2;
+            }
+
+            $score = round($score);
+            
+            if ($score >= $seuilUrgence) {
+                $hasUrgence = true;
+            }
+            
+            $item = [
+                'id' => $c['id'],
+                'titre' => $c['titre'],
+                'montant' => $c['montant'],
+                'status' => $c['status_validation'] ?? 'Inconnu',
+                'date_str' => $dateCharge instanceof \DateTimeInterface ? $dateCharge->format('d/m/Y') : 'N/A',
+                'score' => $score
+            ];
+            $allScoredCharges[] = $item;
+        }
+
+        // Trier du plus urgent au moins urgent
+        usort($allScoredCharges, fn($a, $b) => $b['score'] <=> $a['score']);
+        // -----------------------------------------------------------
+
         return $this->render('afficher_front_charge/index.html.twig', [
             'charges' => $charges,
             'total' => $totalMontant,
@@ -172,7 +223,10 @@ HTML;
             'sort' => $sort,
             'dir' => $dir,
             'statsStatus' => $statsStatus,
-            'statsType' => $statsType
+            'statsType' => $statsType,
+            'scoredCharges' => $allScoredCharges,
+            'hasUrgence' => $hasUrgence,
+            'seuilUrgence' => $seuilUrgence
         ]);
     }
 

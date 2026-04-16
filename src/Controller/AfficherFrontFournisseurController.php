@@ -161,6 +161,7 @@ HTML;
         $ai_analysis = $this->getAIAnalysis($fournisseurs, $httpClient, $repository);
 
         // 9. GESTION DE LA CORBEILLE (Logiciel Métier Avancé)
+        $session = $request->getSession();
         $trash = $session->get('supplier_trash', []);
         $now = time();
         $hasChanged = false;
