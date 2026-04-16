@@ -19,6 +19,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 #[Route('/transaction')]
 final class TransactionController extends AbstractController
@@ -32,8 +35,13 @@ final class TransactionController extends AbstractController
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
 
-        // --- CODE TEMPORAIRE (En attendant l'authentification) ---
-        $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+        // On récupère la franchise de l'utilisateur connecté s'il y en a une
+        $user = $this->getUser();
+        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
+            $dummyFranchise = $user->getIdFranchise();
+        } else {
+            $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($dummyFranchise) {
@@ -124,7 +132,13 @@ final class TransactionController extends AbstractController
         EntityManagerInterface $entityManager
     ): Response
     {
-        $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+        // On récupère la franchise de l'utilisateur connecté s'il y en a une
+        $user = $this->getUser();
+        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
+            $dummyFranchise = $user->getIdFranchise();
+        } else {
+            $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+        }
 
         $typeFilter = $request->query->get('type', 'TOUT');
         $searchQuery = $request->query->get('search', '');
@@ -194,6 +208,112 @@ final class TransactionController extends AbstractController
     }
     // =========================================================================
 
+    #[Route('/historique/export', name: 'app_export_excel', methods: ['GET'])]
+    public function exportExcel(Request $request, TransactionRepository $transactionRepo, EntityManagerInterface $entityManager): Response
+    {
+        // On récupère la franchise
+        $user = $this->getUser();
+        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
+            $dummyFranchise = $user->getIdFranchise();
+        } else {
+            $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+        }
+
+        // On récupère les mêmes filtres que l'affichage
+        $typeFilter = $request->query->get('type', 'TOUT');
+        $searchQuery = $request->query->get('search', '');
+        $periode = $request->query->get('periode', 'this_month');
+        $dateStart = $request->query->get('date_start', '');
+        $dateEnd = $request->query->get('date_end', '');
+        $sort = $request->query->get('sort', 'date');
+        $direction = $request->query->get('direction', 'DESC');
+
+        if (!in_array($sort, ['date', 'type', 'description', 'montant'])) {
+            $sort = 'date';
+        }
+
+        if ($dummyFranchise) {
+            $transactions = $transactionRepo->findFilteredTransactions(
+                $dummyFranchise, $typeFilter, $searchQuery, $periode, $dateStart, $dateEnd, $sort, $direction
+            );
+        } else {
+            $transactions = [];
+        }
+
+        // Création du fichier Excel
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Le Design Personnalisé (L'en-tête)
+        $sheet->setCellValue('A1', 'Historique des Transactions - Boussole');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
+        $sheet->mergeCells('A1:D1');
+
+        // Les Colonnes du Tableau (Ligne 3)
+        $sheet->setCellValue('A3', 'Date');
+        $sheet->setCellValue('B3', 'Type');
+        $sheet->setCellValue('C3', 'Description');
+        $sheet->setCellValue('D3', 'Montant (TND)');
+
+        // Fond gris et texte blanc
+        $sheet->getStyle('A3:D3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FF6C757D');
+        $sheet->getStyle('A3:D3')->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
+        $sheet->getStyle('A3:D3')->getFont()->setBold(true);
+
+        // Remplissage Dynamique (La Boucle)
+        $row = 4;
+        $totalRecettes = 0;
+        $totalCharges = 0;
+
+        foreach ($transactions as $tx) {
+            $sheet->setCellValue('A' . $row, $tx->getDate()->format('Y-m-d'));
+            $sheet->setCellValue('B' . $row, $tx->getType());
+            $sheet->setCellValue('C' . $row, $tx->getDescription());
+            $sheet->setCellValue('D' . $row, $tx->getMontant());
+
+            if ($tx->getType() === 'DEPENSE') {
+                $sheet->getStyle('D' . $row)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+                $totalCharges += $tx->getMontant();
+            } else {
+                $sheet->getStyle('D' . $row)->getFont()->getColor()->setARGB('FF198754'); // Vert Bootstrap #198754
+                $totalRecettes += $tx->getMontant();
+            }
+            $row++;
+        }
+
+        // Le Calcul Final
+        $row++; // Espace pur esthétique ou directement en dessous
+        $sheet->setCellValue('C' . $row, 'SOLDE TOTAL :');
+        $sheet->getStyle('C' . $row)->getFont()->setBold(true);
+
+        $solde = $totalRecettes - $totalCharges;
+        $sheet->setCellValue('D' . $row, $solde . ' TND');
+        $sheet->getStyle('D' . $row)->getFont()->setBold(true);
+        if ($solde < 0) {
+            $sheet->getStyle('D' . $row)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+        } else {
+            $sheet->getStyle('D' . $row)->getFont()->getColor()->setARGB('FF198754');
+        }
+
+        // Ajustement automatique des colonnes
+        foreach (range('A', 'D') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Forçage du téléchargement
+        $writer = new Xlsx($spreadsheet);
+        $response = new StreamedResponse(function () use ($writer) {
+            $writer->save('php://output');
+        });
+
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="historique_transactions.xlsx"');
+
+        return $response;
+    }
+
+    // =========================================================================
+
     #[Route('/{id}', name: 'app_transaction_show', methods: ['GET'])]
     public function show(Transaction $transaction): Response
     {
@@ -209,6 +329,10 @@ final class TransactionController extends AbstractController
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator
     ): JsonResponse {
+        if ($transaction->isEstCloture()) {
+            return new JsonResponse(['success' => false, 'message' => 'Interdit : Cette transaction est archivée et ne peut plus être modifiée.'], 403);
+        }
+
         try {
             $data = json_decode($request->getContent(), true);
             if (!is_array($data) || empty($data)) {
@@ -287,6 +411,10 @@ final class TransactionController extends AbstractController
     #[Route('/{id}', name: 'app_transaction_delete', methods: ['POST'])]
     public function delete(Transaction $transaction, EntityManagerInterface $entityManager): JsonResponse
     {
+        if ($transaction->isEstCloture()) {
+             return new JsonResponse(['success' => false, 'message' => 'Interdit : Cette transaction est archivée et ne peut plus être supprimée.'], 403);
+        }
+
         $entityManager->remove($transaction);
         $entityManager->flush();
 

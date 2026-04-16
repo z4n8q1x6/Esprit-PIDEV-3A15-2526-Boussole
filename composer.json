@@ -17,6 +17,7 @@
         "nyholm/psr7": "^1.8.2",
         "php-ai/php-ml": "^0.10.0",
         "php-flasher/flasher-sweetalert-symfony": "^1.15",
+        "phpoffice/phpspreadsheet": "^5.6",
         "psr/http-client": "^1.0.3",
         "symfony/asset": "6.4.*",
         "symfony/console": "6.4.*",

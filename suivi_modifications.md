@@ -235,3 +235,57 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 * **Fichier modifié** : `templates/franchise/historique.html.twig`
   * **Lignes exactes** : Lignes 79 - 84 (Partiel), 167 - 460 (JavaScript)
   * **Description** : Remplacement du tableau inline et des KPIs par un `<div id="transactions-container">` incluant le partiel. Réécriture complète du JavaScript : remplacement de tous les `form.submit()` par des appels `fetch()` avec `URLSearchParams`. Ajout d'un système de debounce (300ms) sur la recherche textuelle. Les en-têtes de colonnes déclenchent le tri via AJAX. Les fonctions `bindSortHeaders()`, `bindEditableCells()` et `bindDeleteIcons()` sont ré-attachées dynamiquement après chaque rechargement du contenu.
+
+### Localisation du code de Recherche (Recherche Multicritères AJAX)
+
+| Couche | Fichier | Lignes | Rôle |
+|--------|---------|--------|------|
+| **Repository** | `src/Repository/TransactionRepository.php` | L30-L33 | Clause `LIKE` sur `description` et `montant` via QueryBuilder |
+| **Contrôleur** | `src/Controller/TransactionController.php` | L130 | Récupération du paramètre GET `search` via `$request->query->get('search')` |
+| **Contrôleur** | `src/Controller/TransactionController.php` | L183-L188 | Détection AJAX (`X-Requested-With`) et renvoi du partiel `_transactions_list.html.twig` |
+| **Vue HTML** | `templates/franchise/historique.html.twig` | L65-L68 | Champ `<input type="text" name="search">` avec icône loupe |
+| **Vue Partiel** | `templates/franchise/_transactions_list.html.twig` | L1-L108 | Fragment HTML renvoyé (KPIs + Tableau) rechargé dynamiquement |
+| **JS Fetch** | `templates/franchise/historique.html.twig` | L176 | Lecture de la valeur : `document.querySelector('input[name="search"]')` |
+| **JS Fetch** | `templates/franchise/historique.html.twig` | L180-L185 | Construction des `URLSearchParams` et appel `fetch()` avec header `X-Requested-With` |
+| **JS Fetch** | `templates/franchise/historique.html.twig` | L220-L225 | `EventListener('input')` avec `debounce(updateTable, 300)` pour recherche instantanée |
+
+### Localisation Complète de l'Interactivité 100% AJAX (UX/UI Avancée)
+
+| Fonctionnalité | Fichier | Lignes | Mécanisme JavaScript & Backend |
+|--------|---------|--------|------|
+| **Recherche Multicritères & Debounce** | `templates/franchise/historique.html.twig` | L216-L235 | `addEventListener('input')` avec Timeout de 300ms pour éviter de spammer le serveur + `updateTable()` (Fetch AJAX). |
+| **Tri Dynamique** | `templates/franchise/historique.html.twig` | L319-L335 | Fonction `bindSortHeaders()`. Modifie `currentSort` et relance la vue partielle. |
+| **Édition sur place (Inline)** | `templates/franchise/historique.html.twig` | L355-L414 | Fonction `bindEditableCells()`. Remplacement dynamique par `<input>` au double-clic, écoute de la touche 'Entrée', payload POST via fetch sur la route `/transaction/{id}/edit`. |
+| **Actions en masse / Suppression** | `templates/franchise/historique.html.twig` | L416-L450 | Liaisons `bindDeleteIcons()` et modal Bootstrap. Envoi d'une requête DELETE invisible et relance instantanée du `updateTable()`. |
+| **Contrôleur (Réponses AJAX)** | `src/Controller/TransactionController.php` | L170-L240 | Traitement des appels asynchrones : renvoi soit de JSON (`['success' => true]`), soit du fichier fragmentaire `_transactions_list` si la requête contient `XMLHttpRequest`. |
+
+## Tâche 16 : Consolidation Financière & Clôture Mensuelle (Métier Avancé)
+**Date** : 16/04/2026
+* **Fichier modifié** : `src/Entity/Transaction.php`
+  * **Lignes exactes** : Lignes 47 - 48, 106 - 120
+  * **Description** : Ajout du champ booléen `est_cloture` (par défaut `false`) avec ses getters et setters pour gérer l'état d'archivage d'une transaction.
+* **Fichier modifié** : `src/Controller/TransactionController.php`
+  * **Lignes exactes** : Lignes 212 - 214, 289 - 291
+  * **Description** : Ajout d'une vérification de sécurité dans les méthodes `edit` et `delete` du CRUD : si `isEstCloture()` est vrai, l'opération est refusée avec une erreur 403 (Transaction archivée).
+* **Fichier créé** : `src/Service/ClotureFinanciereService.php`
+  * **Lignes exactes** : Lignes 1 - 66
+  * **Description** : Création du service d'algorithme contenant `cloturerMois()`. Cette méthode compile les transactions non clôturées, additionne les recettes/dépenses, calcule le résultat net, instancie une nouvelle entité `Bilan`, passe les transactions à `est_cloture = true`, et execute un unique `flush` transactionnel.
+* **Fichier modifié** : `src/Repository/TransactionRepository.php`
+  * **Lignes exactes** : Lignes 107 - 125
+  * **Description** : Ajout de la méthode `findTransactionsNonClotureesPourMois()` pour le QueryBuilder afin d'alimenter le service d'algorithme.
+* **Fichier modifié** : `src/Controller/BilanController.php`
+  * **Lignes exactes** : Lignes 341 - 369
+  * **Description** : Création de la route `/admin/bilan/cloturer` (`app_cloturer_mois`) déclenchant le service via un appel POST avec redirection et message Flash de validation.
+
+---
+
+## Tâche 17 : Bundle Consistant – Export Excel Personnalisé de l'Historique
+**Date** : 16/04/2026
+* **Installation Requise** : `composer require phpoffice/phpspreadsheet`
+* **Fichier modifié** : `src/Controller/TransactionController.php`
+  * **Description** : Ajout de l'action `exportExcel()` sur la route `#[Route('/historique/export', name: 'app_export_excel')]`. Cette fonction s'appuie sur la même logique de filtrage multicritères que l'attribut AJAX (paramètres récupérés de l'URL) pour n'avoir à exporter **que ce que l'utilisateur voit à l'écran**.
+  * **Implémentation Excel** : Initialisation d'une instance `\PhpOffice\PhpSpreadsheet\Spreadsheet()`. Dessin des en-têtes avec personnalisation du font (Gras, Titre fusionné), création d'un fond gris-charbon sur la ligne 3 pour les colonnes.
+  * **Traitement Dynamique** : Itération sur le tableau des transactions filtrées. Gestion intelligente des couleurs : si type `'DEPENSE'`, l'API colore le texte de la cellule Montant de la ligne D en rouge. Sinon, en vert. Calcul du vrai Solde et affichage d'une ligne de résumé final « SOLDE TOTAL » en bas de la feuille.
+  * **Response** : Instanciation de `StreamedResponse` injectant le format de base `Xlsx` dans le buffer I/O natif via `php://output`, déclenchant un téléchargement instantané du fichier _historique_transactions.xlsx_ pour l'utilisateur.
+* **Fichier modifié** : `templates/franchise/historique.html.twig`
+  * **Description** : Transformation du bouton statique "Exporter..." en lien dynamique de téléchargement avec une icône de tableau (`bi-file-earmark-excel`). Ajout d'une mise à jour asynchrone dans le script JS : lors du déclenchement des filtres JavaScript, le paramètre `href` de ce bouton `a#btn-export-excel` se synchronise avec les paramètres URL de manière réactive.

@@ -44,6 +44,9 @@ class Transaction
     #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Franchises $franchise_id;
 
+    #[ORM\Column(type: "boolean", options: ["default" => false])]
+    private bool $est_cloture = false;
+
     public function getId()
     {
         return $this->id;
@@ -102,5 +105,21 @@ class Transaction
     public function setFranchise_id($value)
     {
         $this->franchise_id = $value;
+    }
+
+    public function getEstCloture(): bool
+    {
+        return $this->est_cloture;
+    }
+
+    public function isEstCloture(): bool
+    {
+        return $this->est_cloture;
+    }
+
+    public function setEstCloture(bool $est_cloture): self
+    {
+        $this->est_cloture = $est_cloture;
+        return $this;
     }
 }

@@ -71,7 +71,7 @@
                 <div class="col-md-3 d-flex justify-content-end align-items-center">
                     <a href="#" id="resetFiltersBtn" class="text-muted me-3 text-decoration-none small">Réinitialiser</a>
                     <button type="submit" class="d-none"></button>
-                    <a href="#" class="btn btn-primary rounded-pill fw-bold px-4" style="background-color: #0d6efd; color: white; border: none;">Exporter...</a>
+                    <a href="{{ path('app_export_excel') }}" id="btn-export-excel" class="btn btn-primary rounded-pill fw-bold px-4" style="background-color: #0d6efd; color: white; border: none;"><i class="bi bi-file-earmark-excel me-1"></i>Exporter Excel</a>
                 </div>
             </div>
         </form>
@@ -189,6 +189,13 @@ document.addEventListener('DOMContentLoaded', function() {
             sort: currentSort,
             direction: currentDirection
         });
+
+        // Mise à jour du lien d'export pour inclure les paramètres actuels
+        const exportBtn = document.getElementById('btn-export-excel');
+        if (exportBtn) {
+            // Le chemin de base doit correspondre à #[Route('/historique/export')] dans TransactionController
+            exportBtn.href = '/transaction/historique/export?' + params.toString();
+        }
 
         fetch(baseUrl + '?' + params.toString(), {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }

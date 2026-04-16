@@ -337,4 +337,33 @@ final class BilanController extends AbstractController
 
         return $this->redirectToRoute('app_bilan_index');
     }
+
+    #[Route('/cloturer', name: 'app_cloturer_mois', methods: ['POST'])]
+    public function cloturerMois(
+        Request $request, 
+        \App\Service\ClotureFinanciereService $clotureService,
+        EntityManagerInterface $entityManager
+    ): Response
+    {
+        $franchiseId = $request->request->get('franchise_id');
+        $mois = (int) $request->request->get('mois', date('m'));
+        $annee = (int) $request->request->get('annee', date('Y'));
+
+        // On cherche la franchise
+        $franchise = $entityManager->getRepository(Franchises::class)->find($franchiseId);
+        
+        if (!$franchise) {
+            $this->addFlash('danger', 'Franchise non trouvée pour la clôture !');
+            return $this->redirectToRoute('app_bilan_index');
+        }
+
+        try {
+            $clotureService->cloturerMois($franchise, $mois, $annee);
+            $this->addFlash('success', "Le mois $mois/$annee a été clôturé et le Bilan a été généré avec succès pour {$franchise->getNom()}.");
+        } catch (\Exception $e) {
+            $this->addFlash('danger', 'Erreur lors de la clôture : ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_bilan_index');
+    }
 }

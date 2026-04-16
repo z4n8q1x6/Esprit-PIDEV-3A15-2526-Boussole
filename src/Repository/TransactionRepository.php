@@ -103,4 +103,25 @@ class TransactionRepository extends ServiceEntityRepository
         
         return $result->fetchAllAssociative();
     }
+
+    /**
+     * Récupère toutes les transactions non clôturées pour un mois et une année donnés.
+     */
+    public function findTransactionsNonClotureesPourMois($franchise, int $mois, int $annee): array
+    {
+        // Création des dates de début et de fin de mois
+        $start = new \DateTime(sprintf('%d-%02d-01 00:00:00', $annee, $mois));
+        $end = clone $start;
+        $end->modify('last day of this month 23:59:59');
+
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.franchise_id = :franchise')
+            ->andWhere('t.est_cloture = false')
+            ->andWhere('t.date >= :start AND t.date <= :end')
+            ->setParameter('franchise', $franchise)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
+    }
 }

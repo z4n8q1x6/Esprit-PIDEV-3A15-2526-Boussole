@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btnGenerate.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
 
             try {
-                const response = await fetch('/bilan/generate-ajax', {
+                const response = await fetch('/admin/bilan/generate-ajax', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cible, mois, annee })
