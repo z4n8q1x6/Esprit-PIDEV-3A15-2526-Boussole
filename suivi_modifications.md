@@ -276,6 +276,9 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 * **Fichier modifié** : `src/Controller/BilanController.php`
   * **Lignes exactes** : Lignes 341 - 369
   * **Description** : Création de la route `/admin/bilan/cloturer` (`app_cloturer_mois`) déclenchant le service via un appel POST avec redirection et message Flash de validation.
+* **Fichier modifié** : `src/Controller/BilanController.php`
+  * **Lignes exactes** : Lignes 44 - 57 (méthode `editAjax`)
+  * **Description** : Ajout d'un verrou de clôture automatique dans l'édition inline des bilans. Avant toute modification, le système compare le mois et l'année du bilan avec la date actuelle (`DateTime`). Si le bilan appartient à un mois **déjà écoulé** (ex: Mars alors qu'on est en Avril), le serveur refuse la modification avec une **erreur HTTP 403** et le message : *"Interdit : Ce bilan est clôturé (mois passé). Les données financières archivées ne peuvent plus être modifiées."*. Seuls les bilans du mois en cours restent modifiables.
 
 ---
 
@@ -289,3 +292,20 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
   * **Response** : Instanciation de `StreamedResponse` injectant le format de base `Xlsx` dans le buffer I/O natif via `php://output`, déclenchant un téléchargement instantané du fichier _historique_transactions.xlsx_ pour l'utilisateur.
 * **Fichier modifié** : `templates/franchise/historique.html.twig`
   * **Description** : Transformation du bouton statique "Exporter..." en lien dynamique de téléchargement avec une icône de tableau (`bi-file-earmark-excel`). Ajout d'une mise à jour asynchrone dans le script JS : lors du déclenchement des filtres JavaScript, le paramètre `href` de ce bouton `a#btn-export-excel` se synchronise avec les paramètres URL de manière réactive.
+
+---
+
+## Tâche 18 : Notification Préventive de "Rupture de Budget" (Événements Symfony)
+**Date** : 16/04/2026
+* **Installation Requise** : Aucune (utilisation des Événements natifs de Symfony / Doctrine).
+* **Fichier créé** : `src/EventSubscriber/BudgetAlertSubscriber.php`
+  * **Lignes exactes** : Fichier complet (1 - 130)
+  * **Description** : Création d'un Listener Doctrine déclaré avec l'attribut `#[AsDoctrineListener(event: Events::postPersist)]`. Ce subscriber est automatiquement invoqué par Symfony après chaque insertion d'entité en base de données, sans aucun appel explicite dans les contrôleurs.
+  * **Algorithme Mathématique** :
+    1. L'événement `postPersist` se déclenche → vérifie si l'entité est une `Transaction` de type `'DEPENSE'`.
+    2. Calcule via QueryBuilder `SUM(t.montant)` de toutes les dépenses du mois en cours pour la franchise concernée.
+    3. Récupère l'entité `Budget_previsionnel` correspondante (type `'LIMITE_DEPENSE'`, même mois, même franchise).
+    4. Applique la formule : `pourcentage = (totalDepenses / limiteBudget) * 100`.
+    5. Si `pourcentage >= 90%` → Injecte un message Flash `warning` via `RequestStack` : *"⚠️ Attention : Vous avez consommé X% de votre budget autorisé ce mois"*.
+    6. Si `pourcentage >= 100%` → Injecte un message Flash `error` : *"🚨 DÉPASSEMENT DE BUDGET !"*.
+  * **Mécanisme de notification** : Utilise `$request->getSession()->getFlashBag()->add()` pour stocker le message dans la session. Ce message est ensuite rendu automatiquement par le bundle PHP Flasher (SweetAlert2) déjà intégré via `{{ flasher_render() }}` dans les templates de base.

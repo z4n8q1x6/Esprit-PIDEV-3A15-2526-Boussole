@@ -41,6 +41,20 @@ final class BilanController extends AbstractController
     #[Route('/{id}/edit-ajax', name: 'app_bilan_edit_ajax', methods: ['POST'])]
     public function editAjax(Request $request, Bilan $bilan, EntityManagerInterface $entityManager): Response
     {
+        // === PROTECTION CLÔTURE MENSUELLE ===
+        // Interdire toute modification sur un bilan dont le mois est déjà passé
+        $now = new \DateTime();
+        $moisActuel = (int) $now->format('n');
+        $anneeActuelle = (int) $now->format('Y');
+
+        if ($bilan->getAnnee() < $anneeActuelle || 
+            ($bilan->getAnnee() === $anneeActuelle && $bilan->getMois() < $moisActuel)) {
+            return $this->json([
+                'success' => false, 
+                'message' => 'Interdit : Ce bilan est clôturé (mois passé). Les données financières archivées ne peuvent plus être modifiées.'
+            ], 403);
+        }
+
         $data = json_decode($request->getContent(), true);
 
         if (isset($data['total_recettes'])) {
