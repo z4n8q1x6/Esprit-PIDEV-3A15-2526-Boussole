@@ -24,11 +24,15 @@ use Twig\Environment;
  */
 class TemplateManager
 {
-    public function __construct(
-        protected Profiler $profiler,
-        protected Environment $twig,
-        protected array $templates,
-    ) {
+    protected Environment $twig;
+    protected array $templates;
+    protected Profiler $profiler;
+
+    public function __construct(Profiler $profiler, Environment $twig, array $templates)
+    {
+        $this->profiler = $profiler;
+        $this->twig = $twig;
+        $this->templates = $templates;
     }
 
     /**

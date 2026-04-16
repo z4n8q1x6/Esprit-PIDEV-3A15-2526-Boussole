@@ -13,9 +13,6 @@ namespace Symfony\Component\Form\Test;
 
 use Symfony\Component\Form\FormInterface as BaseFormInterface;
 
-/**
- * @extends \Iterator<string, BaseFormInterface>
- */
 interface FormInterface extends \Iterator, BaseFormInterface
 {
 }

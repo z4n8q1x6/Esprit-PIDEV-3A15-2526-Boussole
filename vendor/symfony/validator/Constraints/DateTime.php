@@ -14,9 +14,8 @@ namespace Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Validates that a value is a valid "datetime" according to a given format.
- *
- * @see https://www.php.net/manual/en/datetime.format.php
+ * @Annotation
+ * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
@@ -33,18 +32,29 @@ class DateTime extends Constraint
         self::INVALID_TIME_ERROR => 'INVALID_TIME_ERROR',
     ];
 
-    public string $format = 'Y-m-d H:i:s';
-    public string $message = 'This value is not a valid datetime.';
-
     /**
-     * @param non-empty-string|null $format The datetime format to match (defaults to 'Y-m-d H:i:s')
-     * @param string[]|null         $groups
+     * @deprecated since Symfony 6.1, use const ERROR_NAMES instead
      */
-    public function __construct(?string $format = null, ?string $message = null, ?array $groups = null, mixed $payload = null)
-    {
-        parent::__construct(null, $groups, $payload);
+    protected static $errorNames = self::ERROR_NAMES;
 
-        $this->format = $format ?? $this->format;
+    public $format = 'Y-m-d H:i:s';
+    public $message = 'This value is not a valid datetime.';
+
+    public function __construct(string|array|null $format = null, ?string $message = null, ?array $groups = null, mixed $payload = null, array $options = [])
+    {
+        if (\is_array($format)) {
+            $options = array_merge($format, $options);
+        } elseif (null !== $format) {
+            $options['value'] = $format;
+        }
+
+        parent::__construct($options, $groups, $payload);
+
         $this->message = $message ?? $this->message;
+    }
+
+    public function getDefaultOption(): ?string
+    {
+        return 'format';
     }
 }

@@ -18,7 +18,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TextType extends AbstractType implements DataTransformerInterface
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    /**
+     * @return void
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         // When empty_data is explicitly set to an empty string,
         // a string should always be returned when NULL is submitted
@@ -30,7 +33,10 @@ class TextType extends AbstractType implements DataTransformerInterface
         }
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * @return void
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'compound' => false,

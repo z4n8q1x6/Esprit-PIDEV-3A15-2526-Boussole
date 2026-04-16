@@ -14,19 +14,33 @@ namespace Symfony\Component\Serializer\Attribute;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 
 /**
+ * Annotation class for @MaxDepth().
+ *
+ * @Annotation
+ * @NamedArgumentConstructor
+ * @Target({"PROPERTY", "METHOD"})
+ *
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
 #[\Attribute(\Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY)]
 class MaxDepth
 {
-    /**
-     * @param int $maxDepth The maximum serialization depth
-     */
-    public function __construct(
-        public readonly int $maxDepth,
-    ) {
+    public function __construct(private readonly int $maxDepth)
+    {
         if ($maxDepth <= 0) {
             throw new InvalidArgumentException(\sprintf('Parameter given to "%s" must be a positive integer.', static::class));
         }
     }
+
+    /**
+     * @return int
+     */
+    public function getMaxDepth()
+    {
+        return $this->maxDepth;
+    }
+}
+
+if (!class_exists(\Symfony\Component\Serializer\Annotation\MaxDepth::class, false)) {
+    class_alias(MaxDepth::class, \Symfony\Component\Serializer\Annotation\MaxDepth::class);
 }

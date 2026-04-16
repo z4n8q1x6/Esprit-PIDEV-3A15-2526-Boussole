@@ -21,7 +21,7 @@ use Symfony\Component\Form\Exception\InvalidArgumentException;
  */
 abstract class BaseDateTimeTransformer implements DataTransformerInterface
 {
-    protected static array $formats = [
+    protected static $formats = [
         \IntlDateFormatter::NONE,
         \IntlDateFormatter::FULL,
         \IntlDateFormatter::LONG,
@@ -29,8 +29,9 @@ abstract class BaseDateTimeTransformer implements DataTransformerInterface
         \IntlDateFormatter::SHORT,
     ];
 
-    protected string $inputTimezone;
-    protected string $outputTimezone;
+    protected $inputTimezone;
+
+    protected $outputTimezone;
 
     /**
      * @param string|null $inputTimezone  The name of the input timezone

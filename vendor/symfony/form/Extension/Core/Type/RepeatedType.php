@@ -18,7 +18,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RepeatedType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    /**
+     * @return void
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         // Overwrite required option for child fields
         $options['first_options']['required'] = $options['required'];
@@ -41,7 +44,10 @@ class RepeatedType extends AbstractType
         ;
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * @return void
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'type' => TextType::class,

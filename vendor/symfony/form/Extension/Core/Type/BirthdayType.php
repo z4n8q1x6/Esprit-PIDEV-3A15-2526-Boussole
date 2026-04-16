@@ -16,7 +16,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class BirthdayType extends AbstractType
 {
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * @return void
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'years' => range((int) date('Y') - 120, date('Y')),

@@ -25,11 +25,17 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
  */
 class RangeValidator extends ConstraintValidator
 {
-    public function __construct(private ?PropertyAccessorInterface $propertyAccessor = null)
+    private ?PropertyAccessorInterface $propertyAccessor;
+
+    public function __construct(?PropertyAccessorInterface $propertyAccessor = null)
     {
+        $this->propertyAccessor = $propertyAccessor;
     }
 
-    public function validate(mixed $value, Constraint $constraint): void
+    /**
+     * @return void
+     */
+    public function validate(mixed $value, Constraint $constraint)
     {
         if (!$constraint instanceof Range) {
             throw new UnexpectedTypeException($constraint, Range::class);

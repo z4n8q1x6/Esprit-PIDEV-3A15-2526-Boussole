@@ -23,7 +23,10 @@ use Symfony\Component\Form\Util\StringUtil;
  */
 class TrimListener implements EventSubscriberInterface
 {
-    public function preSubmit(FormEvent $event): void
+    /**
+     * @return void
+     */
+    public function preSubmit(FormEvent $event)
     {
         $data = $event->getData();
 

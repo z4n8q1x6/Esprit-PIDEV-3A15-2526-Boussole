@@ -29,9 +29,26 @@ use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
  */
 abstract class MemberMetadata extends GenericMetadata implements PropertyMetadataInterface
 {
-    private string $class;
-    private string $name;
-    private string $property;
+    /**
+     * @internal This property is public in order to reduce the size of the
+     *           class' serialized representation. Do not access it. Use
+     *           {@link getClassName()} instead.
+     */
+    public string $class;
+
+    /**
+     * @internal This property is public in order to reduce the size of the
+     *           class' serialized representation. Do not access it. Use
+     *           {@link getName()} instead.
+     */
+    public string $name;
+
+    /**
+     * @internal This property is public in order to reduce the size of the
+     *           class' serialized representation. Do not access it. Use
+     *           {@link getPropertyName()} instead.
+     */
+    public string $property;
 
     /**
      * @var \ReflectionMethod[]|\ReflectionProperty[]
@@ -59,24 +76,27 @@ abstract class MemberMetadata extends GenericMetadata implements PropertyMetadat
         return $this;
     }
 
-    public function __serialize(): array
+    public function __sleep(): array
     {
-        return parent::__serialize() + [
-            'class' => $this->class,
-            'name' => $this->name,
-            'property' => $this->property,
-        ];
+        return array_merge(parent::__sleep(), [
+            'class',
+            'name',
+            'property',
+        ]);
     }
 
     /**
-     * Returns the name of the property or its getter.
+     * Returns the name of the member.
      */
     public function getName(): string
     {
         return $this->name;
     }
 
-    public function getClassName(): string
+    /**
+     * @return string
+     */
+    public function getClassName()
     {
         return $this->class;
     }
@@ -86,21 +106,33 @@ abstract class MemberMetadata extends GenericMetadata implements PropertyMetadat
         return $this->property;
     }
 
+    /**
+     * Returns whether this member is public.
+     */
     public function isPublic(object|string $objectOrClassName): bool
     {
         return $this->getReflectionMember($objectOrClassName)->isPublic();
     }
 
+    /**
+     * Returns whether this member is protected.
+     */
     public function isProtected(object|string $objectOrClassName): bool
     {
         return $this->getReflectionMember($objectOrClassName)->isProtected();
     }
 
+    /**
+     * Returns whether this member is private.
+     */
     public function isPrivate(object|string $objectOrClassName): bool
     {
         return $this->getReflectionMember($objectOrClassName)->isPrivate();
     }
 
+    /**
+     * Returns the reflection instance for accessing the member's value.
+     */
     public function getReflectionMember(object|string $objectOrClassName): \ReflectionMethod|\ReflectionProperty
     {
         $className = \is_string($objectOrClassName) ? $objectOrClassName : $objectOrClassName::class;

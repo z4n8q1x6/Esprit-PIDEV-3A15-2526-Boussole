@@ -29,7 +29,7 @@ class XmlFileLoader extends FileLoader
     /**
      * An array of {@class \SimpleXMLElement} instances.
      *
-     * @var array<class-string, \SimpleXMLElement>|null
+     * @var \SimpleXMLElement[]|null
      */
     private ?array $classes = null;
 
@@ -107,8 +107,7 @@ class XmlFileLoader extends FileLoader
 
                 $classMetadata->setClassDiscriminatorMapping(new ClassDiscriminatorMapping(
                     (string) $xml->{'discriminator-map'}->attributes()->{'type-property'},
-                    $mapping,
-                    $xml->{'discriminator-map'}->attributes()->{'default-type'} ?? null
+                    $mapping
                 ));
             }
 
@@ -121,7 +120,7 @@ class XmlFileLoader extends FileLoader
     /**
      * Return the names of the classes mapped in this file.
      *
-     * @return class-string[]
+     * @return string[]
      */
     public function getMappedClasses(): array
     {
@@ -144,9 +143,6 @@ class XmlFileLoader extends FileLoader
         return simplexml_import_dom($dom);
     }
 
-    /**
-     * @return array<class-string, \SimpleXMLElement>
-     */
     private function getClassesFromXml(): array
     {
         $xml = $this->parseFile($this->file);

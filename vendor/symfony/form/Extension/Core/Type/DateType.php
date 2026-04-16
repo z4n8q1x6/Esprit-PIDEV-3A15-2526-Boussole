@@ -11,10 +11,8 @@
 
 namespace Symfony\Component\Form\Extension\Core\Type;
 
-use Symfony\Component\Clock\DatePoint;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\LogicException;
-use Symfony\Component\Form\Extension\Core\DataTransformer\DatePointToDateTimeTransformer;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeImmutableToDateTimeTransformer;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToArrayTransformer;
 use Symfony\Component\Form\Extension\Core\DataTransformer\DateTimeToLocalizedStringTransformer;
@@ -47,11 +45,14 @@ class DateType extends AbstractType
         'choice' => ChoiceType::class,
     ];
 
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    /**
+     * @return void
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $dateFormat = \is_int($options['format']) ? $options['format'] : self::DEFAULT_FORMAT;
         $timeFormat = \IntlDateFormatter::NONE;
-        $calendar = $options['calendar'] ?? \IntlDateFormatter::GREGORIAN;
+        $calendar = \IntlDateFormatter::GREGORIAN;
         $pattern = \is_string($options['format']) ? $options['format'] : '';
 
         if (!\in_array($dateFormat, self::ACCEPTED_FORMATS, true)) {
@@ -122,10 +123,16 @@ class DateType extends AbstractType
                 \Locale::getDefault(),
                 $dateFormat,
                 $timeFormat,
-                null,
+                // see https://bugs.php.net/66323
+                class_exists(\IntlTimeZone::class, false) ? \IntlTimeZone::createDefault() : null,
                 $calendar,
                 $pattern
             );
+
+            // new \IntlDateFormatter may return null instead of false in case of failure, see https://bugs.php.net/66323
+            if (!$formatter) {
+                throw new InvalidOptionsException(intl_get_error_message(), intl_get_error_code());
+            }
 
             $formatter->setLenient(false);
 
@@ -158,12 +165,7 @@ class DateType extends AbstractType
             ;
         }
 
-        if ('date_point' === $options['input']) {
-            if (!class_exists(DatePoint::class)) {
-                throw new LogicException(\sprintf('The "symfony/clock" component is required to use "%s" with option "input=date_point". Try running "composer require symfony/clock".', self::class));
-            }
-            $builder->addModelTransformer(new DatePointToDateTimeTransformer());
-        } elseif ('datetime_immutable' === $options['input']) {
+        if ('datetime_immutable' === $options['input']) {
             $builder->addModelTransformer(new DateTimeImmutableToDateTimeTransformer());
         } elseif ('string' === $options['input']) {
             $builder->addModelTransformer(new ReversedTransformer(
@@ -179,7 +181,7 @@ class DateType extends AbstractType
             ));
         }
 
-        if (\in_array($options['input'], ['datetime', 'datetime_immutable', 'date_point'], true) && null !== $options['model_timezone']) {
+        if (\in_array($options['input'], ['datetime', 'datetime_immutable'], true) && null !== $options['model_timezone']) {
             $builder->addEventListener(FormEvents::POST_SET_DATA, static function (FormEvent $event) use ($options): void {
                 $date = $event->getData();
 
@@ -188,13 +190,17 @@ class DateType extends AbstractType
                 }
 
                 if ($date->getTimezone()->getName() !== $options['model_timezone']) {
-                    throw new LogicException(\sprintf('Using a "%s" instance with a timezone ("%s") not matching the configured model timezone "%s" is not supported.', get_debug_type($date), $date->getTimezone()->getName(), $options['model_timezone']));
+                    trigger_deprecation('symfony/form', '6.4', \sprintf('Using a "%s" instance with a timezone ("%s") not matching the configured model timezone "%s" is deprecated.', $date::class, $date->getTimezone()->getName(), $options['model_timezone']));
+                    // throw new LogicException(sprintf('Using a "%s" instance with a timezone ("%s") not matching the configured model timezone "%s" is not supported.', $date::class, $date->getTimezone()->getName(), $options['model_timezone']));
                 }
             });
         }
     }
 
-    public function finishView(FormView $view, FormInterface $form, array $options): void
+    /**
+     * @return void
+     */
+    public function finishView(FormView $view, FormInterface $form, array $options)
     {
         $view->vars['widget'] = $options['widget'];
 
@@ -231,7 +237,10 @@ class DateType extends AbstractType
         }
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * @return void
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $compound = static fn (Options $options) => 'single_text' !== $options['widget'];
 
@@ -256,8 +265,10 @@ class DateType extends AbstractType
 
         $choiceTranslationDomainNormalizer = static function (Options $options, $choiceTranslationDomain) {
             if (\is_array($choiceTranslationDomain)) {
+                $default = false;
+
                 return array_replace(
-                    ['year' => false, 'month' => false, 'day' => false],
+                    ['year' => $default, 'month' => $default, 'day' => $default],
                     $choiceTranslationDomain
                 );
             }
@@ -275,12 +286,15 @@ class DateType extends AbstractType
             'years' => range((int) date('Y') - 5, (int) date('Y') + 5),
             'months' => range(1, 12),
             'days' => range(1, 31),
-            'widget' => 'single_text',
+            'widget' => static function (Options $options) {
+                trigger_deprecation('symfony/form', '6.3', 'Not configuring the "widget" option of form type "date" is deprecated. It will default to "single_text" in Symfony 7.0.');
+
+                return 'choice';
+            },
             'input' => 'datetime',
             'format' => $format,
             'model_timezone' => null,
             'view_timezone' => null,
-            'calendar' => null,
             'placeholder' => $placeholderDefault,
             'html5' => true,
             // Don't modify \DateTime classes by reference, we treat
@@ -305,7 +319,6 @@ class DateType extends AbstractType
         $resolver->setAllowedValues('input', [
             'datetime',
             'datetime_immutable',
-            'date_point',
             'string',
             'timestamp',
             'array',
@@ -321,9 +334,6 @@ class DateType extends AbstractType
         $resolver->setAllowedTypes('months', 'array');
         $resolver->setAllowedTypes('days', 'array');
         $resolver->setAllowedTypes('input_format', 'string');
-        $resolver->setAllowedTypes('calendar', ['null', 'int', \IntlCalendar::class]);
-
-        $resolver->setInfo('calendar', 'The calendar to use for formatting and parsing the date. The value should be an instance of \IntlCalendar. By default, the Gregorian calendar with the default locale is used.');
 
         $resolver->setNormalizer('html5', static function (Options $options, $html5) {
             if ($html5 && 'single_text' === $options['widget'] && self::HTML5_FORMAT !== $options['format']) {

@@ -16,26 +16,26 @@ use Symfony\Component\Form\FormInterface;
 /**
  * Normalizes invalid Form instances.
  */
-final class FormErrorNormalizer implements NormalizerInterface
+final class FormErrorNormalizer implements NormalizerInterface, CacheableSupportsMethodInterface
 {
     public const TITLE = 'title';
     public const TYPE = 'type';
     public const CODE = 'status_code';
 
-    public function normalize(mixed $data, ?string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
-        $error = [
+        $data = [
             'title' => $context[self::TITLE] ?? 'Validation Failed',
             'type' => $context[self::TYPE] ?? 'https://symfony.com/errors/form',
             'code' => $context[self::CODE] ?? null,
-            'errors' => $this->convertFormErrorsToArray($data),
+            'errors' => $this->convertFormErrorsToArray($object),
         ];
 
-        if (0 !== \count($data->all())) {
-            $error['children'] = $this->convertFormChildrenToArray($data);
+        if (0 !== \count($object->all())) {
+            $data['children'] = $this->convertFormChildrenToArray($object);
         }
 
-        return $error;
+        return $data;
     }
 
     public function getSupportedTypes(?string $format): array
@@ -81,5 +81,15 @@ final class FormErrorNormalizer implements NormalizerInterface
         }
 
         return $children;
+    }
+
+    /**
+     * @deprecated since Symfony 6.3, use "getSupportedTypes()" instead
+     */
+    public function hasCacheableSupportsMethod(): bool
+    {
+        trigger_deprecation('symfony/serializer', '6.3', 'The "%s()" method is deprecated, use "getSupportedTypes()" instead.', __METHOD__);
+
+        return true;
     }
 }

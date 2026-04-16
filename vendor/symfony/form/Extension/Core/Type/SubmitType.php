@@ -24,7 +24,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class SubmitType extends AbstractType implements SubmitButtonTypeInterface
 {
-    public function buildView(FormView $view, FormInterface $form, array $options): void
+    /**
+     * @return void
+     */
+    public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $view->vars['clicked'] = $form->isClicked();
 
@@ -33,7 +36,10 @@ class SubmitType extends AbstractType implements SubmitButtonTypeInterface
         }
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * @return void
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefault('validate', true);
         $resolver->setAllowedTypes('validate', 'bool');

@@ -24,6 +24,13 @@ use Symfony\Component\Uid\Ulid;
  */
 class UlidToStringTransformer implements DataTransformerInterface
 {
+    /**
+     * Transforms a Ulid object into a string.
+     *
+     * @param Ulid $value A Ulid object
+     *
+     * @throws TransformationFailedException If the given value is not a Ulid object
+     */
     public function transform(mixed $value): ?string
     {
         if (null === $value) {
@@ -37,6 +44,14 @@ class UlidToStringTransformer implements DataTransformerInterface
         return (string) $value;
     }
 
+    /**
+     * Transforms a ULID string into a Ulid object.
+     *
+     * @param string $value A ULID string
+     *
+     * @throws TransformationFailedException If the given value is not a string,
+     *                                       or could not be transformed
+     */
     public function reverseTransform(mixed $value): ?Ulid
     {
         if (null === $value || '' === $value) {

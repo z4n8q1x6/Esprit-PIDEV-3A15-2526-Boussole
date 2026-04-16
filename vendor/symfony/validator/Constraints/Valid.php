@@ -12,29 +12,21 @@
 namespace Symfony\Component\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Exception\InvalidArgumentException;
 
 /**
- * Validates an object embedded in an object's property.
+ * @Annotation
+ * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
 class Valid extends Constraint
 {
-    public bool $traverse = true;
+    public $traverse = true;
 
-    /**
-     * @param string[]|null $groups
-     * @param bool|null     $traverse Whether to validate {@see \Traversable} objects (defaults to true)
-     */
     public function __construct(?array $options = null, ?array $groups = null, $payload = null, ?bool $traverse = null)
     {
-        if (null !== $options) {
-            throw new InvalidArgumentException(\sprintf('Passing an array of options to configure the "%s" constraint is no longer supported.', static::class));
-        }
-
-        parent::__construct(null, $groups, $payload);
+        parent::__construct($options ?? [], $groups, $payload);
 
         $this->traverse = $traverse ?? $this->traverse;
     }
@@ -49,7 +41,10 @@ class Valid extends Constraint
         return parent::__get($option);
     }
 
-    public function addImplicitGroupName(string $group): void
+    /**
+     * @return void
+     */
+    public function addImplicitGroupName(string $group)
     {
         if (null !== $this->groups) {
             parent::addImplicitGroupName($group);

@@ -58,6 +58,22 @@ final class CsvEncoderContextBuilder implements ContextBuilderInterface
     }
 
     /**
+     * Configures the escape character.
+     *
+     * Must be empty or a single character.
+     *
+     * @throws InvalidArgumentException
+     */
+    public function withEscapeChar(?string $escapeChar): static
+    {
+        if (null !== $escapeChar && \strlen($escapeChar) > 1) {
+            throw new InvalidArgumentException(\sprintf('The "%s" escape character must be empty or a single character.', $escapeChar));
+        }
+
+        return $this->with(CsvEncoder::ESCAPE_CHAR_KEY, $escapeChar);
+    }
+
+    /**
      * Configures the key separator when (un)flattening arrays.
      */
     public function withKeySeparator(?string $keySeparator): static

@@ -29,7 +29,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @author Kévin Dunglas <dunglas@gmail.com>
  * @author Yonel Ceruto <yonelceruto@gmail.com>
  */
-class ProblemNormalizer implements NormalizerInterface, SerializerAwareInterface
+class ProblemNormalizer implements NormalizerInterface, SerializerAwareInterface, CacheableSupportsMethodInterface
 {
     use SerializerAwareTrait;
 
@@ -47,7 +47,7 @@ class ProblemNormalizer implements NormalizerInterface, SerializerAwareInterface
     public function getSupportedTypes(?string $format): array
     {
         return [
-            FlattenException::class => __CLASS__ === self::class,
+            FlattenException::class => __CLASS__ === self::class || $this->hasCacheableSupportsMethod(),
         ];
     }
 
@@ -57,7 +57,7 @@ class ProblemNormalizer implements NormalizerInterface, SerializerAwareInterface
             throw new InvalidArgumentException(\sprintf('The object must implement "%s".', FlattenException::class));
         }
 
-        $error = [];
+        $data = [];
         $context += $this->defaultContext;
         $debug = $this->debug && ($context['debug'] ?? true);
         $exception = $context['exception'] ?? null;
@@ -67,7 +67,7 @@ class ProblemNormalizer implements NormalizerInterface, SerializerAwareInterface
             if ($exception instanceof PartialDenormalizationException) {
                 $trans = $this->translator ? $this->translator->trans(...) : fn ($m, $p) => strtr($m, $p);
                 $template = 'This value should be of type {{ type }}.';
-                $error = [
+                $data = [
                     self::TYPE => 'https://symfony.com/errors/validation',
                     self::TITLE => 'Validation Failed',
                     'violations' => array_map(
@@ -84,31 +84,44 @@ class ProblemNormalizer implements NormalizerInterface, SerializerAwareInterface
                         $exception->getErrors()
                     ),
                 ];
-                $error['detail'] = implode("\n", array_map(fn ($e) => $e['propertyPath'].': '.$e['title'], $error['violations']));
+                $data['detail'] = implode("\n", array_map(fn ($e) => $e['propertyPath'].': '.$e['title'], $data['violations']));
             } elseif (($exception instanceof ValidationFailedException || $exception instanceof MessageValidationFailedException)
                 && $this->serializer instanceof NormalizerInterface
                 && $this->serializer->supportsNormalization($exception->getViolations(), $format, $context)
             ) {
-                $error = $this->serializer->normalize($exception->getViolations(), $format, $context);
+                $data = $this->serializer->normalize($exception->getViolations(), $format, $context);
             }
         }
 
-        $error = [
-            self::TYPE => $error[self::TYPE] ?? $context[self::TYPE] ?? 'https://tools.ietf.org/html/rfc2616#section-10',
-            self::TITLE => $error[self::TITLE] ?? $context[self::TITLE] ?? 'An error occurred',
+        $data = [
+            self::TYPE => $data[self::TYPE] ?? $context[self::TYPE] ?? 'https://tools.ietf.org/html/rfc2616#section-10',
+            self::TITLE => $data[self::TITLE] ?? $context[self::TITLE] ?? 'An error occurred',
             self::STATUS => $context[self::STATUS] ?? $object->getStatusCode(),
-            'detail' => $error['detail'] ?? ($debug ? $object->getMessage() : $object->getStatusText()),
-        ] + $error;
+            'detail' => $data['detail'] ?? ($debug ? $object->getMessage() : $object->getStatusText()),
+        ] + $data;
         if ($debug) {
-            $error['class'] = $object->getClass();
-            $error['trace'] = $object->getTrace();
+            $data['class'] = $object->getClass();
+            $data['trace'] = $object->getTrace();
         }
 
-        return $error;
+        return $data;
     }
 
-    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
+    /**
+     * @param array $context
+     */
+    public function supportsNormalization(mixed $data, ?string $format = null /* , array $context = [] */): bool
     {
         return $data instanceof FlattenException;
+    }
+
+    /**
+     * @deprecated since Symfony 6.3, use "getSupportedTypes()" instead
+     */
+    public function hasCacheableSupportsMethod(): bool
+    {
+        trigger_deprecation('symfony/serializer', '6.3', 'The "%s()" method is deprecated, implement "%s::getSupportedTypes()" instead.', __METHOD__, get_debug_type($this));
+
+        return true;
     }
 }

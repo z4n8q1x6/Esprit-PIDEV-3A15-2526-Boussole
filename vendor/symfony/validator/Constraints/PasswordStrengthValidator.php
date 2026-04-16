@@ -36,16 +36,15 @@ final class PasswordStrengthValidator extends ConstraintValidator
             return;
         }
 
-        if (!\is_string($value) && !$value instanceof \Stringable) {
+        if (!\is_string($value)) {
             throw new UnexpectedValueException($value, 'string');
         }
         $passwordStrengthEstimator = $this->passwordStrengthEstimator ?? self::estimateStrength(...);
-        $strength = $passwordStrengthEstimator((string) $value);
+        $strength = $passwordStrengthEstimator($value);
 
         if ($strength < $constraint->minScore) {
             $this->context->buildViolation($constraint->message)
                 ->setCode(PasswordStrength::PASSWORD_STRENGTH_ERROR)
-                ->setParameter('{{ strength }}', $strength)
                 ->addViolation();
         }
     }
@@ -57,7 +56,7 @@ final class PasswordStrengthValidator extends ConstraintValidator
      *
      * @return PasswordStrength::STRENGTH_*
      */
-    public static function estimateStrength(#[\SensitiveParameter] string $password): int
+    private static function estimateStrength(#[\SensitiveParameter] string $password): int
     {
         if (!$length = \strlen($password)) {
             return PasswordStrength::STRENGTH_VERY_WEAK;

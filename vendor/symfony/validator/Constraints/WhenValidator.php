@@ -33,20 +33,10 @@ final class WhenValidator extends ConstraintValidator
         $variables = $constraint->values;
         $variables['value'] = $value;
         $variables['this'] = $context->getObject();
-        $variables['context'] = $context;
 
-        if ($constraint->expression instanceof \Closure) {
-            $result = ($constraint->expression)($context->getObject());
-        } else {
-            $result = $this->getExpressionLanguage()->evaluate($constraint->expression, $variables);
-        }
-
-        if ($result) {
+        if ($this->getExpressionLanguage()->evaluate($constraint->expression, $variables)) {
             $context->getValidator()->inContext($context)
                 ->validate($value, $constraint->constraints);
-        } elseif ($constraint->otherwise) {
-            $context->getValidator()->inContext($context)
-                ->validate($value, $constraint->otherwise);
         }
     }
 

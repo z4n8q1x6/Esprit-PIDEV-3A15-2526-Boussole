@@ -12,9 +12,18 @@
 namespace Symfony\Component\Serializer\Attribute;
 
 /**
+ * Annotation class for @Ignore().
+ *
+ * @Annotation
+ * @Target({"PROPERTY", "METHOD"})
+ *
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
 #[\Attribute(\Attribute::TARGET_METHOD | \Attribute::TARGET_PROPERTY)]
 class Ignore
 {
+}
+
+if (!class_exists(\Symfony\Component\Serializer\Annotation\Ignore::class, false)) {
+    class_alias(Ignore::class, \Symfony\Component\Serializer\Annotation\Ignore::class);
 }

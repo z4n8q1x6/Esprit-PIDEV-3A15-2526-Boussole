@@ -11,6 +11,10 @@ use App\Entity\Utilisateur;
 use App\Entity\Franchises;
 use App\Form\UtilisateurType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use App\Service\FacePlusPlusService;
 
 final class AdminUserController extends AbstractController
 {
@@ -74,7 +78,7 @@ final class AdminUserController extends AbstractController
     }
 
     #[Route('/admin/user/new', name: 'app_admin_user_new', methods: ['POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): \Symfony\Component\HttpFoundation\JsonResponse
+    public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher, MailerInterface $mailer, FacePlusPlusService $faceppService): \Symfony\Component\HttpFoundation\JsonResponse
     {
         $data = json_decode($request->getContent(), true);
 
@@ -94,6 +98,12 @@ final class AdminUserController extends AbstractController
         // Validate email
         if (empty($data['email']) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'L\'adresse email n\'est pas valide.';
+        } else {
+            // Check if email already exists
+            $existingUser = $entityManager->getRepository(Utilisateur::class)->findOneBy(['email' => $data['email']]);
+            if ($existingUser) {
+                $errors[] = 'Cette adresse email est déjà utilisée.';
+            }
         }
 
         // Validate telephone (exactly 8 digits)
@@ -140,8 +150,48 @@ final class AdminUserController extends AbstractController
         $utilisateur->setDate_creation(new \DateTime());
         $utilisateur->setId_franchise($franchise);
 
-        // Generate and hash password
-        $randomPassword = bin2hex(random_bytes(8));
+        // Handle Face Biometrics with Face++
+        if (!empty($data['face_image'])) {
+            $faceToken = $faceppService->detectFace($data['face_image']);
+            if ($faceToken) {
+                if ($faceppService->addFaceToFaceSet($faceToken)) {
+                    $utilisateur->setFace_token($faceToken);
+                }
+            }
+        }
+
+        // Generate password (8 chars, readable)
+        $characters = '23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ';
+        $randomPassword = '';
+        for ($i = 0; $i < 8; $i++) {
+            $randomPassword .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+
+        // Send Email
+        try {
+            $email = (new TemplatedEmail())
+                ->from('no-reply@boussole.tn')
+                ->to($utilisateur->getEmail())
+                ->subject('Bienvenue chez Boussole !')
+                ->htmlTemplate('emails/user_created.html.twig')
+                ->context([
+                    'prenom' => $utilisateur->getPrenom(),
+                    'user_email' => $utilisateur->getEmail(),
+                    'password' => $randomPassword,
+                    'login_url' => $this->generateUrl('app_login', [], \Symfony\Component\Routing\Generator\UrlGeneratorInterface::ABSOLUTE_URL),
+                ]);
+
+            $mailer->send($email);
+        } catch (\Exception $e) {
+            // Include error message in response for debugging
+            return $this->json([
+                'success' => false, 
+                'errors' => ['L\'envoi de l\'email a échoué : ' . $e->getMessage()],
+                'mailer_debug' => true
+            ], 500);
+        }
+
+        // Hash and set password
         $hashedPassword = $passwordHasher->hashPassword($utilisateur, $randomPassword);
         $utilisateur->setMot_de_passe($hashedPassword);
 
@@ -166,6 +216,7 @@ final class AdminUserController extends AbstractController
                 'email' => $utilisateur->getEmail(),
                 'role' => 'Entreprise',
                 'actif' => true,
+                'temp_password' => $randomPassword // Passed back so they can see it even if the local email failed
             ]
         ]);
     }

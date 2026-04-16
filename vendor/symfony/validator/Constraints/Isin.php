@@ -12,12 +12,10 @@
 namespace Symfony\Component\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Exception\InvalidArgumentException;
 
 /**
- * Validates that a value is a valid International Securities Identification Number (ISIN).
- *
- * @see https://en.wikipedia.org/wiki/International_Securities_Identification_Number
+ * @Annotation
+ * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  *
  * @author Laurent Masforné <l.masforne@gmail.com>
  */
@@ -37,18 +35,16 @@ class Isin extends Constraint
         self::INVALID_CHECKSUM_ERROR => 'INVALID_CHECKSUM_ERROR',
     ];
 
-    public string $message = 'This value is not a valid International Securities Identification Number (ISIN).';
-
     /**
-     * @param string[]|null $groups
+     * @deprecated since Symfony 6.1, use const ERROR_NAMES instead
      */
+    protected static $errorNames = self::ERROR_NAMES;
+
+    public $message = 'This value is not a valid International Securities Identification Number (ISIN).';
+
     public function __construct(?array $options = null, ?string $message = null, ?array $groups = null, mixed $payload = null)
     {
-        if (null !== $options) {
-            throw new InvalidArgumentException(\sprintf('Passing an array of options to configure the "%s" constraint is no longer supported.', static::class));
-        }
-
-        parent::__construct(null, $groups, $payload);
+        parent::__construct($options, $groups, $payload);
 
         $this->message = $message ?? $this->message;
     }

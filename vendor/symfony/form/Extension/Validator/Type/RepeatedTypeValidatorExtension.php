@@ -21,7 +21,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class RepeatedTypeValidatorExtension extends AbstractTypeExtension
 {
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * @return void
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         // Map errors to the first field
         $errorMapping = static fn (Options $options) => ['.' => $options['first_name']];

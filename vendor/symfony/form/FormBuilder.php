@@ -14,6 +14,7 @@ namespace Symfony\Component\Form;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Exception\BadMethodCallException;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
+use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
 /**
@@ -57,6 +58,10 @@ class FormBuilder extends FormConfigBuilder implements \IteratorAggregate, FormB
             unset($this->unresolvedChildren[$child->getName()]);
 
             return $this;
+        }
+
+        if (!\is_string($child) && !\is_int($child)) {
+            throw new UnexpectedTypeException($child, 'string or Symfony\Component\Form\FormBuilderInterface');
         }
 
         // Add to "children" to maintain order

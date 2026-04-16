@@ -30,7 +30,7 @@ class YamlFileLoader extends FileLoader
     private ?Parser $yamlParser = null;
 
     /**
-     * @var array<class-string, array>
+     * An array of YAML class descriptions.
      */
     private ?array $classes = null;
 
@@ -133,8 +133,7 @@ class YamlFileLoader extends FileLoader
 
             $classMetadata->setClassDiscriminatorMapping(new ClassDiscriminatorMapping(
                 $yaml['discriminator_map']['type_property'],
-                $yaml['discriminator_map']['mapping'],
-                $yaml['discriminator_map']['default_type'] ?? null
+                $yaml['discriminator_map']['mapping']
             ));
         }
 
@@ -144,16 +143,13 @@ class YamlFileLoader extends FileLoader
     /**
      * Return the names of the classes mapped in this file.
      *
-     * @return class-string[]
+     * @return string[]
      */
     public function getMappedClasses(): array
     {
         return array_keys($this->classes ??= $this->getClassesFromYaml());
     }
 
-    /**
-     * @return array<class-string, array>
-     */
     private function getClassesFromYaml(): array
     {
         if (!stream_is_local($this->file)) {
@@ -164,7 +160,7 @@ class YamlFileLoader extends FileLoader
 
         $classes = $this->yamlParser->parseFile($this->file, Yaml::PARSE_CONSTANT);
 
-        if (!$classes) {
+        if (empty($classes)) {
             return [];
         }
 

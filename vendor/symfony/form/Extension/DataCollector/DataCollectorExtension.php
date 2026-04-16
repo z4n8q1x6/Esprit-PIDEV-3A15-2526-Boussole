@@ -21,9 +21,11 @@ use Symfony\Component\Form\AbstractExtension;
  */
 class DataCollectorExtension extends AbstractExtension
 {
-    public function __construct(
-        private FormDataCollectorInterface $dataCollector,
-    ) {
+    private FormDataCollectorInterface $dataCollector;
+
+    public function __construct(FormDataCollectorInterface $dataCollector)
+    {
+        $this->dataCollector = $dataCollector;
     }
 
     protected function loadTypeExtensions(): array

@@ -31,20 +31,9 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder('web_profiler');
 
-        $treeBuilder
-            ->getRootNode()
-            ->docUrl('https://symfony.com/doc/{version:major}.{version:minor}/reference/configuration/web_profiler.html', 'symfony/web-profiler-bundle')
+        $treeBuilder->getRootNode()
             ->children()
-                ->arrayNode('toolbar')
-                    ->info('Profiler toolbar configuration')
-                    ->canBeEnabled()
-                    ->children()
-                        ->booleanNode('ajax_replace')
-                            ->defaultFalse()
-                            ->info('Replace toolbar on AJAX requests')
-                        ->end()
-                    ->end()
-                ->end()
+                ->booleanNode('toolbar')->defaultFalse()->end()
                 ->booleanNode('intercept_redirects')->defaultFalse()->end()
                 ->scalarNode('excluded_ajax_paths')->defaultValue('^/((index|app(_[\w]+)?)\.php/)?_wdt')->end()
             ->end()

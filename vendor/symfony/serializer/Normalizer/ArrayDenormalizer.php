@@ -11,13 +11,10 @@
 
 namespace Symfony\Component\Serializer\Normalizer;
 
+use Symfony\Component\PropertyInfo\Type;
 use Symfony\Component\Serializer\Exception\BadMethodCallException;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
-use Symfony\Component\TypeInfo\Type\BuiltinType;
-use Symfony\Component\TypeInfo\Type\CollectionType;
-use Symfony\Component\TypeInfo\Type\UnionType;
-use Symfony\Component\TypeInfo\TypeIdentifier;
 
 /**
  * Denormalizes arrays of objects.
@@ -26,9 +23,18 @@ use Symfony\Component\TypeInfo\TypeIdentifier;
  *
  * @final
  */
-class ArrayDenormalizer implements DenormalizerInterface, DenormalizerAwareInterface
+class ArrayDenormalizer implements ContextAwareDenormalizerInterface, DenormalizerAwareInterface, CacheableSupportsMethodInterface
 {
     use DenormalizerAwareTrait;
+
+    public function setDenormalizer(DenormalizerInterface $denormalizer): void
+    {
+        if (!method_exists($denormalizer, 'getSupportedTypes')) {
+            trigger_deprecation('symfony/serializer', '6.3', 'Not implementing the "DenormalizerInterface::getSupportedTypes()" in "%s" is deprecated.', get_debug_type($denormalizer));
+        }
+
+        $this->denormalizer = $denormalizer;
+    }
 
     public function getSupportedTypes(?string $format): array
     {
@@ -40,11 +46,11 @@ class ArrayDenormalizer implements DenormalizerInterface, DenormalizerAwareInter
      */
     public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): array
     {
-        if (!isset($this->denormalizer)) {
+        if (null === $this->denormalizer) {
             throw new BadMethodCallException('Please set a denormalizer before calling denormalize()!');
         }
         if (!\is_array($data)) {
-            throw NotNormalizableValueException::createForUnexpectedDataType(\sprintf('Data expected to be "%s", "%s" given.', $type, get_debug_type($data)), $data, ['array'], $context['deserialization_path'] ?? null);
+            throw NotNormalizableValueException::createForUnexpectedDataType(\sprintf('Data expected to be "%s", "%s" given.', $type, get_debug_type($data)), $data, [Type::BUILTIN_TYPE_ARRAY], $context['deserialization_path'] ?? null);
         }
         if (!str_ends_with($type, '[]')) {
             throw new InvalidArgumentException('Unsupported class: '.$type);
@@ -52,19 +58,12 @@ class ArrayDenormalizer implements DenormalizerInterface, DenormalizerAwareInter
 
         $type = substr($type, 0, -2);
 
-        $typeIdentifiers = [];
-        if (null !== $keyType = ($context['key_type'] ?? null)) {
-            /** @var list<BuiltinType<TypeIdentifier::INT>|BuiltinType<TypeIdentifier::STRING>> */
-            $keyTypes = $keyType instanceof UnionType ? $keyType->getTypes() : [$keyType];
-
-            $typeIdentifiers = array_map(fn ($t) => $t->getTypeIdentifier()->value, $keyTypes);
-        }
+        $builtinTypes = array_map(static function (Type $keyType) {
+            return $keyType->getBuiltinType();
+        }, \is_array($keyType = $context['key_type'] ?? []) ? $keyType : [$keyType]);
 
         $valueType = $context['value_type'] ?? null;
-        if ($valueType instanceof CollectionType) {
-            $context['key_type'] = $valueType->getCollectionKeyType();
-            $context['value_type'] = $valueType->getCollectionValueType();
-        } elseif ($valueType instanceof LegacyType && $valueType->isCollection()) {
+        if ($valueType instanceof Type && $valueType->isCollection()) {
             if ($collectionKeyTypes = $valueType->getCollectionKeyTypes()) {
                 $context['key_type'] = \count($collectionKeyTypes) > 1 ? $collectionKeyTypes : $collectionKeyTypes[0];
             }
@@ -78,7 +77,7 @@ class ArrayDenormalizer implements DenormalizerInterface, DenormalizerAwareInter
             $subContext = $context;
             $subContext['deserialization_path'] = ($context['deserialization_path'] ?? false) ? \sprintf('%s[%s]', $context['deserialization_path'], $key) : "[$key]";
 
-            $this->validateKeyType($typeIdentifiers, $key, $subContext['deserialization_path']);
+            $this->validateKeyType($builtinTypes, $key, $subContext['deserialization_path']);
 
             $data[$key] = $this->denormalizer->denormalize($value, $type, $format, $subContext);
         }
@@ -88,7 +87,7 @@ class ArrayDenormalizer implements DenormalizerInterface, DenormalizerAwareInter
 
     public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool
     {
-        if (!isset($this->denormalizer)) {
+        if (null === $this->denormalizer) {
             throw new BadMethodCallException(\sprintf('The nested denormalizer needs to be set to allow "%s()" to be used.', __METHOD__));
         }
 
@@ -97,20 +96,30 @@ class ArrayDenormalizer implements DenormalizerInterface, DenormalizerAwareInter
     }
 
     /**
-     * @param list<string> $typeIdentifiers
+     * @deprecated since Symfony 6.3, use "getSupportedTypes()" instead
      */
-    private function validateKeyType(array $typeIdentifiers, mixed $key, string $path): void
+    public function hasCacheableSupportsMethod(): bool
     {
-        if (!$typeIdentifiers) {
+        trigger_deprecation('symfony/serializer', '6.3', 'The "%s()" method is deprecated, use "getSupportedTypes()" instead.', __METHOD__);
+
+        return $this->denormalizer instanceof CacheableSupportsMethodInterface && $this->denormalizer->hasCacheableSupportsMethod();
+    }
+
+    /**
+     * @param mixed $key
+     */
+    private function validateKeyType(array $builtinTypes, $key, string $path): void
+    {
+        if (!$builtinTypes) {
             return;
         }
 
-        foreach ($typeIdentifiers as $typeIdentifier) {
-            if (('is_'.$typeIdentifier)($key)) {
+        foreach ($builtinTypes as $builtinType) {
+            if (('is_'.$builtinType)($key)) {
                 return;
             }
         }
 
-        throw NotNormalizableValueException::createForUnexpectedDataType(\sprintf('The type of the key "%s" must be "%s" ("%s" given).', $key, implode('", "', $typeIdentifiers), get_debug_type($key)), $key, $typeIdentifiers, $path, true);
+        throw NotNormalizableValueException::createForUnexpectedDataType(\sprintf('The type of the key "%s" must be "%s" ("%s" given).', $key, implode('", "', $builtinTypes), get_debug_type($key)), $key, $builtinTypes, $path, true);
     }
 }

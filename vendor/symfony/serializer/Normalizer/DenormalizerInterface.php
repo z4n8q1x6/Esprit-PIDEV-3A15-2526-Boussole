@@ -21,6 +21,8 @@ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
 
 /**
  * @author Jordi Boggiano <j.boggiano@seld.be>
+ *
+ * @method array getSupportedTypes(?string $format)
  */
 interface DenormalizerInterface
 {
@@ -29,14 +31,12 @@ interface DenormalizerInterface
     /**
      * Denormalizes data back into an object of the given class.
      *
-     * @template TObject of object
+     * @param mixed       $data    Data to restore
+     * @param string      $type    The expected class to instantiate
+     * @param string|null $format  Format the given data was extracted from
+     * @param array       $context Options available to the denormalizer
      *
-     * @param mixed                        $data    Data to restore
-     * @param class-string<TObject>|string $type    The expected class to instantiate
-     * @param string|null                  $format  Format the given data was extracted from
-     * @param array<string, mixed>         $context Options available to the denormalizer
-     *
-     * @return ($type is class-string<TObject> ? TObject : mixed)
+     * @return mixed
      *
      * @throws BadMethodCallException   Occurs when the normalizer is not called in an expected context
      * @throws InvalidArgumentException Occurs when the arguments are not coherent or not supported
@@ -46,17 +46,19 @@ interface DenormalizerInterface
      * @throws RuntimeException         Occurs if the class cannot be instantiated
      * @throws ExceptionInterface       Occurs for all the other cases of errors
      */
-    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed;
+    public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []);
 
     /**
      * Checks whether the given class is supported for denormalization by this normalizer.
      *
-     * @param mixed                $data    Data to denormalize from
-     * @param string               $type    The class to which the data should be denormalized
-     * @param string|null          $format  The format being deserialized from
-     * @param array<string, mixed> $context Options available to the denormalizer
+     * @param mixed       $data    Data to denormalize from
+     * @param string      $type    The class to which the data should be denormalized
+     * @param string|null $format  The format being deserialized from
+     * @param array       $context Options available to the denormalizer
+     *
+     * @return bool
      */
-    public function supportsDenormalization(mixed $data, string $type, ?string $format = null, array $context = []): bool;
+    public function supportsDenormalization(mixed $data, string $type, ?string $format = null /* , array $context = [] */);
 
     /**
      * Returns the types potentially supported by this denormalizer.
@@ -73,5 +75,5 @@ interface DenormalizerInterface
      *
      * @return array<class-string|'*'|'object'|string, bool|null>
      */
-    public function getSupportedTypes(?string $format): array;
+    /* public function getSupportedTypes(?string $format): array; */
 }

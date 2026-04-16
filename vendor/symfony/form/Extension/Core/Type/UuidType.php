@@ -21,14 +21,20 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class UuidType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    /**
+     * @return void
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
             ->addViewTransformer(new UuidToStringTransformer())
         ;
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * @return void
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'compound' => false,

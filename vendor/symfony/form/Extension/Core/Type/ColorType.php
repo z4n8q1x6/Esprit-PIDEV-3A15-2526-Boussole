@@ -26,12 +26,17 @@ class ColorType extends AbstractType
      */
     private const HTML5_PATTERN = '/^#[0-9a-f]{6}$/i';
 
-    public function __construct(
-        private ?TranslatorInterface $translator = null,
-    ) {
+    private ?TranslatorInterface $translator;
+
+    public function __construct(?TranslatorInterface $translator = null)
+    {
+        $this->translator = $translator;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    /**
+     * @return void
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         if (!$options['html5']) {
             return;
@@ -58,7 +63,10 @@ class ColorType extends AbstractType
         });
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * @return void
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'html5' => false,

@@ -12,10 +12,10 @@
 namespace Symfony\Component\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Exception\InvalidArgumentException;
 
 /**
- * Validates that a value is true.
+ * @Annotation
+ * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
@@ -28,18 +28,16 @@ class IsTrue extends Constraint
         self::NOT_TRUE_ERROR => 'NOT_TRUE_ERROR',
     ];
 
-    public string $message = 'This value should be true.';
-
     /**
-     * @param string[]|null $groups
+     * @deprecated since Symfony 6.1, use const ERROR_NAMES instead
      */
+    protected static $errorNames = self::ERROR_NAMES;
+
+    public $message = 'This value should be true.';
+
     public function __construct(?array $options = null, ?string $message = null, ?array $groups = null, mixed $payload = null)
     {
-        if (null !== $options) {
-            throw new InvalidArgumentException(\sprintf('Passing an array of options to configure the "%s" constraint is no longer supported.', static::class));
-        }
-
-        parent::__construct(null, $groups, $payload);
+        parent::__construct($options ?? [], $groups, $payload);
 
         $this->message = $message ?? $this->message;
     }

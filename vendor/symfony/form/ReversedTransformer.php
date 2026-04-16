@@ -21,9 +21,11 @@ namespace Symfony\Component\Form;
  */
 class ReversedTransformer implements DataTransformerInterface
 {
-    public function __construct(
-        protected DataTransformerInterface $reversedTransformer,
-    ) {
+    protected $reversedTransformer;
+
+    public function __construct(DataTransformerInterface $reversedTransformer)
+    {
+        $this->reversedTransformer = $reversedTransformer;
     }
 
     public function transform(mixed $value): mixed

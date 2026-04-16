@@ -20,12 +20,18 @@ use Symfony\Component\Form\Util\StringUtil;
 
 class TextareaType extends AbstractType implements DataTransformerInterface
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    /**
+     * @return void
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->addViewTransformer($this);
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options): void
+    /**
+     * @return void
+     */
+    public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $view->vars['pattern'] = null;
         unset($view->vars['attr']['pattern']);

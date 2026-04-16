@@ -11,6 +11,8 @@
 
 namespace Symfony\Component\HttpClient;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\HttpClient\Response\AsyncContext;
 use Symfony\Component\HttpClient\Response\AsyncResponse;
@@ -26,7 +28,7 @@ use Symfony\Contracts\Service\ResetInterface;
  * @author Hallison Boaventura <hallisonboaventura@gmail.com>
  * @author Nicolas Grekas <p@tchwork.com>
  */
-final class NoPrivateNetworkHttpClient implements HttpClientInterface, ResetInterface
+final class NoPrivateNetworkHttpClient implements HttpClientInterface, LoggerAwareInterface, ResetInterface
 {
     use AsyncDecoratorTrait;
     use HttpClientTrait;
@@ -155,6 +157,13 @@ final class NoPrivateNetworkHttpClient implements HttpClientInterface, ResetInte
                 $context->passthru();
             }
         });
+    }
+
+    public function setLogger(LoggerInterface $logger): void
+    {
+        if ($this->client instanceof LoggerAwareInterface) {
+            $this->client->setLogger($logger);
+        }
     }
 
     public function withOptions(array $options): static

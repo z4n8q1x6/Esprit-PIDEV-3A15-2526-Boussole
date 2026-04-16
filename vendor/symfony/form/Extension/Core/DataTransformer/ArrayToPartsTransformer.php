@@ -21,9 +21,11 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
  */
 class ArrayToPartsTransformer implements DataTransformerInterface
 {
-    public function __construct(
-        private array $partMapping,
-    ) {
+    private array $partMapping;
+
+    public function __construct(array $partMapping)
+    {
+        $this->partMapping = $partMapping;
     }
 
     public function transform(mixed $array): mixed

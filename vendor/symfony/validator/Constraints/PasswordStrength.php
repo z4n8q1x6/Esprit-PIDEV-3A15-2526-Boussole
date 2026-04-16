@@ -13,10 +13,10 @@ namespace Symfony\Component\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
-use Symfony\Component\Validator\Exception\InvalidArgumentException;
 
 /**
- * Validates that the given password has reached a minimum strength.
+ * @Annotation
+ * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  *
  * @author Florent Morselli <florent.morselli@spomky-labs.com>
  */
@@ -39,21 +39,13 @@ final class PasswordStrength extends Constraint
 
     public int $minScore;
 
-    /**
-     * @param self::STRENGTH_*|null $minScore The minimum required strength of the password (defaults to {@see PasswordStrength::STRENGTH_MEDIUM})
-     * @param string[]|null         $groups
-     */
     public function __construct(?array $options = null, ?int $minScore = null, ?array $groups = null, mixed $payload = null, ?string $message = null)
     {
-        if (null !== $options) {
-            throw new InvalidArgumentException(\sprintf('Passing an array of options to configure the "%s" constraint is no longer supported.', static::class));
-        }
+        $options['minScore'] ??= self::STRENGTH_MEDIUM;
 
-        $minScore ??= self::STRENGTH_MEDIUM;
+        parent::__construct($options, $groups, $payload);
 
-        parent::__construct(null, $groups, $payload);
-
-        $this->minScore = $minScore;
+        $this->minScore = $minScore ?? $this->minScore;
         $this->message = $message ?? $this->message;
 
         if ($this->minScore < 1 || 4 < $this->minScore) {

@@ -31,11 +31,16 @@ class DateTimeToHtml5LocalDateTimeTransformer extends BaseDateTimeTransformer
     }
 
     /**
+     * Transforms a \DateTime into a local date and time string.
+     *
      * According to the HTML standard, the input string of a datetime-local
      * input is an RFC3339 date followed by 'T', followed by an RFC3339 time.
-     * https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-local-date-and-time-string.
+     * https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-local-date-and-time-string
      *
-     * @throws \DateInvalidTimeZoneException
+     * @param \DateTimeInterface $dateTime
+     *
+     * @throws TransformationFailedException If the given value is not an
+     *                                       instance of \DateTime or \DateTimeInterface
      */
     public function transform(mixed $dateTime): string
     {
@@ -56,11 +61,16 @@ class DateTimeToHtml5LocalDateTimeTransformer extends BaseDateTimeTransformer
     }
 
     /**
+     * Transforms a local date and time string into a \DateTime.
+     *
      * When transforming back to DateTime the regex is slightly laxer, taking into
      * account rules for parsing a local date and time string
-     * https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#parse-a-local-date-and-time-string.
+     * https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#parse-a-local-date-and-time-string
      *
-     * @throws \DateInvalidTimeZoneException
+     * @param string $dateTimeLocal Formatted string
+     *
+     * @throws TransformationFailedException If the given value is not a string,
+     *                                       if the value could not be transformed
      */
     public function reverseTransform(mixed $dateTimeLocal): ?\DateTime
     {

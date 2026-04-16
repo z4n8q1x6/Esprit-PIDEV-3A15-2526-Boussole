@@ -27,7 +27,10 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
  */
 class ChoiceValidator extends ConstraintValidator
 {
-    public function validate(mixed $value, Constraint $constraint): void
+    /**
+     * @return void
+     */
+    public function validate(mixed $value, Constraint $constraint)
     {
         if (!$constraint instanceof Choice) {
             throw new UnexpectedTypeException($constraint, Choice::class);
@@ -83,7 +86,7 @@ class ChoiceValidator extends ConstraintValidator
             if (null !== $constraint->min && $count < $constraint->min) {
                 $this->context->buildViolation($constraint->minMessage)
                     ->setParameter('{{ limit }}', $constraint->min)
-                    ->setPlural($constraint->min)
+                    ->setPlural((int) $constraint->min)
                     ->setCode(Choice::TOO_FEW_ERROR)
                     ->addViolation();
 
@@ -93,9 +96,11 @@ class ChoiceValidator extends ConstraintValidator
             if (null !== $constraint->max && $count > $constraint->max) {
                 $this->context->buildViolation($constraint->maxMessage)
                     ->setParameter('{{ limit }}', $constraint->max)
-                    ->setPlural($constraint->max)
+                    ->setPlural((int) $constraint->max)
                     ->setCode(Choice::TOO_MANY_ERROR)
                     ->addViolation();
+
+                return;
             }
         } elseif ($constraint->match xor \in_array($value, $choices, true)) {
             $this->context->buildViolation($constraint->message)

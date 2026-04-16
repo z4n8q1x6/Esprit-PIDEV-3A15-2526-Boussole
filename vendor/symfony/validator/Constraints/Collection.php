@@ -12,10 +12,11 @@
 namespace Symfony\Component\Validator\Constraints;
 
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Exception\MissingOptionsException;
+use Symfony\Component\Validator\Exception\ConstraintDefinitionException;
 
 /**
- * Validates a collection with constraints defined for specific keys.
+ * @Annotation
+ * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
@@ -30,27 +31,24 @@ class Collection extends Composite
         self::NO_SUCH_FIELD_ERROR => 'NO_SUCH_FIELD_ERROR',
     ];
 
-    public array $fields = [];
-    public bool $allowExtraFields = false;
-    public bool $allowMissingFields = false;
-    public string $extraFieldsMessage = 'This field was not expected.';
-    public string $missingFieldsMessage = 'This field is missing.';
-
     /**
-     * @param array<string,Constraint|list<Constraint>>|null $fields             An associative array defining keys in the collection and their constraints
-     * @param string[]|null                                  $groups
-     * @param bool|null                                      $allowExtraFields   Whether to allow additional keys not declared in the configured fields (defaults to false)
-     * @param bool|null                                      $allowMissingFields Whether to allow the collection to lack some fields declared in the configured fields (defaults to false)
+     * @deprecated since Symfony 6.1, use const ERROR_NAMES instead
      */
-    public function __construct(?array $fields = null, ?array $groups = null, mixed $payload = null, ?bool $allowExtraFields = null, ?bool $allowMissingFields = null, ?string $extraFieldsMessage = null, ?string $missingFieldsMessage = null)
+    protected static $errorNames = self::ERROR_NAMES;
+
+    public $fields = [];
+    public $allowExtraFields = false;
+    public $allowMissingFields = false;
+    public $extraFieldsMessage = 'This field was not expected.';
+    public $missingFieldsMessage = 'This field is missing.';
+
+    public function __construct(mixed $fields = null, ?array $groups = null, mixed $payload = null, ?bool $allowExtraFields = null, ?bool $allowMissingFields = null, ?string $extraFieldsMessage = null, ?string $missingFieldsMessage = null)
     {
-        if (null === $fields) {
-            throw new MissingOptionsException(\sprintf('The options "fields" must be set for constraint "%s".', self::class), ['fields']);
+        if (self::isFieldsOption($fields)) {
+            $fields = ['fields' => $fields];
         }
 
-        $this->fields = $fields;
-
-        parent::__construct(null, $groups, $payload);
+        parent::__construct($fields, $groups, $payload);
 
         $this->allowExtraFields = $allowExtraFields ?? $this->allowExtraFields;
         $this->allowMissingFields = $allowMissingFields ?? $this->allowMissingFields;
@@ -58,9 +56,16 @@ class Collection extends Composite
         $this->missingFieldsMessage = $missingFieldsMessage ?? $this->missingFieldsMessage;
     }
 
-    protected function initializeNestedConstraints(): void
+    /**
+     * @return void
+     */
+    protected function initializeNestedConstraints()
     {
         parent::initializeNestedConstraints();
+
+        if (!\is_array($this->fields)) {
+            throw new ConstraintDefinitionException(\sprintf('The option "fields" is expected to be an array in constraint "%s".', __CLASS__));
+        }
 
         foreach ($this->fields as $fieldName => $field) {
             // the XmlFileLoader and YamlFileLoader pass the field Optional
@@ -70,13 +75,45 @@ class Collection extends Composite
             }
 
             if (!$field instanceof Optional && !$field instanceof Required) {
-                $this->fields[$fieldName] = new Required($field ?? []);
+                $this->fields[$fieldName] = new Required($field);
             }
         }
+    }
+
+    public function getRequiredOptions(): array
+    {
+        return ['fields'];
     }
 
     protected function getCompositeOption(): string
     {
         return 'fields';
+    }
+
+    private static function isFieldsOption($options): bool
+    {
+        if (!\is_array($options)) {
+            return false;
+        }
+
+        foreach ($options as $optionOrField) {
+            if ($optionOrField instanceof Constraint) {
+                return true;
+            }
+
+            if (null === $optionOrField) {
+                continue;
+            }
+
+            if (!\is_array($optionOrField)) {
+                return false;
+            }
+
+            if ($optionOrField && !($optionOrField[0] ?? null) instanceof Constraint) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

@@ -34,15 +34,21 @@ use Twig\Environment;
 class ProfilerController
 {
     private TemplateManager $templateManager;
+    private UrlGeneratorInterface $generator;
+    private ?Profiler $profiler;
+    private Environment $twig;
+    private array $templates;
+    private ?ContentSecurityPolicyHandler $cspHandler;
+    private ?string $baseDir;
 
-    public function __construct(
-        private UrlGeneratorInterface $generator,
-        private ?Profiler $profiler,
-        private Environment $twig,
-        private array $templates,
-        private ?ContentSecurityPolicyHandler $cspHandler = null,
-        private ?string $baseDir = null,
-    ) {
+    public function __construct(UrlGeneratorInterface $generator, ?Profiler $profiler, Environment $twig, array $templates, ?ContentSecurityPolicyHandler $cspHandler = null, ?string $baseDir = null)
+    {
+        $this->generator = $generator;
+        $this->profiler = $profiler;
+        $this->twig = $twig;
+        $this->templates = $templates;
+        $this->cspHandler = $cspHandler;
+        $this->baseDir = $baseDir;
     }
 
     /**
@@ -163,27 +169,6 @@ class ProfilerController
     }
 
     /**
-     * Renders the Web Debug Toolbar stylesheet.
-     *
-     * @throws NotFoundHttpException
-     */
-    public function toolbarStylesheetAction(): Response
-    {
-        $this->denyAccessIfProfilerDisabled();
-
-        $this->cspHandler?->disableCsp();
-
-        return new Response(
-            $this->twig->render('@WebProfiler/Profiler/toolbar.css.twig'),
-            200,
-            [
-                'Content-Type' => 'text/css',
-                'Cache-Control' => 'max-age=600, private',
-            ],
-        );
-    }
-
-    /**
      * Renders the profiler search bar.
      *
      * @throws NotFoundHttpException
@@ -210,6 +195,7 @@ class ProfilerController
                 'end' => $request->query->get('end', $session?->get('_profiler_search_end')),
                 'limit' => $request->query->get('limit', $session?->get('_profiler_search_limit')),
                 'request' => $request,
+                'render_hidden_by_default' => false,
                 'profile_type' => $request->query->get('type', $session?->get('_profiler_search_type', 'request')),
             ]),
             200,
@@ -289,7 +275,7 @@ class ProfilerController
             $session->set('_profiler_search_type', $profileType);
         }
 
-        if ($token) {
+        if (!empty($token)) {
             return new RedirectResponse($this->generator->generate('_profiler', ['token' => $token]), 302, ['Content-Type' => 'text/html']);
         }
 
@@ -404,9 +390,6 @@ class ProfilerController
         return $this->templateManager ??= new TemplateManager($this->profiler, $this->twig, $this->templates);
     }
 
-    /**
-     * @throws NotFoundHttpException
-     */
     private function denyAccessIfProfilerDisabled(): void
     {
         if (null === $this->profiler) {

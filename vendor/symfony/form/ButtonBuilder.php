@@ -11,6 +11,7 @@
 
 namespace Symfony\Component\Form;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Exception\BadMethodCallException;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
@@ -25,25 +26,25 @@ use Symfony\Component\PropertyAccess\PropertyPathInterface;
  */
 class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
 {
-    protected bool $locked = false;
+    protected $locked = false;
 
     private bool $disabled = false;
     private ResolvedFormTypeInterface $type;
     private string $name;
     private array $attributes = [];
+    private array $options;
 
     /**
      * @throws InvalidArgumentException if the name is empty
      */
-    public function __construct(
-        ?string $name,
-        private array $options = [],
-    ) {
+    public function __construct(?string $name, array $options = [])
+    {
         if ('' === $name || null === $name) {
             throw new InvalidArgumentException('Buttons cannot have empty names.');
         }
 
         $this->name = $name;
+        $this->options = $options;
 
         FormConfigBuilder::validateName($name);
     }
@@ -51,9 +52,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function add(string|FormBuilderInterface $child, ?string $type = null, array $options = []): never
+    public function add(string|FormBuilderInterface $child, ?string $type = null, array $options = []): static
     {
         throw new BadMethodCallException('Buttons cannot have children.');
     }
@@ -61,9 +64,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function create(string $name, ?string $type = null, array $options = []): never
+    public function create(string $name, ?string $type = null, array $options = []): FormBuilderInterface
     {
         throw new BadMethodCallException('Buttons cannot have children.');
     }
@@ -71,9 +76,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function get(string $name): never
+    public function get(string $name): FormBuilderInterface
     {
         throw new BadMethodCallException('Buttons cannot have children.');
     }
@@ -81,9 +88,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function remove(string $name): never
+    public function remove(string $name): static
     {
         throw new BadMethodCallException('Buttons cannot have children.');
     }
@@ -115,9 +124,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function addEventListener(string $eventName, callable $listener, int $priority = 0): never
+    public function addEventListener(string $eventName, callable $listener, int $priority = 0): static
     {
         throw new BadMethodCallException('Buttons do not support event listeners.');
     }
@@ -125,9 +136,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function addEventSubscriber(EventSubscriberInterface $subscriber): never
+    public function addEventSubscriber(EventSubscriberInterface $subscriber): static
     {
         throw new BadMethodCallException('Buttons do not support event subscribers.');
     }
@@ -135,9 +148,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function addViewTransformer(DataTransformerInterface $viewTransformer, bool $forcePrepend = false): never
+    public function addViewTransformer(DataTransformerInterface $viewTransformer, bool $forcePrepend = false): static
     {
         throw new BadMethodCallException('Buttons do not support data transformers.');
     }
@@ -145,9 +160,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function resetViewTransformers(): never
+    public function resetViewTransformers(): static
     {
         throw new BadMethodCallException('Buttons do not support data transformers.');
     }
@@ -155,9 +172,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function addModelTransformer(DataTransformerInterface $modelTransformer, bool $forceAppend = false): never
+    public function addModelTransformer(DataTransformerInterface $modelTransformer, bool $forceAppend = false): static
     {
         throw new BadMethodCallException('Buttons do not support data transformers.');
     }
@@ -165,9 +184,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function resetModelTransformers(): never
+    public function resetModelTransformers(): static
     {
         throw new BadMethodCallException('Buttons do not support data transformers.');
     }
@@ -195,10 +216,16 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setDataMapper(?DataMapperInterface $dataMapper): never
+    public function setDataMapper(?DataMapperInterface $dataMapper = null): static
     {
+        if (1 > \func_num_args()) {
+            trigger_deprecation('symfony/form', '6.2', 'Calling "%s()" without any arguments is deprecated, pass null explicitly instead.', __METHOD__);
+        }
+
         throw new BadMethodCallException('Buttons do not support data mappers.');
     }
 
@@ -217,9 +244,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setEmptyData(mixed $emptyData): never
+    public function setEmptyData(mixed $emptyData): static
     {
         throw new BadMethodCallException('Buttons do not support empty data.');
     }
@@ -227,9 +256,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setErrorBubbling(bool $errorBubbling): never
+    public function setErrorBubbling(bool $errorBubbling): static
     {
         throw new BadMethodCallException('Buttons do not support error bubbling.');
     }
@@ -237,9 +268,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setRequired(bool $required): never
+    public function setRequired(bool $required): static
     {
         throw new BadMethodCallException('Buttons cannot be required.');
     }
@@ -247,9 +280,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setPropertyPath(string|PropertyPathInterface|null $propertyPath): never
+    public function setPropertyPath(string|PropertyPathInterface|null $propertyPath): static
     {
         throw new BadMethodCallException('Buttons do not support property paths.');
     }
@@ -257,9 +292,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setMapped(bool $mapped): never
+    public function setMapped(bool $mapped): static
     {
         throw new BadMethodCallException('Buttons do not support data mapping.');
     }
@@ -267,9 +304,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setByReference(bool $byReference): never
+    public function setByReference(bool $byReference): static
     {
         throw new BadMethodCallException('Buttons do not support data mapping.');
     }
@@ -277,9 +316,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setCompound(bool $compound): never
+    public function setCompound(bool $compound): static
     {
         throw new BadMethodCallException('Buttons cannot be compound.');
     }
@@ -299,9 +340,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setData(mixed $data): never
+    public function setData(mixed $data): static
     {
         throw new BadMethodCallException('Buttons do not support data.');
     }
@@ -309,9 +352,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setDataLocked(bool $locked): never
+    public function setDataLocked(bool $locked): static
     {
         throw new BadMethodCallException('Buttons do not support data locking.');
     }
@@ -319,9 +364,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setFormFactory(FormFactoryInterface $formFactory): never
+    public function setFormFactory(FormFactoryInterface $formFactory)
     {
         throw new BadMethodCallException('Buttons do not support form factories.');
     }
@@ -329,9 +376,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setAction(string $action): never
+    public function setAction(string $action): static
     {
         throw new BadMethodCallException('Buttons do not support actions.');
     }
@@ -339,9 +388,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setMethod(string $method): never
+    public function setMethod(string $method): static
     {
         throw new BadMethodCallException('Buttons do not support methods.');
     }
@@ -349,9 +400,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setRequestHandler(RequestHandlerInterface $requestHandler): never
+    public function setRequestHandler(RequestHandlerInterface $requestHandler): static
     {
         throw new BadMethodCallException('Buttons do not support request handlers.');
     }
@@ -375,9 +428,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setInheritData(bool $inheritData): never
+    public function setInheritData(bool $inheritData): static
     {
         throw new BadMethodCallException('Buttons do not support data inheritance.');
     }
@@ -397,9 +452,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function setIsEmptyCallback(?callable $isEmptyCallback): never
+    public function setIsEmptyCallback(?callable $isEmptyCallback): static
     {
         throw new BadMethodCallException('Buttons do not support "is empty" callback.');
     }
@@ -407,9 +464,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function getEventDispatcher(): never
+    public function getEventDispatcher(): EventDispatcherInterface
     {
         throw new BadMethodCallException('Buttons do not support event dispatching.');
     }
@@ -565,8 +624,10 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
 
     /**
      * Unsupported method.
+     *
+     * @return never
      */
-    public function getFormFactory(): never
+    public function getFormFactory(): FormFactoryInterface
     {
         throw new BadMethodCallException('Buttons do not support adding children.');
     }
@@ -574,9 +635,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function getAction(): never
+    public function getAction(): string
     {
         throw new BadMethodCallException('Buttons do not support actions.');
     }
@@ -584,9 +647,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function getMethod(): never
+    public function getMethod(): string
     {
         throw new BadMethodCallException('Buttons do not support methods.');
     }
@@ -594,9 +659,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function getRequestHandler(): never
+    public function getRequestHandler(): RequestHandlerInterface
     {
         throw new BadMethodCallException('Buttons do not support request handlers.');
     }
@@ -644,9 +711,11 @@ class ButtonBuilder implements \IteratorAggregate, FormBuilderInterface
     /**
      * Unsupported method.
      *
+     * @return never
+     *
      * @throws BadMethodCallException
      */
-    public function getIsEmptyCallback(): never
+    public function getIsEmptyCallback(): ?callable
     {
         throw new BadMethodCallException('Buttons do not support "is empty" callback.');
     }

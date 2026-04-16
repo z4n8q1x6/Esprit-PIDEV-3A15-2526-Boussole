@@ -16,7 +16,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RangeType extends AbstractType
 {
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * @return void
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'invalid_message' => 'Please choose a valid range.',

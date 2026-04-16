@@ -11,33 +11,30 @@
 
 namespace Symfony\Component\Validator\Constraints;
 
-use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\Exception\MissingOptionsException;
-
 /**
- * When applied to an array (or Traversable object), this constraint allows you to apply
- * a collection of constraints to each element of the array.
+ * @Annotation
+ * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  *
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
 class All extends Composite
 {
-    public array|Constraint $constraints = [];
+    public $constraints = [];
 
-    /**
-     * @param array<Constraint>|Constraint|null $constraints
-     * @param string[]|null                     $groups
-     */
-    public function __construct(array|Constraint|null $constraints = null, ?array $groups = null, mixed $payload = null)
+    public function __construct(mixed $constraints = null, ?array $groups = null, mixed $payload = null)
     {
-        if (null === $constraints || [] === $constraints) {
-            throw new MissingOptionsException(\sprintf('The options "constraints" must be set for constraint "%s".', self::class), ['constraints']);
-        }
+        parent::__construct($constraints ?? [], $groups, $payload);
+    }
 
-        $this->constraints = $constraints;
+    public function getDefaultOption(): ?string
+    {
+        return 'constraints';
+    }
 
-        parent::__construct(null, $groups, $payload);
+    public function getRequiredOptions(): array
+    {
+        return ['constraints'];
     }
 
     protected function getCompositeOption(): string

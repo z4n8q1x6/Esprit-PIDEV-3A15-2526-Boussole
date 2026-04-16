@@ -14,9 +14,8 @@ namespace Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Constraint;
 
 /**
- * Validates that a value is a valid ISBN according to ISBN-10 or ISBN-13 formats.
- *
- * @see https://en.wikipedia.org/wiki/ISBN
+ * @Annotation
+ * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
  *
  * @author The Whole Life To Learn <thewholelifetolearn@gmail.com>
  * @author Manuel Reinhard <manu@sprain.ch>
@@ -42,32 +41,43 @@ class Isbn extends Constraint
         self::TYPE_NOT_RECOGNIZED_ERROR => 'TYPE_NOT_RECOGNIZED_ERROR',
     ];
 
-    public string $isbn10Message = 'This value is not a valid ISBN-10.';
-    public string $isbn13Message = 'This value is not a valid ISBN-13.';
-    public string $bothIsbnMessage = 'This value is neither a valid ISBN-10 nor a valid ISBN-13.';
-    public ?string $type = null;
-    public ?string $message = null;
-
     /**
-     * @param self::ISBN_*|null $type    The type of ISBN to validate (i.e. {@see Isbn::ISBN_10}, {@see Isbn::ISBN_13} or null to accept both, defaults to null)
-     * @param string|null       $message If defined, this message has priority over the others
-     * @param string[]|null     $groups
+     * @deprecated since Symfony 6.1, use const ERROR_NAMES instead
      */
+    protected static $errorNames = self::ERROR_NAMES;
+
+    public $isbn10Message = 'This value is not a valid ISBN-10.';
+    public $isbn13Message = 'This value is not a valid ISBN-13.';
+    public $bothIsbnMessage = 'This value is neither a valid ISBN-10 nor a valid ISBN-13.';
+    public $type;
+    public $message;
+
     public function __construct(
-        ?string $type = null,
+        string|array|null $type = null,
         ?string $message = null,
         ?string $isbn10Message = null,
         ?string $isbn13Message = null,
         ?string $bothIsbnMessage = null,
         ?array $groups = null,
         mixed $payload = null,
+        array $options = [],
     ) {
-        parent::__construct(null, $groups, $payload);
+        if (\is_array($type)) {
+            $options = array_merge($type, $options);
+        } elseif (null !== $type) {
+            $options['value'] = $type;
+        }
 
-        $this->message = $message;
+        parent::__construct($options, $groups, $payload);
+
+        $this->message = $message ?? $this->message;
         $this->isbn10Message = $isbn10Message ?? $this->isbn10Message;
         $this->isbn13Message = $isbn13Message ?? $this->isbn13Message;
         $this->bothIsbnMessage = $bothIsbnMessage ?? $this->bothIsbnMessage;
-        $this->type = $type;
+    }
+
+    public function getDefaultOption(): ?string
+    {
+        return 'type';
     }
 }

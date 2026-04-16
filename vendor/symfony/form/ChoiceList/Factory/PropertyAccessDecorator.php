@@ -38,12 +38,12 @@ use Symfony\Component\PropertyAccess\PropertyPathInterface;
  */
 class PropertyAccessDecorator implements ChoiceListFactoryInterface
 {
+    private ChoiceListFactoryInterface $decoratedFactory;
     private PropertyAccessorInterface $propertyAccessor;
 
-    public function __construct(
-        private ChoiceListFactoryInterface $decoratedFactory,
-        ?PropertyAccessorInterface $propertyAccessor = null,
-    ) {
+    public function __construct(ChoiceListFactoryInterface $decoratedFactory, ?PropertyAccessorInterface $propertyAccessor = null)
+    {
+        $this->decoratedFactory = $decoratedFactory;
         $this->propertyAccessor = $propertyAccessor ?: PropertyAccess::createPropertyAccessor();
     }
 
@@ -109,8 +109,12 @@ class PropertyAccessDecorator implements ChoiceListFactoryInterface
         return $this->decoratedFactory->createListFromLoader($loader, $value, $filter);
     }
 
-    public function createView(ChoiceListInterface $list, mixed $preferredChoices = null, mixed $label = null, mixed $index = null, mixed $groupBy = null, mixed $attr = null, mixed $labelTranslationParameters = [], bool $duplicatePreferredChoices = true): ChoiceListView
+    /**
+     * @param bool $duplicatePreferredChoices
+     */
+    public function createView(ChoiceListInterface $list, mixed $preferredChoices = null, mixed $label = null, mixed $index = null, mixed $groupBy = null, mixed $attr = null, mixed $labelTranslationParameters = []/* , bool $duplicatePreferredChoices = true */): ChoiceListView
     {
+        $duplicatePreferredChoices = \func_num_args() > 7 ? func_get_arg(7) : true;
         $accessor = $this->propertyAccessor;
 
         if (\is_string($label)) {

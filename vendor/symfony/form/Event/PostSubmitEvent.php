@@ -11,7 +11,6 @@
 
 namespace Symfony\Component\Form\Event;
 
-use Symfony\Component\Form\Exception\BadMethodCallException;
 use Symfony\Component\Form\FormEvent;
 
 /**
@@ -22,8 +21,13 @@ use Symfony\Component\Form\FormEvent;
  */
 final class PostSubmitEvent extends FormEvent
 {
-    public function setData(mixed $data): never
+    /**
+     * @deprecated since Symfony 6.4, it will throw an exception in 7.0.
+     */
+    public function setData(mixed $data): void
     {
-        throw new BadMethodCallException('Form data cannot be changed during "form.post_submit", you should use "form.pre_submit" or "form.submit" instead.');
+        trigger_deprecation('symfony/form', '6.4', 'Calling "%s()" will throw an exception as of 7.0, listen to "form.pre_submit" or "form.submit" instead.', __METHOD__);
+        // throw new BadMethodCallException('Form data cannot be changed during "form.post_submit", you should use "form.pre_submit" or "form.submit" instead.');
+        parent::setData($data);
     }
 }

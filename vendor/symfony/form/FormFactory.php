@@ -13,28 +13,21 @@ namespace Symfony\Component\Form;
 
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Flow\FormFlowBuilderInterface;
-use Symfony\Component\Form\Flow\FormFlowInterface;
-use Symfony\Component\Form\Flow\FormFlowTypeInterface;
 
 class FormFactory implements FormFactoryInterface
 {
-    public function __construct(
-        private FormRegistryInterface $registry,
-    ) {
+    private FormRegistryInterface $registry;
+
+    public function __construct(FormRegistryInterface $registry)
+    {
+        $this->registry = $registry;
     }
 
-    /**
-     * @return ($type is class-string<FormFlowTypeInterface> ? FormFlowInterface : FormInterface)
-     */
     public function create(string $type = FormType::class, mixed $data = null, array $options = []): FormInterface
     {
         return $this->createBuilder($type, $data, $options)->getForm();
     }
 
-    /**
-     * @return ($type is class-string<FormFlowTypeInterface> ? FormFlowInterface : FormInterface)
-     */
     public function createNamed(string $name, string $type = FormType::class, mixed $data = null, array $options = []): FormInterface
     {
         return $this->createNamedBuilder($name, $type, $data, $options)->getForm();
@@ -45,17 +38,11 @@ class FormFactory implements FormFactoryInterface
         return $this->createBuilderForProperty($class, $property, $data, $options)->getForm();
     }
 
-    /**
-     * @return ($type is class-string<FormFlowTypeInterface> ? FormFlowBuilderInterface : FormBuilderInterface)
-     */
     public function createBuilder(string $type = FormType::class, mixed $data = null, array $options = []): FormBuilderInterface
     {
         return $this->createNamedBuilder($this->registry->getType($type)->getBlockPrefix(), $type, $data, $options);
     }
 
-    /**
-     * @return ($type is class-string<FormFlowTypeInterface> ? FormFlowBuilderInterface : FormBuilderInterface)
-     */
     public function createNamedBuilder(string $name, string $type = FormType::class, mixed $data = null, array $options = []): FormBuilderInterface
     {
         if (null !== $data && !\array_key_exists('data', $options)) {
@@ -65,10 +52,6 @@ class FormFactory implements FormFactoryInterface
         $type = $this->registry->getType($type);
 
         $builder = $type->createBuilder($this, $name, $options);
-
-        if ($builder instanceof FormFlowBuilderInterface) {
-            $builder->setInitialOptions($options);
-        }
 
         // Explicitly call buildForm() in order to be able to override either
         // createBuilder() or buildForm() in the resolved form type

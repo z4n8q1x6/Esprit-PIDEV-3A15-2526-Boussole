@@ -24,7 +24,10 @@ use Symfony\Component\Validator\Constraints\GroupSequence;
  */
 abstract class BaseValidatorExtension extends AbstractTypeExtension
 {
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * @return void
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         // Make sure that validation groups end up as null, closure or array
         $validationGroupsNormalizer = static function (Options $options, $groups) {
@@ -32,7 +35,7 @@ abstract class BaseValidatorExtension extends AbstractTypeExtension
                 return [];
             }
 
-            if (!$groups) {
+            if (empty($groups)) {
                 return null;
             }
 

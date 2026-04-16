@@ -27,10 +27,13 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 class ResolvedTypeDataCollectorProxy implements ResolvedFormTypeInterface
 {
-    public function __construct(
-        private ResolvedFormTypeInterface $proxiedType,
-        private FormDataCollectorInterface $dataCollector,
-    ) {
+    private ResolvedFormTypeInterface $proxiedType;
+    private FormDataCollectorInterface $dataCollector;
+
+    public function __construct(ResolvedFormTypeInterface $proxiedType, FormDataCollectorInterface $dataCollector)
+    {
+        $this->proxiedType = $proxiedType;
+        $this->dataCollector = $dataCollector;
     }
 
     public function getBlockPrefix(): string
@@ -68,17 +71,26 @@ class ResolvedTypeDataCollectorProxy implements ResolvedFormTypeInterface
         return $this->proxiedType->createView($form, $parent);
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    /**
+     * @return void
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $this->proxiedType->buildForm($builder, $options);
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options): void
+    /**
+     * @return void
+     */
+    public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $this->proxiedType->buildView($view, $form, $options);
     }
 
-    public function finishView(FormView $view, FormInterface $form, array $options): void
+    /**
+     * @return void
+     */
+    public function finishView(FormView $view, FormInterface $form, array $options)
     {
         $this->proxiedType->finishView($view, $form, $options);
 

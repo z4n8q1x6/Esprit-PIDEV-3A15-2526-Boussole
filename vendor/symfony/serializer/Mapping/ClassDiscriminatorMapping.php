@@ -22,7 +22,6 @@ class ClassDiscriminatorMapping
     public function __construct(
         private readonly string $typeProperty,
         private array $typesMapping = [],
-        private readonly ?string $defaultType = null,
     ) {
         uasort($this->typesMapping, static function (string $a, string $b): int {
             if (is_a($a, $b, true)) {
@@ -61,10 +60,5 @@ class ClassDiscriminatorMapping
     public function getTypesMapping(): array
     {
         return $this->typesMapping;
-    }
-
-    public function getDefaultType(): ?string
-    {
-        return $this->defaultType;
     }
 }

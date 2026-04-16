@@ -30,7 +30,6 @@ class TraceableEncoder implements EncoderInterface, DecoderInterface, Serializer
     public function __construct(
         private EncoderInterface|DecoderInterface $encoder,
         private SerializerDataCollector $dataCollector,
-        private readonly string $serializerName = 'default',
     ) {
     }
 
@@ -45,7 +44,7 @@ class TraceableEncoder implements EncoderInterface, DecoderInterface, Serializer
         $time = microtime(true) - $startTime;
 
         if ($traceId = ($context[TraceableSerializer::DEBUG_TRACE_ID] ?? null)) {
-            $this->dataCollector->collectEncoding($traceId, $this->encoder::class, $time, $this->serializerName);
+            $this->dataCollector->collectEncoding($traceId, $this->encoder::class, $time);
         }
 
         return $encoded;
@@ -71,7 +70,7 @@ class TraceableEncoder implements EncoderInterface, DecoderInterface, Serializer
         $time = microtime(true) - $startTime;
 
         if ($traceId = ($context[TraceableSerializer::DEBUG_TRACE_ID] ?? null)) {
-            $this->dataCollector->collectDecoding($traceId, $this->encoder::class, $time, $this->serializerName);
+            $this->dataCollector->collectDecoding($traceId, $this->encoder::class, $time);
         }
 
         return $encoded;

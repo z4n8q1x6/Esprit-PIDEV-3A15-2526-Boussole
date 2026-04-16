@@ -25,9 +25,11 @@ interface DataMapperInterface
      * @param mixed                              $viewData View data of the compound form being initialized
      * @param \Traversable<mixed, FormInterface> $forms    A list of {@link FormInterface} instances
      *
+     * @return void
+     *
      * @throws Exception\UnexpectedTypeException if the type of the data parameter is not supported
      */
-    public function mapDataToForms(mixed $viewData, \Traversable $forms): void;
+    public function mapDataToForms(mixed $viewData, \Traversable $forms);
 
     /**
      * Maps the model data of a list of children forms into the view data of their parent.
@@ -56,7 +58,9 @@ interface DataMapperInterface
      * @param mixed                              &$viewData The compound form's view data that get mapped
      *                                                      its children model data
      *
+     * @return void
+     *
      * @throws Exception\UnexpectedTypeException if the type of the data parameter is not supported
      */
-    public function mapFormsToData(\Traversable $forms, mixed &$viewData): void;
+    public function mapFormsToData(\Traversable $forms, mixed &$viewData);
 }

@@ -26,19 +26,24 @@ abstract class AbstractRendererEngine implements FormRendererEngineInterface, Re
     public const CACHE_KEY_VAR = 'cache_key';
 
     /**
+     * @var array
+     */
+    protected $defaultThemes;
+
+    /**
      * @var array[]
      */
-    protected array $themes = [];
+    protected $themes = [];
 
     /**
      * @var bool[]
      */
-    protected array $useDefaultThemes = [];
+    protected $useDefaultThemes = [];
 
     /**
      * @var array[]
      */
-    protected array $resources = [];
+    protected $resources = [];
 
     /**
      * @var array<array<int|false>>
@@ -56,12 +61,15 @@ abstract class AbstractRendererEngine implements FormRendererEngineInterface, Re
      * @param array $defaultThemes The default themes. The type of these
      *                             themes is open to the implementation.
      */
-    public function __construct(
-        protected array $defaultThemes = [],
-    ) {
+    public function __construct(array $defaultThemes = [])
+    {
+        $this->defaultThemes = $defaultThemes;
     }
 
-    public function setTheme(FormView $view, mixed $themes, bool $useDefaultThemes = true): void
+    /**
+     * @return void
+     */
+    public function setTheme(FormView $view, mixed $themes, bool $useDefaultThemes = true)
     {
         $cacheKey = $view->vars[self::CACHE_KEY_VAR];
 
@@ -131,8 +139,10 @@ abstract class AbstractRendererEngine implements FormRendererEngineInterface, Re
      * Loads the cache with the resource for a given block name.
      *
      * @see getResourceForBlock()
+     *
+     * @return bool
      */
-    abstract protected function loadResourceForBlockName(string $cacheKey, FormView $view, string $blockName): bool;
+    abstract protected function loadResourceForBlockName(string $cacheKey, FormView $view, string $blockName);
 
     /**
      * Loads the cache with the resource for a specific level of a block hierarchy.

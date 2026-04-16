@@ -2,6 +2,7 @@
 
 {% block title 'Redirection Intercepted' %}
 
+
 {% block head %}
     {{ parent() }}
 
@@ -32,7 +33,7 @@
 
 {% block body %}
     <div class="container">
-        {{ include('@WebProfiler/Profiler/header.html.twig', with_context: false) }}
+        {{ include('@WebProfiler/Profiler/header.html.twig', with_context = false) }}
 
         <div class="sf-reset sf-redirection-details">
             <div class="block-exception">

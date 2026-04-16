@@ -15,10 +15,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Exception\InvalidArgumentException;
 
 /**
- * Validates that a value is a valid Universally unique identifier (UUID).
- *
- * @see https://en.wikipedia.org/wiki/Universally_unique_identifier
- * @see https://datatracker.ietf.org/doc/html/rfc4122
+ * @Annotation
  *
  * @author Colin O'Dell <colinodell@gmail.com>
  * @author Bernhard Schussek <bschussek@gmail.com>
@@ -42,6 +39,11 @@ class Uuid extends Constraint
         self::INVALID_VERSION_ERROR => 'INVALID_VERSION_ERROR',
         self::INVALID_VARIANT_ERROR => 'INVALID_VARIANT_ERROR',
     ];
+
+    /**
+     * @deprecated since Symfony 6.1, use const ERROR_NAMES instead
+     */
+    protected static $errorNames = self::ERROR_NAMES;
 
     // Possible versions defined by RFC 9562/4122
     public const V1_MAC = 1;
@@ -72,15 +74,19 @@ class Uuid extends Constraint
 
     /**
      * Message to display when validation fails.
+     *
+     * @var string
      */
-    public string $message = 'This is not a valid UUID.';
+    public $message = 'This is not a valid UUID.';
 
     /**
      * Strict mode only allows UUIDs that meet the formal definition and formatting per RFC 9562/4122.
      *
      * Set this to `false` to allow legacy formats with different dash positioning or wrapping characters
+     *
+     * @var bool
      */
-    public bool $strict = true;
+    public $strict = true;
 
     /**
      * Array of allowed versions (see version constants above).
@@ -89,15 +95,13 @@ class Uuid extends Constraint
      *
      * @var int[]
      */
-    public array $versions = self::ALL_VERSIONS;
+    public $versions = self::ALL_VERSIONS;
 
     /** @var callable|null */
     public $normalizer;
 
     /**
-     * @param self::V*[]|self::V*|null $versions Specific UUID versions (defaults to {@see Uuid::ALL_VERSIONS})
-     * @param bool|null                $strict   Whether to force the value to follow the RFC's input format rules; pass false to allow alternate formats (defaults to true)
-     * @param string[]|null            $groups
+     * @param int[]|int|null $versions
      */
     public function __construct(
         ?array $options = null,
@@ -108,16 +112,12 @@ class Uuid extends Constraint
         ?array $groups = null,
         mixed $payload = null,
     ) {
-        if (null !== $options) {
-            throw new InvalidArgumentException(\sprintf('Passing an array of options to configure the "%s" constraint is no longer supported.', static::class));
-        }
-
-        parent::__construct(null, $groups, $payload);
+        parent::__construct($options, $groups, $payload);
 
         $this->message = $message ?? $this->message;
         $this->versions = (array) ($versions ?? $this->versions);
         $this->strict = $strict ?? $this->strict;
-        $this->normalizer = $normalizer;
+        $this->normalizer = $normalizer ?? $this->normalizer;
 
         if (null !== $this->normalizer && !\is_callable($this->normalizer)) {
             throw new InvalidArgumentException(\sprintf('The "normalizer" option must be a valid callable ("%s" given).', get_debug_type($this->normalizer)));

@@ -18,9 +18,11 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class ServerParams
 {
-    public function __construct(
-        private ?RequestStack $requestStack = null,
-    ) {
+    private ?RequestStack $requestStack;
+
+    public function __construct(?RequestStack $requestStack = null)
+    {
+        $this->requestStack = $requestStack;
     }
 
     /**

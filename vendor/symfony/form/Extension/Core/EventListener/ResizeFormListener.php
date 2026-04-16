@@ -12,7 +12,6 @@
 namespace Symfony\Component\Form\Extension\Core\EventListener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Form\Event\PostSetDataEvent;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
@@ -25,19 +24,20 @@ use Symfony\Component\Form\FormInterface;
  */
 class ResizeFormListener implements EventSubscriberInterface
 {
-    protected array $prototypeOptions;
+    protected $type;
+    protected $options;
+    protected $prototypeOptions;
+    protected $allowAdd;
+    protected $allowDelete;
 
     private \Closure|bool $deleteEmpty;
 
-    public function __construct(
-        private string $type,
-        private array $options = [],
-        private bool $allowAdd = false,
-        private bool $allowDelete = false,
-        bool|callable $deleteEmpty = false,
-        ?array $prototypeOptions = null,
-        private bool $keepAsList = false,
-    ) {
+    public function __construct(string $type, array $options = [], bool $allowAdd = false, bool $allowDelete = false, bool|callable $deleteEmpty = false, ?array $prototypeOptions = null)
+    {
+        $this->type = $type;
+        $this->allowAdd = $allowAdd;
+        $this->allowDelete = $allowDelete;
+        $this->options = $options;
         $this->deleteEmpty = \is_bool($deleteEmpty) ? $deleteEmpty : $deleteEmpty(...);
         $this->prototypeOptions = $prototypeOptions ?? $options;
     }
@@ -45,14 +45,17 @@ class ResizeFormListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            FormEvents::POST_SET_DATA => ['postSetData', 255], // as early as possible
+            FormEvents::PRE_SET_DATA => 'preSetData',
             FormEvents::PRE_SUBMIT => 'preSubmit',
             // (MergeCollectionListener, MergeDoctrineCollectionListener)
             FormEvents::SUBMIT => ['onSubmit', 50],
         ];
     }
 
-    final public function postSetData(PostSetDataEvent $event): void
+    /**
+     * @return void
+     */
+    public function preSetData(FormEvent $event)
     {
         $form = $event->getForm();
         $data = $event->getData() ?? [];
@@ -74,7 +77,10 @@ class ResizeFormListener implements EventSubscriberInterface
         }
     }
 
-    public function preSubmit(FormEvent $event): void
+    /**
+     * @return void
+     */
+    public function preSubmit(FormEvent $event)
     {
         $form = $event->getForm();
         $data = $event->getData();
@@ -104,7 +110,10 @@ class ResizeFormListener implements EventSubscriberInterface
         }
     }
 
-    public function onSubmit(FormEvent $event): void
+    /**
+     * @return void
+     */
+    public function onSubmit(FormEvent $event)
     {
         $form = $event->getForm();
         $data = $event->getData() ?? [];
@@ -150,26 +159,6 @@ class ResizeFormListener implements EventSubscriberInterface
 
             foreach ($toDelete as $name) {
                 unset($data[$name]);
-            }
-        }
-
-        if ($this->keepAsList) {
-            $formReindex = $dataKeys = [];
-            foreach ($data as $key => $value) {
-                $dataKeys[] = $key;
-            }
-            foreach ($dataKeys as $key) {
-                unset($data[$key]);
-            }
-            foreach ($form as $name => $child) {
-                $formReindex[] = $child;
-                $form->remove($name);
-            }
-            foreach ($formReindex as $index => $child) {
-                $form->add($index, $this->type, array_replace([
-                    'property_path' => '['.$index.']',
-                ], $this->options, ['data' => $child->getData()]));
-                $data[$index] = $child->getData();
             }
         }
 

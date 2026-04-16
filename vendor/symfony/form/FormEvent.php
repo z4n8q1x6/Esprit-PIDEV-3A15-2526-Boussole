@@ -18,10 +18,13 @@ use Symfony\Contracts\EventDispatcher\Event;
  */
 class FormEvent extends Event
 {
-    public function __construct(
-        private FormInterface $form,
-        protected mixed $data,
-    ) {
+    private FormInterface $form;
+    protected $data;
+
+    public function __construct(FormInterface $form, mixed $data)
+    {
+        $this->form = $form;
+        $this->data = $data;
     }
 
     /**
@@ -42,8 +45,10 @@ class FormEvent extends Event
 
     /**
      * Allows updating with some filtered data.
+     *
+     * @return void
      */
-    public function setData(mixed $data): void
+    public function setData(mixed $data)
     {
         $this->data = $data;
     }

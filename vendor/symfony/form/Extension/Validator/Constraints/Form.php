@@ -11,13 +11,11 @@
 
 namespace Symfony\Component\Form\Extension\Validator\Constraints;
 
-use Symfony\Component\Validator\Attribute\HasNamedArguments;
 use Symfony\Component\Validator\Constraint;
 
 /**
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-#[\Attribute(\Attribute::TARGET_CLASS)]
 class Form extends Constraint
 {
     public const NOT_SYNCHRONIZED_ERROR = '1dafa156-89e1-4736-b832-419c2e501fca';
@@ -28,11 +26,10 @@ class Form extends Constraint
         self::NO_SUCH_FIELD_ERROR => 'NO_SUCH_FIELD_ERROR',
     ];
 
-    #[HasNamedArguments]
-    public function __construct(mixed $options = null, ?array $groups = null, mixed $payload = null)
-    {
-        parent::__construct($options, $groups, $payload);
-    }
+    /**
+     * @deprecated since Symfony 6.1, use const ERROR_NAMES instead
+     */
+    protected static $errorNames = self::ERROR_NAMES;
 
     public function getTargets(): string|array
     {

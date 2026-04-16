@@ -25,10 +25,13 @@ use Symfony\Component\HttpKernel\Profiler\Profiler;
  */
 class ExceptionPanelController
 {
-    public function __construct(
-        private HtmlErrorRenderer $errorRenderer,
-        private ?Profiler $profiler = null,
-    ) {
+    private HtmlErrorRenderer $errorRenderer;
+    private ?Profiler $profiler;
+
+    public function __construct(HtmlErrorRenderer $errorRenderer, ?Profiler $profiler = null)
+    {
+        $this->errorRenderer = $errorRenderer;
+        $this->profiler = $profiler;
     }
 
     /**

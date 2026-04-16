@@ -17,6 +17,7 @@ use Amp\Http\Client\InterceptedHttpClient;
 use Amp\Http\Client\PooledHttpClient;
 use Amp\Http\Client\Request;
 use Amp\Http\Tunnel\Http1TunnelConnector;
+use Amp\Promise;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\HttpClient\Exception\TransportException;
@@ -29,7 +30,11 @@ use Symfony\Contracts\HttpClient\ResponseStreamInterface;
 use Symfony\Contracts\Service\ResetInterface;
 
 if (!interface_exists(DelegateHttpClient::class)) {
-    throw new \LogicException('You cannot use "Symfony\Component\HttpClient\AmpHttpClient" as the "amphp/http-client" package is not installed. Try running "composer require amphp/http-client:^5".');
+    throw new \LogicException('You cannot use "Symfony\Component\HttpClient\AmpHttpClient" as the "amphp/http-client" package is not installed. Try running "composer require amphp/http-client:^4.2.1".');
+}
+
+if (!interface_exists(Promise::class)) {
+    throw new \LogicException('You cannot use "Symfony\Component\HttpClient\AmpHttpClient" as the installed "amphp/http-client" is not compatible with this version of "symfony/http-client". Try downgrading "amphp/http-client" to "^4.2.1".');
 }
 
 /**
@@ -128,10 +133,12 @@ final class AmpHttpClient implements HttpClientInterface, LoggerAwareInterface, 
             $request->addHeader($h[0], $h[1]);
         }
 
-        $request->setTcpConnectTimeout($options['timeout']);
-        $request->setTlsHandshakeTimeout($options['timeout']);
-        $request->setTransferTimeout($options['max_duration']);
-        $request->setInactivityTimeout(0);
+        $request->setTcpConnectTimeout(ceil(1000 * $options['timeout']));
+        $request->setTlsHandshakeTimeout(ceil(1000 * $options['timeout']));
+        $request->setTransferTimeout(ceil(1000 * $options['max_duration']));
+        if (method_exists($request, 'setInactivityTimeout')) {
+            $request->setInactivityTimeout(0);
+        }
 
         if ('' !== $request->getUri()->getUserInfo() && !$request->hasHeader('authorization')) {
             $auth = explode(':', $request->getUri()->getUserInfo(), 2);
@@ -155,9 +162,9 @@ final class AmpHttpClient implements HttpClientInterface, LoggerAwareInterface, 
     {
         $this->multi->dnsCache = [];
 
-        foreach ($this->multi->pushedResponses as $pushedResponses) {
+        foreach ($this->multi->pushedResponses as $authority => $pushedResponses) {
             foreach ($pushedResponses as [$pushedUrl, $pushDeferred]) {
-                $pushDeferred->error(new CancelledException());
+                $pushDeferred->fail(new CancelledException());
 
                 $this->logger?->debug(\sprintf('Unused pushed response: "%s"', $pushedUrl));
             }

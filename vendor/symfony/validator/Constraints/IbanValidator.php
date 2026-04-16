@@ -167,7 +167,10 @@ class IbanValidator extends ConstraintValidator
         'YT' => 'FR\d{2}\d{5}\d{5}[\dA-Z]{11}\d{2}', // France
     ];
 
-    public function validate(mixed $value, Constraint $constraint): void
+    /**
+     * @return void
+     */
+    public function validate(mixed $value, Constraint $constraint)
     {
         if (!$constraint instanceof Iban) {
             throw new UnexpectedTypeException($constraint, Iban::class);
@@ -183,8 +186,8 @@ class IbanValidator extends ConstraintValidator
 
         $value = (string) $value;
 
-        // Remove spaces (regular, non-breaking, and narrow non-breaking) and convert to uppercase
-        $canonicalized = str_replace([' ', "\xc2\xa0", "\xe2\x80\xaf"], '', strtoupper($value));
+        // Remove spaces and convert to uppercase
+        $canonicalized = str_replace(' ', '', strtoupper($value));
 
         // The IBAN must contain only digits and characters...
         if (!ctype_alnum($canonicalized)) {

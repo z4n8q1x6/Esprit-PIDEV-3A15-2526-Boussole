@@ -26,6 +26,7 @@ use Symfony\Component\Form\Console\Helper\DescriptorHelper;
 use Symfony\Component\Form\Extension\Core\CoreExtension;
 use Symfony\Component\Form\FormRegistryInterface;
 use Symfony\Component\Form\FormTypeInterface;
+use Symfony\Component\HttpKernel\Debug\FileLinkFormatter as LegacyFileLinkFormatter;
 
 /**
  * A console command for retrieving information about form types.
@@ -35,18 +36,29 @@ use Symfony\Component\Form\FormTypeInterface;
 #[AsCommand(name: 'debug:form', description: 'Display form type information')]
 class DebugCommand extends Command
 {
-    public function __construct(
-        private FormRegistryInterface $formRegistry,
-        private array $namespaces = ['Symfony\Component\Form\Extension\Core\Type'],
-        private array $types = [],
-        private array $extensions = [],
-        private array $guessers = [],
-        private ?FileLinkFormatter $fileLinkFormatter = null,
-    ) {
+    private FormRegistryInterface $formRegistry;
+    private array $namespaces;
+    private array $types;
+    private array $extensions;
+    private array $guessers;
+    private FileLinkFormatter|LegacyFileLinkFormatter|null $fileLinkFormatter;
+
+    public function __construct(FormRegistryInterface $formRegistry, array $namespaces = ['Symfony\Component\Form\Extension\Core\Type'], array $types = [], array $extensions = [], array $guessers = [], FileLinkFormatter|LegacyFileLinkFormatter|null $fileLinkFormatter = null)
+    {
         parent::__construct();
+
+        $this->formRegistry = $formRegistry;
+        $this->namespaces = $namespaces;
+        $this->types = $types;
+        $this->extensions = $extensions;
+        $this->guessers = $guessers;
+        $this->fileLinkFormatter = $fileLinkFormatter;
     }
 
-    protected function configure(): void
+    /**
+     * @return void
+     */
+    protected function configure()
     {
         $this
             ->setDefinition([
@@ -56,33 +68,33 @@ class DebugCommand extends Command
                 new InputOption('format', null, InputOption::VALUE_REQUIRED, \sprintf('The output format ("%s")', implode('", "', $this->getAvailableFormatOptions())), 'txt'),
             ])
             ->setHelp(<<<'EOF'
-                The <info>%command.name%</info> command displays information about form types.
+The <info>%command.name%</info> command displays information about form types.
 
-                  <info>php %command.full_name%</info>
+  <info>php %command.full_name%</info>
 
-                The command lists all built-in types, services types, type extensions and
-                guessers currently available.
+The command lists all built-in types, services types, type extensions and
+guessers currently available.
 
-                  <info>php %command.full_name% Symfony\Component\Form\Extension\Core\Type\ChoiceType</info>
-                  <info>php %command.full_name% ChoiceType</info>
+  <info>php %command.full_name% Symfony\Component\Form\Extension\Core\Type\ChoiceType</info>
+  <info>php %command.full_name% ChoiceType</info>
 
-                The command lists all defined options that contains the given form type,
-                as well as their parents and type extensions.
+The command lists all defined options that contains the given form type,
+as well as their parents and type extensions.
 
-                  <info>php %command.full_name% ChoiceType choice_value</info>
+  <info>php %command.full_name% ChoiceType choice_value</info>
 
-                Use the <info>--show-deprecated</info> option to display form types with
-                deprecated options or the deprecated options of the given form type:
+Use the <info>--show-deprecated</info> option to display form types with
+deprecated options or the deprecated options of the given form type:
 
-                  <info>php %command.full_name% --show-deprecated</info>
-                  <info>php %command.full_name% ChoiceType --show-deprecated</info>
+  <info>php %command.full_name% --show-deprecated</info>
+  <info>php %command.full_name% ChoiceType --show-deprecated</info>
 
-                The command displays the definition of the given option name.
+The command displays the definition of the given option name.
 
-                  <info>php %command.full_name% --format=json</info>
+  <info>php %command.full_name% --format=json</info>
 
-                The command lists everything in a machine readable json format.
-                EOF
+The command lists everything in a machine readable json format.
+EOF
             )
         ;
     }
@@ -272,7 +284,6 @@ class DebugCommand extends Command
         $suggestions->suggestValues($resolvedType->getOptionsResolver()->getDefinedOptions());
     }
 
-    /** @return string[] */
     private function getAvailableFormatOptions(): array
     {
         return (new DescriptorHelper())->getFormats();

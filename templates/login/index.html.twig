@@ -65,6 +65,7 @@
         
         .alert { padding: 12px 15px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
         .alert-error { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+        .alert-success { background-color: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
         
         .forgot-password { display: block; text-align: right; margin-top: 12px; font-size: 13px; color: #3b82f6; text-decoration: none; font-weight: 500; }
         .forgot-password:hover { text-decoration: underline; }
@@ -123,6 +124,14 @@
             </div>
         {% endif %}
 
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label == 'success' ? 'success' : 'error' }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
         <form method="post">
             <div class="form-group">
                 <label for="username">Email</label>
@@ -143,7 +152,7 @@
 
         <div class="divider">ou continuer avec</div>
 
-        <a href="#" class="btn-social btn-google">
+        <a href="{{ path('connect_google_start') }}" class="btn-social btn-google">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
                 <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
                 <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
@@ -153,7 +162,7 @@
             S'authentifier avec Google
         </a>
 
-        <a href="#" class="btn-social btn-faceid">
+        <a href="javascript:void(0)" id="start-faceid" class="btn-social btn-faceid">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
                 <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
@@ -256,6 +265,135 @@
 
     init();
     animate();
+
+    // --- FaceID Logic ---
+    const faceIdBtn = document.getElementById('start-faceid');
+    const FACE_MODEL_URL = 'https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights';
+    let faceModelsLoaded = false;
+
+    async function loadFaceModels() {
+        if (faceModelsLoaded) return;
+        try {
+            await Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL),
+                faceapi.nets.faceLandmark68Net.loadFromUri(FACE_MODEL_URL),
+                faceapi.nets.faceRecognitionNet.loadFromUri(FACE_MODEL_URL)
+            ]);
+            faceModelsLoaded = true;
+        } catch (e) {
+            console.error('Face models failed to load', e);
+        }
+    }
+
+    faceIdBtn.addEventListener('click', async () => {
+        faceIdBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Initialisation...';
+        await loadFaceModels();
+        
+        // Create a temporary hidden video element
+        const tempVideo = document.createElement('video');
+        tempVideo.style.display = 'none';
+        tempVideo.autoplay = true;
+        tempVideo.muted = true;
+        tempVideo.playsInline = true;
+        document.body.appendChild(tempVideo);
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
+            tempVideo.srcObject = stream;
+            
+            tempVideo.onloadedmetadata = () => {
+                tempVideo.play();
+                faceIdBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Scan en cours...';
+                
+                let attempts = 0;
+                const maxAttempts = 10;
+                let captured = false;
+
+                const interval = setInterval(async () => {
+                    attempts++;
+                    
+                    // Simple capture for Face++ (capped resolution for API reliability)
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 640;
+                    const MAX_HEIGHT = 480;
+                    let width = tempVideo.videoWidth || 640;
+                    let height = tempVideo.videoHeight || 480;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(tempVideo, 0, 0, width, height);
+                    const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+
+                    if (base64Image) {
+                        captured = true;
+                        clearInterval(interval);
+                        
+                        fetch("{{ path('app_login_face') }}", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ image: base64Image })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.href = data.redirect;
+                            } else {
+                                alert(data.error || 'Authentification échouée');
+                                resetFaceButton();
+                                // Stop camera on error too
+                                stream.getTracks().forEach(t => t.stop());
+                                tempVideo.remove();
+                            }
+                        });
+
+                        // Stop camera
+                        stream.getTracks().forEach(t => t.stop());
+                        tempVideo.remove();
+                    } else if (attempts >= maxAttempts) {
+                        clearInterval(interval);
+                        alert("Impossible de capturer l'image.");
+                        resetFaceButton();
+                        stream.getTracks().forEach(t => t.stop());
+                        tempVideo.remove();
+                    }
+                }, 1000);
+            };
+
+        } catch (err) {
+            console.error('Camera error:', err);
+            alert("Veuillez autoriser l'accès à la caméra.");
+            resetFaceButton();
+            if (tempVideo) tempVideo.remove();
+        }
+    });
+
+    function resetFaceButton() {
+        faceIdBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2"></path>
+                <path d="M17 3h2a2 2 0 0 1 2 2v2"></path>
+                <path d="M21 17v2a2 2 0 0 1-2 2h-2"></path>
+                <path d="M7 21H5a2 2 0 0 1-2-2v-2"></path>
+                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                <line x1="15" y1="9" x2="15.01" y2="9"></line>
+            </svg>
+            S'authentifier avec FaceID`;
+    }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 </body>
 </html>
