@@ -1,6 +1,5 @@
 # config/packages/csrf.yaml
-# Enable CSRF protection (default in Symfony 6.4 when session is enabled)
 
+# Enable CSRF protection for forms and security
 framework:
-    form:
-        csrf_protection: true
+    csrf_protection: true

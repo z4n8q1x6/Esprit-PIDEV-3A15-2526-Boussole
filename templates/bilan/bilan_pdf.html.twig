@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bilan Financier</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .header-bg {
+            background-color: #1a1f2c;
+            text-align: center;
+            padding: 30px 20px 20px 20px;
+            border-bottom: 6px solid #00d4ff;
+        }
+        .header-bg .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 10px;
+            letter-spacing: 5px;
+        }
+        .header-bg .logo span {
+            color: #00d4ff;
+        }
+        .header-bg .subtitle {
+            font-size: 13px;
+            color: #a0aec0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .content {
+            padding: 40px;
+        }
+        .info-section {
+            background-color: #f8f9fa;
+            border-left: 5px solid #00d4ff;
+            padding: 20px 30px;
+            border-radius: 4px;
+            margin-bottom: 40px;
+        }
+        .info-table {
+            width: 100%;
+            font-size: 14px;
+            border: none;
+        }
+        .info-table td {
+            padding: 6px 0;
+            border: none;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #2d3748;
+            width: 150px;
+        }
+        .info-value {
+            color: #4a5568;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 50px;
+        }
+        .data-table th {
+            background-color: #1a1f2c;
+            color: #00d4ff;
+            text-transform: uppercase;
+            font-size: 11px;
+            padding: 12px 15px;
+            letter-spacing: 1px;
+            text-align: left;
+        }
+        .data-table th.amount {
+            text-align: right;
+        }
+        .data-table td {
+            padding: 18px 15px;
+            font-size: 14px;
+            color: #2d3748;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .data-table tr:last-child td {
+            border-bottom: 2px solid #1a1f2c;
+        }
+        .data-table td.amount {
+            text-align: right;
+            font-weight: bold;
+        }
+        .val-positive {
+            color: #10ac84; /* Vert plus vif */
+        }
+        .val-negative {
+            color: #ff4757; /* Rouge plus vif */
+        }
+        .val-neutral {
+            color: #7f8c8d; /* Gris pour 0 */
+        }
+
+        .result-box {
+            background-color: #1a1f2c;
+            border-radius: 6px;
+            padding: 25px;
+            text-align: center;
+            width: 60%;
+            margin: 0 auto;
+        }
+        .result-title {
+            color: #a0aec0;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .result-amount {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .result-divider {
+            border-top: 1px solid #2d3748;
+            margin: 0 40px;
+            padding-top: 15px;
+        }
+        .result-status {
+            font-size: 12px;
+            color: #e2e8f0;
+        }
+        .status-badge {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-bg">
+        <div class="logo">BOUSSOLE<span>.</span></div>
+        <div class="subtitle">Bilan Financier Mensuel</div>
+    </div>
+
+    <div class="content">
+        <div class="info-section">
+            <table class="info-table">
+                <tr>
+                    <td class="info-label">Franchise :</td>
+                    <td class="info-value">
+                        {% if bilan.getFranchiseId() %}
+                            {{ bilan.getFranchiseId().getNom()|upper }}
+                        {% else %}
+                            SIÈGE PRINCIPAL
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="info-label">Adresse/Ville :</td>
+                    <td class="info-value">
+                        {% if bilan.getFranchiseId() %}
+                            {{ bilan.getFranchiseId().getAdresse() }}
+                        {% else %}
+                            Siège Central Boussole
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="info-label">Période :</td>
+                    <td class="info-value">Mois {{ "%02d"|format(bilan.getMois()) }} / Année {{ bilan.getAnnee() }}</td>
+                </tr>
+                <tr>
+                    <td class="info-label">Généré le :</td>
+                    <td class="info-value">{{ "now"|date("d/m/Y H:i") }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Description des flux</th>
+                    <th class="amount">Montant (TND)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Total des Recettes Encaissées</td>
+                    <td class="amount" style="font-weight: bold; color: {% if bilan.getTotalRecettes() >= 0 %}#10ac84{% else %}#ff4757{% endif %};">
+                        {% if bilan.getTotalRecettes() >= 0 %}+ {% endif %}{{ bilan.getTotalRecettes() | number_format(3, '.', '') }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Total des Dépenses & Charges</td>
+                    <td class="amount" style="font-weight: bold; color: {% if bilan.getTotalCharges() >= 0 %}#ff4757{% else %}#10ac84{% endif %};">
+                        {% if bilan.getTotalCharges() >= 0 %}- {% else %}+ {% endif %}{{ bilan.getTotalCharges() | number_format(3, '.', '') }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="result-box">
+            <div class="result-title">Résultat Net du mois</div>
+            <div class="result-amount" style="color: {% if bilan.getResultatNet() >= 0 %}#10ac84{% else %}#ff4757{% endif %};">
+                {{ bilan.getResultatNet() | number_format(3, '.', '') }} TND
+            </div>
+            <div class="result-divider">
+                <span class="result-status">Statut : </span>
+                <span class="status-badge" style="color: {% if bilan.getResultatNet() >= 0 %}#10ac84{% else %}#ff4757{% endif %};">
+                    {% if bilan.getResultatNet() >= 0 %}
+                        Bénéficiaire
+                    {% else %}
+                        Déficitaire
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        {% if qr_code_uri is defined %}
+        <div style="text-align: center; margin-top: 40px;">
+            <p style="color: #a0aec0; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;">Signature Numérique</p>
+            <img src="{{ qr_code_uri }}" alt="QR Code de validation" style="width: 120px; height: 120px; border-radius: 8px; border: 2px solid #00d4ff; padding: 5px; background-color: #1a1f2c;" />
+        </div>
+        {% endif %}
+    </div>
+
+</body>
+</html>

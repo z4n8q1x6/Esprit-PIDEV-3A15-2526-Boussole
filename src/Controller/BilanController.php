@@ -11,7 +11,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use DateTime;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mime\Address;
 
 #[Route('/admin/bilan')]
 final class BilanController extends AbstractController
@@ -36,6 +41,20 @@ final class BilanController extends AbstractController
     #[Route('/{id}/edit-ajax', name: 'app_bilan_edit_ajax', methods: ['POST'])]
     public function editAjax(Request $request, Bilan $bilan, EntityManagerInterface $entityManager): Response
     {
+        // === PROTECTION CLÔTURE MENSUELLE ===
+        // Interdire toute modification sur un bilan dont le mois est déjà passé
+        $now = new \DateTime();
+        $moisActuel = (int) $now->format('n');
+        $anneeActuelle = (int) $now->format('Y');
+
+        if ($bilan->getAnnee() < $anneeActuelle || 
+            ($bilan->getAnnee() === $anneeActuelle && $bilan->getMois() < $moisActuel)) {
+            return $this->json([
+                'success' => false, 
+                'message' => 'Interdit : Ce bilan est clôturé (mois passé). Les données financières archivées ne peuvent plus être modifiées.'
+            ], 403);
+        }
+
         $data = json_decode($request->getContent(), true);
 
         if (isset($data['total_recettes'])) {
@@ -87,6 +106,27 @@ final class BilanController extends AbstractController
         $entityManager->flush();
 
         return $this->json(['success' => true]);
+    }
+
+    #[Route('/delete-batch-ajax', name: 'app_bilan_delete_batch_ajax', methods: ['POST'])]
+    public function deleteBatchAjax(Request $request, EntityManagerInterface $entityManager): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $ids = $data['ids'] ?? [];
+
+        if (empty($ids)) {
+            return $this->json(['success' => false, 'message' => 'Aucun bilan sélectionné.']);
+        }
+
+        $bilans = $entityManager->getRepository(Bilan::class)->findBy(['id' => $ids]);
+        
+        $count = count($bilans);
+        foreach ($bilans as $bilan) {
+            $entityManager->remove($bilan);
+        }
+        $entityManager->flush();
+
+        return $this->json(['success' => true, 'message' => $count . ' bilan(s) supprimé(s).']);
     }
 
     #[Route('/generate-ajax', name: 'app_bilan_generate_ajax', methods: ['POST'])]
@@ -189,5 +229,155 @@ final class BilanController extends AbstractController
             'message' => $msg,
             'reload' => true,
         ]);
+    }
+
+    #[Route('/pdf/{id}', name: 'export_pdf', methods: ['GET'])]
+    public function exportPdf(Bilan $bilan, \Endroid\QrCode\Builder\BuilderInterface $customQrCodeBuilder): Response
+    {
+        // Generation du QR Code
+        $statut = $bilan->getResultatNet() >= 0 ? 'Beneficiaire' : 'Deficitaire';
+        $franchiseNom = $bilan->getFranchiseId() ? $bilan->getFranchiseId()->getNom() : 'SIEGE PRINCIPAL';
+        
+        $qrData = sprintf(
+            "Bilan N. %d - Franchise: %s - Solde: %s TND - Statut: %s",
+            $bilan->getId(),
+            $franchiseNom,
+            ($bilan->getResultatNet() >= 0 ? '+' : '') . number_format($bilan->getResultatNet(), 3, '.', ''),
+            $statut
+        );
+
+        $result = $customQrCodeBuilder->build(
+            size: 150,
+            margin: 5,
+            data: $qrData,
+            foregroundColor: new \Endroid\QrCode\Color\Color(0, 212, 255), // Cyan #00d4ff
+            backgroundColor: new \Endroid\QrCode\Color\Color(26, 31, 44) // Bleu nuit #1a1f2c (fond)
+        );
+
+        $qrCodeUri = $result->getDataUri();
+
+        // 1. Configurer Dompdf
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->set('isRemoteEnabled', true); // Permet de charger des images si besoin
+
+        $dompdf = new Dompdf($pdfOptions);
+
+        // 2. Générer le HTML depuis le template Twig
+        $html = $this->renderView('bilan/bilan_pdf.html.twig', [
+            'bilan' => $bilan,
+            'qr_code_uri' => $qrCodeUri
+        ]);
+
+        // 3. Charger le HTML dans Dompdf
+        $dompdf->loadHtml($html);
+
+        // 4. Configurer la taille du papier (A4, portrait)
+        $dompdf->setPaper('A4', 'portrait');
+
+        // 5. Rendre le HTML en PDF
+        $dompdf->render();
+
+        // 6. Renvoyer le PDF pour qu'il soit téléchargé (via Symfony Response)
+        $pdfOutput = $dompdf->output();
+        
+        $filename = "Bilan_Financier_" . $bilan->getMois() . "_" . $bilan->getAnnee() . ".pdf";
+
+        return new Response($pdfOutput, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    #[Route('/email/{id}', name: 'app_bilan_email', methods: ['POST', 'GET'])]
+    public function sendEmail(Bilan $bilan, MailerInterface $mailer, \Endroid\QrCode\Builder\BuilderInterface $customQrCodeBuilder): Response
+    {
+        // 1. Déterminer le destinataire
+        $franchise = $bilan->getFranchiseId();
+        $destinataire = $franchise && $franchise->getEmail() ? $franchise->getEmail() : 'franchise.test@boussole.com';
+        $franchiseNom = $franchise ? $franchise->getNom() : 'SIEGE PRINCIPAL';
+
+        // 2. Générer le PDF (recyclage de la logique exportPdf)
+        $statut = $bilan->getResultatNet() >= 0 ? 'Beneficiaire' : 'Deficitaire';
+        $qrData = sprintf(
+            "Bilan N. %d - Franchise: %s - Solde: %s TND - Statut: %s",
+            $bilan->getId(),
+            $franchiseNom,
+            ($bilan->getResultatNet() >= 0 ? '+' : '') . number_format($bilan->getResultatNet(), 3, '.', ''),
+            $statut
+        );
+
+        $result = $customQrCodeBuilder->build(
+            size: 150, margin: 5, data: $qrData,
+            foregroundColor: new \Endroid\QrCode\Color\Color(0, 212, 255),
+            backgroundColor: new \Endroid\QrCode\Color\Color(26, 31, 44)
+        );
+        $qrCodeUri = $result->getDataUri();
+
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->set('isRemoteEnabled', true);
+        $dompdf = new Dompdf($pdfOptions);
+
+        $html = $this->renderView('bilan/bilan_pdf.html.twig', [
+            'bilan' => $bilan,
+            'qr_code_uri' => $qrCodeUri
+        ]);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $pdfOutput = $dompdf->output();
+        $pdfFilename = "Bilan_" . $bilan->getMois() . "_" . $bilan->getAnnee() . ".pdf";
+
+        // 3. Préparer et envoyer l'e-mail
+        $emailObj = (new TemplatedEmail())
+            ->from(new Address('no-reply@boussole.com', 'Boussole Admin'))
+            ->to($destinataire)
+            ->subject('Votre Bilan Mensuel - ' . $bilan->getMois() . '/' . $bilan->getAnnee())
+            ->htmlTemplate('email/bilan_mensuel.html.twig')
+            ->context([
+                'franchiseNom' => $franchiseNom,
+                'mois' => $bilan->getMois(),
+                'annee' => $bilan->getAnnee(),
+                'recettes' => $bilan->getTotalRecettes(),
+                'charges' => $bilan->getTotalCharges(),
+                'resultat' => $bilan->getResultatNet(),
+            ])
+            ->attach($pdfOutput, $pdfFilename, 'application/pdf');
+
+        $mailer->send($emailObj);
+
+        $this->addFlash('success', 'Email de bilan envoyé avec succès à ' . $destinataire);
+
+        return $this->redirectToRoute('app_bilan_index');
+    }
+
+    #[Route('/cloturer', name: 'app_cloturer_mois', methods: ['POST'])]
+    public function cloturerMois(
+        Request $request, 
+        \App\Service\ClotureFinanciereService $clotureService,
+        EntityManagerInterface $entityManager
+    ): Response
+    {
+        $franchiseId = $request->request->get('franchise_id');
+        $mois = (int) $request->request->get('mois', date('m'));
+        $annee = (int) $request->request->get('annee', date('Y'));
+
+        // On cherche la franchise
+        $franchise = $entityManager->getRepository(Franchises::class)->find($franchiseId);
+        
+        if (!$franchise) {
+            $this->addFlash('danger', 'Franchise non trouvée pour la clôture !');
+            return $this->redirectToRoute('app_bilan_index');
+        }
+
+        try {
+            $clotureService->cloturerMois($franchise, $mois, $annee);
+            $this->addFlash('success', "Le mois $mois/$annee a été clôturé et le Bilan a été généré avec succès pour {$franchise->getNom()}.");
+        } catch (\Exception $e) {
+            $this->addFlash('danger', 'Erreur lors de la clôture : ' . $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_bilan_index');
     }
 }

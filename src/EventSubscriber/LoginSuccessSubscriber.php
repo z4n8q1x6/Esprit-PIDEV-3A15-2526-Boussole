@@ -34,8 +34,8 @@ class LoginSuccessSubscriber implements EventSubscriberInterface
         $user = $event->getUser();
         $roles = $user->getRoles();
 
-        if (in_array('ROLE_ADMIN', $roles, true)) {
-            $url = $this->urlGenerator->generate('app_admin_entreprise');
+        if (in_array('SIEGE', $roles, true) || in_array('ROLE_ADMIN', $roles, true)) {
+            $url = $this->urlGenerator->generate('app_siege_dashboard');
         } elseif (in_array('ROLE_ENTREPRISE', $roles, true) || in_array('ROLE_FRANCHISE', $roles, true)) {
             $url = $this->urlGenerator->generate('app_front_home');
         } else {

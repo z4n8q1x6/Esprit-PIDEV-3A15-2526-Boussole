@@ -11,9 +11,7 @@
                     <h4 class="mb-0">{% if is_edit|default(false) %}Modifier le Fournisseur{% else %}Ajouter un Fournisseur{% endif %}</h4>
                 </div>
                 <div class="card-body p-4">
-                    {% for message in app.flashes('success') %}
-                        <div class="alert alert-success">{{ message }}</div>
-                    {% endfor %}
+
 
                     {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
                         <div class="mb-3">

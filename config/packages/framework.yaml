@@ -2,8 +2,14 @@
 framework:
     secret: '%env(APP_SECRET)%'
 
-    # Note that the session will be started ONLY if you read or write from it.
-    session: true
+    # Keep sessions inside the project so the login CSRF token is stored
+    # consistently, regardless of the web server/PHP tmp directory in use.
+    session:
+        handler_id: null
+        storage_factory_id: session.storage.factory.native
+        save_path: '%kernel.project_dir%/var/sessions/%kernel.environment%'
+        cookie_secure: auto
+        cookie_samesite: lax
 
     #esi: true
     #fragments: true

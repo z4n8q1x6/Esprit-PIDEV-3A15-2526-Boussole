@@ -52,7 +52,7 @@ final class ReclamationController extends AbstractController
             $reclamation->setFranchise_id($franchise);
             $this->em->persist($reclamation);
             $this->em->flush();
-            $this->addFlash('success', 'Reclamation added successfully.');
+            $this->addFlash('success', 'Réclamation ajoutée avec succès.');
             return $this->redirectToRoute('reclamation_index');
         }
         return $this->render('reclamation/new.html.twig', [
@@ -67,7 +67,7 @@ final class ReclamationController extends AbstractController
         if ($this->isCsrfTokenValid('delete-item', $submitedToken)) {
             $this->em->remove($reclamation);
             $this->em->flush();
-            $this->addFlash('success', 'Reclamation deleted successfully.');
+            $this->addFlash('success', 'Réclamation supprimée avec succès.');
         }
         return $this->redirectToRoute('reclamation_index');
     }

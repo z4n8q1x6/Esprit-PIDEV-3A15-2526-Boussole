@@ -1,0 +1,55 @@
+{% extends 'front_base.html.twig' %}
+
+{% block title %}Vérification du Bilan - Boussole{% endblock %}
+
+{% block body %}
+<div class="container py-5 d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card border-0 shadow-lg" style="border-radius: 15px; max-width: 500px; width: 100%;">
+        <div class="card-header text-center border-0 py-4" style="background: linear-gradient(135deg, #0b0f19, #1a1f2c); border-radius: 15px 15px 0 0;">
+            <i class="fas fa-check-circle" style="font-size: 3rem; color: #00d4ff; margin-bottom: 10px;"></i>
+            <h4 class="text-white mb-0" style="font-family: 'Montserrat', sans-serif;">Document Certifié Authentique</h4>
+            <p class="text-muted small mb-0 mt-1">Plateforme Boussole Management</p>
+        </div>
+        
+        <div class="card-body p-4 bg-white text-dark">
+            <h5 class="fw-bold mb-4 border-bottom pb-2" style="color: #0b0f19;">Détails du Bilan N° {{ bilan.id }}</h5>
+            
+            <div class="mb-3">
+                <span class="text-muted d-block small text-uppercase fw-bold">Période Concernée</span>
+                <span class="fs-5 fw-bold" style="color: #1a1f2c;">
+                    {% set mois_fr = ['', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'] %}
+                    {{ mois_fr[bilan.mois] }} {{ bilan.annee }}
+                </span>
+            </div>
+            
+            <div class="mb-3">
+                <span class="text-muted d-block small text-uppercase fw-bold">Franchise Mère</span>
+                <span class="fs-5" style="color: #1a1f2c;">
+                    {% if bilan.franchiseId %}{{ bilan.franchiseId.nom }}{% else %}SIÈGE PRINCIPAL{% endif %}
+                </span>
+            </div>
+
+            <div class="mb-4">
+                <span class="text-muted d-block small text-uppercase fw-bold">Solde Net Vérifié</span>
+                {% if bilan.resultatNet >= 0 %}
+                    <span class="fs-4 fw-bold" style="color: #00b894;">+{{ bilan.resultatNet|number_format(3, ',', ' ') }} TND</span>
+                {% else %}
+                    <span class="fs-4 fw-bold text-danger">{{ bilan.resultatNet|number_format(3, ',', ' ') }} TND</span>
+                {% endif %}
+            </div>
+
+            <div class="alert alert-success d-flex align-items-center" role="alert" style="background-color: rgba(0,212,255,0.1); border-color: #00d4ff; color: #008eb3; border-radius: 10px;">
+                <i class="fas fa-shield-alt me-3 fs-3"></i>
+                <div>
+                    <strong>Signature Numérique Valide.</strong><br>
+                    <small>Ce document a été généré via le réseau Boussole et ne montre aucune altération.</small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-footer bg-light border-0 text-center py-3" style="border-radius: 0 0 15px 15px;">
+            <small class="text-muted">© {{ "now"|date("Y") }} Boussole Management. Tous droits réservés.</small>
+        </div>
+    </div>
+</div>
+{% endblock %}
