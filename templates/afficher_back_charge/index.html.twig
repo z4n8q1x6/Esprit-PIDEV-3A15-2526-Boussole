@@ -6,10 +6,15 @@
 <div class="container mt-4">
     {# En-tête avec titre + bouton Ajouter #}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0 fw-bold text-dark">Gestion des Charges</h2>
-        <a href="{{ path('app_ajouter_charge') }}" class="btn btn-add-modern">
-            <i class="fas fa-plus-circle me-2"></i> Ajouter une charge
-        </a>
+        <h2 class="mb-0 fw-bold back-page-title">Gestion des Charges</h2>
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_afficher_back_charge_mail') }}" class="btn btn-mail-modern">
+                <i class="fas fa-envelope me-2"></i> Mail
+            </a>
+            <a href="{{ path('app_ajouter_charge') }}" class="btn btn-add-modern">
+                <i class="fas fa-plus-circle me-2"></i> Ajouter une charge
+            </a>
+        </div>
     </div>
 
     {# Barre de recherche #}
@@ -103,13 +108,43 @@
             </div>
         </div>
 
-        {# Footer : Total des charges #}
-        <div class="card-footer bg-white border-top-0 py-3">
-            <div class="d-flex justify-content-end">
-                <div class="total-badge-modern">
-                    <span class="label">Total Charges</span>
-                    <span class="count"><span id="totalDisplay">{{ total_charges|number_format(2, ',', ' ') }}</span> TND</span>
+        {# Footer : 3 Cartes de Totaux (USD, EUR, TND) #}
+        <div class="card-footer bg-transparent border-top-0 py-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-4">
+                
+                {# Card USD #}
+                <div class="total-card-modern shadow-sm">
+                    <div class="card-top">
+                        <span class="label">Equiv. Dollars</span>
+                        <span class="count bg-usd"><span id="totalUsdDisplay">{{ total_usd|number_format(2, ',', ' ') }}</span> $</span>
+                    </div>
+                    <div class="card-bottom text-success">
+                        <i class="fas fa-sync-alt me-1"></i> 1 TND = {{ rates.usd|number_format(4) }} $
+                    </div>
                 </div>
+
+                {# Card EUR #}
+                <div class="total-card-modern shadow-sm">
+                    <div class="card-top">
+                        <span class="label">Equiv. Euros</span>
+                        <span class="count bg-eur"><span id="totalEurDisplay">{{ total_eur|number_format(2, ',', ' ') }}</span> €</span>
+                    </div>
+                    <div class="card-bottom text-danger">
+                        <i class="fas fa-sync-alt me-1"></i> 1 TND = {{ rates.eur|number_format(4) }} €
+                    </div>
+                </div>
+
+                {# Card TND (Principal) #}
+                <div class="total-card-modern shadow-sm border-primary">
+                    <div class="card-top">
+                        <span class="label">Total en Dinars</span>
+                        <span class="count bg-tnd"><span id="totalDisplay">{{ total_charges|number_format(2, ',', ' ') }}</span> <small>TND</small></span>
+                    </div>
+                    <div class="card-bottom text-primary">
+                        <i class="fas fa-wallet me-1"></i> Devise de base
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -134,6 +169,16 @@
 ">Modification enregistrée !</div>
 
 <style>
+/* Style pour titres contrastés en mode sombre */
+.back-page-title {
+    color: #1a1a1a;
+    transition: color 0.3s ease;
+}
+
+[data-bs-theme="dark"] .back-page-title {
+    color: #f8f9fa !important;
+}
+
 .editable-cell {
     padding: 4px 8px;
     margin: -4px -8px;
@@ -193,6 +238,24 @@ th[data-sort]:hover {
     filter: brightness(1.1);
 }
 
+.btn-mail-modern {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    color: white !important;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(78, 115, 223, 0.2);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-mail-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(78, 115, 223, 0.3);
+    filter: brightness(1.1);
+}
+
 .btn-delete-modern {
     color: #dc3545;
     background: transparent;
@@ -212,39 +275,70 @@ th[data-sort]:hover {
     transform: scale(1.1);
 }
 
-.total-badge-modern {
+.total-card-modern {
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 14px;
+    overflow: hidden;
+    min-width: 240px;
+    transition: transform 0.2s ease;
+}
+.total-card-modern:hover {
+    transform: translateY(-3px);
+}
+.total-card-modern .card-top {
     display: flex;
     align-items: center;
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 12px;
-    padding: 8px 16px;
-    gap: 12px;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    justify-content: space-between;
+    padding: 12px 16px;
+    gap: 15px;
 }
-.total-badge-modern .label {
-    color: #6c757d;
+.total-card-modern .card-bottom {
+    background: rgba(0,0,0,0.02);
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    color: #495057;
+    font-weight: 700;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+.total-card-modern .label {
+    color: #495057;
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
 }
-.total-badge-modern .count {
-    background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+.total-card-modern .count {
     color: white;
-    padding: 2px 14px;
-    border-radius: 20px;
-    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 50px;
+    font-weight: 800;
     font-size: 1.1rem;
-    box-shadow: 0 2px 5px rgba(13, 110, 253, 0.3);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.bg-usd { background: linear-gradient(135deg, #198754 0%, #146c43 100%); }
+.bg-eur { background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%); }
+.bg-tnd { background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%); }
+
+.border-primary {
+    border: 1px solid #0d6efd !important;
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var searchInput = document.getElementById('searchInput');
-    var tableBody   = document.getElementById('tableBody');
-    var rows        = tableBody.getElementsByTagName('tr');
+    /* ===== 0. TAUX DE CHANGE (BACKEND) ===== */
+    const EXCHANGE_RATES = {
+        eur: {{ rates.eur|default(0) }},
+        usd: {{ rates.usd|default(0) }}
+    };
+
+    function formatCurrency(num) {
+        return Number(num).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
 
     /* ===== 1. RECHERCHE EN TEMPS RÉEL ===== */
     searchInput.addEventListener('keyup', function() {
@@ -350,8 +444,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     showToast('Modification enregistrée !', false);
                     oldValues[field + id] = value; // Mise à jour de la valeur de référence
                     if (data.newTotal !== undefined) {
-                        document.getElementById('totalDisplay').innerText =
-                            Number(data.newTotal).toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+                        const newTotal = Number(data.newTotal);
+                        document.getElementById('totalDisplay').innerText = formatCurrency(newTotal);
+
+                        // Mise à jour des conversions dynamiques
+                        document.getElementById('totalEurDisplay').innerText = formatCurrency(newTotal * EXCHANGE_RATES.eur);
+                        document.getElementById('totalUsdDisplay').innerText = formatCurrency(newTotal * EXCHANGE_RATES.usd);
                     }
                 } else {
                     showToast('Erreur : ' + data.message, true);
@@ -376,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var value = this.value;
             var id    = this.closest('tr').getAttribute('data-id');
 
-            fetch('/afficher_back_charge/edit/' + id, {
+            fetch('/admin/afficher_back_charge/edit/' + id, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
                 body: JSON.stringify({ field: field, value: value })
