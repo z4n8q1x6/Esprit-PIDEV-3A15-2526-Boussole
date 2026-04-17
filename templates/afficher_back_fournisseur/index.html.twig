@@ -6,10 +6,15 @@
 <div class="container mt-4">
     {# En-tête avec titre + bouton Ajouter #}
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0 fw-bold text-dark">Gestion des Fournisseurs</h2>
-        <a href="{{ path('app_ajouter_fournisseur') }}" class="btn btn-add-modern">
-            <i class="fas fa-plus-circle me-2"></i> Ajouter un fournisseur
-        </a>
+        <h2 class="mb-0 fw-bold back-page-title">Gestion des Fournisseurs</h2>
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_afficher_back_fournisseur_mail') }}" class="btn btn-mail-modern">
+                <i class="fas fa-envelope me-2"></i> Mail
+            </a>
+            <a href="{{ path('app_ajouter_fournisseur') }}" class="btn btn-add-modern">
+                <i class="fas fa-plus-circle me-2"></i> Ajouter un fournisseur
+            </a>
+        </div>
     </div>
 
     {# Barre de recherche #}
@@ -95,24 +100,8 @@
     </div>
 </div>
 
-{# Toast de notification #}
-<div id="toast" style="
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background-color: #198754;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    z-index: 9999;
-    font-weight: 500;
-    font-size: 0.9rem;
-    pointer-events: none;
-">Modification enregistrée !</div>
+{# SweetAlert2 CDN pour notifications AJAX #}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
 .editable-cell {
@@ -188,6 +177,33 @@ th[data-sort]:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(25, 135, 84, 0.3);
     filter: brightness(1.1);
+}
+
+.btn-mail-modern {
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    color: white !important;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 24px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(78, 115, 223, 0.2);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-mail-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(78, 115, 223, 0.3);
+    filter: brightness(1.1);
+}
+
+.back-page-title {
+    color: #1a1a1a;
+    transition: color 0.3s ease;
+}
+
+[data-bs-theme="dark"] .back-page-title {
+    color: #f8f9fa !important;
 }
 
 .btn-delete-modern {
@@ -286,17 +302,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    /* ===== 3. TOAST ===== */
+    /* ===== 3. TOAST (SweetAlert2) ===== */
     function showToast(message, isError) {
-        var toast = document.getElementById('toast');
-        toast.textContent = message;
-        toast.style.backgroundColor = isError ? '#dc3545' : '#198754';
-        toast.style.transform = 'translateY(0)';
-        toast.style.opacity = '1';
-        setTimeout(function() {
-            toast.style.transform = 'translateY(100px)';
-            toast.style.opacity = '0';
-        }, 3000);
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: '#1e293b',
+            color: '#fff'
+        });
+        Toast.fire({
+            icon: isError ? 'error' : 'success',
+            title: message
+        });
     }
 
     /* ===== 4. ÉDITION EN LIGNE AJAX AVEC CONTROLE DE SAISIE ===== */

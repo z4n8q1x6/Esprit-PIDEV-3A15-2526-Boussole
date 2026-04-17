@@ -9,9 +9,90 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class AfficherFrontChargeController extends AbstractController
 {
+    #[Route('/charge/pdf/{id}', name: 'app_charge_pdf')]
+    public function pdf(Charge $charge): Response
+    {
+        $pdfOptions = new Options();
+        $pdfOptions->set('defaultFont', 'Arial');
+        $pdfOptions->set('isRemoteEnabled', true);
+        
+        $dompdf = new Dompdf($pdfOptions);
+        
+        $dateStr = (new \DateTime())->format('d/m/Y H:i');
+        $chargeDate = $charge->getDateCharge()->format('d/m/Y');
+        $montant = number_format($charge->getMontant(), 2, ',', ' ');
+        $franchise = $charge->getFranchiseId() ? $charge->getFranchiseId()->getNom() : 'Non spécifié';
+        $titre = $charge->getTitre();
+        $type = $charge->getType();
+        $status = $charge->getStatusValidation();
+        $id = $charge->getId();
+
+        // Logo Base64
+        $logoPath = $this->getParameter('kernel.project_dir') . '/public/assets/images/logoboussole.png';
+        $logoBase64 = '';
+        if (file_exists($logoPath)) {
+            $logoBase64 = 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath));
+        }
+
+        $html = <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: 'Helvetica', sans-serif; color: #333; margin: 0; padding: 0; }
+        .header { background: #1d3b53; color: white; padding: 30px 20px; text-align: center; }
+        .header img { height: 60px; margin-bottom: 10px; }
+        .header h1 { margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
+        .content { padding: 40px; }
+        .document-title { color: #1d3b53; font-size: 20px; font-weight: bold; border-bottom: 2px solid #0d6efd; margin-bottom: 30px; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th { text-align: left; color: #6c757d; font-size: 13px; text-transform: uppercase; padding: 15px 10px; border-bottom: 1px solid #eee; width: 35%; }
+        td { padding: 18px 10px; border-bottom: 1px solid #f8f9fa; font-size: 16px; color: #212529; }
+        .amount-box { background: #f8f9fa; border-left: 5px solid #0d6efd; padding: 30px; text-align: right; margin-top: 20px; }
+        .footer { position: fixed; bottom: 0; width: 100%; padding: 20px; text-align: center; font-size: 11px; color: #adb5bd; border-top: 1px solid #eee; }
+        .badge { background: #e9ecef; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{$logoBase64}" alt="Logo">
+        <h1>BOUSSOLE</h1>
+        <p>Rapport de Charge Certifié</p>
+    </div>
+    <div class="content">
+        <div class="document-title">Récapitulatif de la Dépense</div>
+        <table>
+            <tr><th>Titre de la charge</th><td><strong>{$titre}</strong></td></tr>
+            <tr><th>Catégorie / Type</th><td>{$type}</td></tr>
+            <tr><th>Date d'émission</th><td>{$chargeDate}</td></tr>
+            <tr><th>Statut</th><td><span class="badge">{$status}</span></td></tr>
+            <tr><th>Franchise associée</th><td>{$franchise}</td></tr>
+        </table>
+        <div class="amount-box">
+            <div style="font-size:14px; color:#6c757d; margin-bottom:5px;">Montant Total de la Charge</div>
+            <div style="font-size:32px; font-weight:bold; color:#1d3b53;">{$montant} TND</div>
+        </div>
+    </div>
+    <div class="footer">Document généré le {$dateStr} par la plateforme Boussole.</div>
+</body>
+</html>
+HTML;
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        return new Response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="charge_'.$id.'.pdf"'
+        ]);
+    }
     #[Route('/charge/delete/{id}', name: 'app_charge_delete', methods: ['POST', 'GET'])]
     public function delete(Charge $charge, EntityManagerInterface $entityManager): Response
     {
@@ -62,6 +143,77 @@ class AfficherFrontChargeController extends AbstractController
             $totalMontant += $c['montant'];
         }
 
+        // Statistiques globales (sur tous les résultats filtrés)
+        $statsStatus = ['Validé' => 0, 'Refusé' => 0, 'En attente' => 0];
+        $statsType = ['Financière' => 0, 'Exploitation' => 0, 'Exceptionnelle' => 0];
+
+        foreach ($allCharges as $c) {
+            // Statut
+            $status = $c['status_validation'] ?? 'En attente';
+            if (isset($statsStatus[$status])) {
+                $statsStatus[$status]++;
+            } else {
+                $statsStatus['En attente']++;
+            }
+
+            // Type
+            $type = $c['type'] ?? '';
+            if ($type === 'CHARGES_FINANCIERES') $statsType['Financière']++;
+            elseif ($type === 'CHARGES_EXPLOITATIONS') $statsType['Exploitation']++;
+            elseif ($type === 'CHARGES_EXCEPTIONNELLES') $statsType['Exceptionnelle']++;
+        }
+
+        // --- NOUVEAU METIER AVANCÉ : Score de Priorité Financière ---
+        $today = new \DateTime();
+        $seuilUrgence = 490; // Seuil proposé : 490
+        $hasUrgence = false;
+        $allScoredCharges = [];
+
+        foreach ($allCharges as $c) {
+            $dateCharge = $c['date_charge'] ?? null;
+            if (is_string($dateCharge)) {
+                $dateCharge = new \DateTime($dateCharge);
+            }
+            
+            $days = 0;
+            if ($dateCharge instanceof \DateTimeInterface) {
+                // Calcul de l'ancienneté (différence absolue en jours)
+                $days = $today->diff($dateCharge)->days;
+            }
+
+            $score = $days;
+            $statusStr = mb_strtolower($c['status_validation'] ?? '', 'UTF-8');
+            
+            // Si "valide", on multiplie par 40% (x1.4)
+            // Si "en attente", on multiplie par 20% (x1.2)
+            // Sinon le score reste le même
+            if (str_contains($statusStr, 'valid')) {
+                $score = $score * 1.4;
+            } elseif (str_contains($statusStr, 'attente')) {
+                $score = $score * 1.2;
+            }
+
+            $score = round($score);
+            
+            if ($score >= $seuilUrgence) {
+                $hasUrgence = true;
+            }
+            
+            $item = [
+                'id' => $c['id'],
+                'titre' => $c['titre'],
+                'montant' => $c['montant'],
+                'status' => $c['status_validation'] ?? 'Inconnu',
+                'date_str' => $dateCharge instanceof \DateTimeInterface ? $dateCharge->format('d/m/Y') : 'N/A',
+                'score' => $score
+            ];
+            $allScoredCharges[] = $item;
+        }
+
+        // Trier du plus urgent au moins urgent
+        usort($allScoredCharges, fn($a, $b) => $b['score'] <=> $a['score']);
+        // -----------------------------------------------------------
+
         return $this->render('afficher_front_charge/index.html.twig', [
             'charges' => $charges,
             'total' => $totalMontant,
@@ -69,7 +221,109 @@ class AfficherFrontChargeController extends AbstractController
             'pagesCount' => $pagesCount,
             'search' => $search,
             'sort' => $sort,
-            'dir' => $dir
+            'dir' => $dir,
+            'statsStatus' => $statsStatus,
+            'statsType' => $statsType,
+            'scoredCharges' => $allScoredCharges,
+            'hasUrgence' => $hasUrgence,
+            'seuilUrgence' => $seuilUrgence
         ]);
+    }
+
+    #[Route('/afficher_front_charge/conseils', name: 'app_front_charge_conseils')]
+    public function conseils(ChargeRepository $repo, Request $request): Response
+    {
+        $search = $request->query->get('q', '');
+        
+        $qb = $repo->createQueryBuilder('c')
+            ->leftJoin('c.franchise_id', 'f')
+            ->addSelect('f');
+
+        if (!empty($search)) {
+            $qb->andWhere('c.titre LIKE :search OR c.type LIKE :search OR c.status_validation LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        // Utilisation de getArrayResult pour correspondre à la vue indexssss
+        $allCharges = $qb->getQuery()->getArrayResult();
+        
+        if (empty($allCharges)) {
+            return $this->json([
+                'success' => false,
+                'message' => "Aucune donnée correspondant à votre recherche n'a été trouvée pour l'analyse."
+            ]);
+        }
+
+        $totalDepenses = 0;
+        $parCategorie = [];
+
+        foreach ($allCharges as $charge) {
+            $montant = (float) $charge['montant'];
+            $totalDepenses += $montant;
+            $type = (string) $charge['type'];
+
+            if (!isset($parCategorie[$type])) {
+                $parCategorie[$type] = [
+                    'montant' => 0,
+                    'count' => 0,
+                    'label' => $this->translateType($type)
+                ];
+            }
+            $parCategorie[$type]['montant'] += $montant;
+            $parCategorie[$type]['count']++;
+        }
+
+        $moyenneParCharge = $totalDepenses / count($allCharges);
+
+        $stats = [];
+        foreach ($parCategorie as $type => $data) {
+            $pourcentage = ($data['montant'] / $totalDepenses) * 100;
+            $stats[] = [
+                'type' => $type,
+                'label' => $data['label'],
+                'montant' => $data['montant'], // On garde le float pour le tri
+                'montant_format' => number_format($data['montant'], 2, ',', ' '),
+                'pourcentage' => round($pourcentage, 1),
+                'count' => $data['count'],
+                'conseil' => $this->getExtendedAdvice($type, round($pourcentage, 1))
+            ];
+        }
+
+        // Tri par montant décroissant (plus robuste)
+        usort($stats, fn($a, $b) => $b['montant'] <=> $a['montant']);
+
+        return $this->json([
+            'success' => true,
+            'total' => number_format($totalDepenses, 2, ',', ' '),
+            'moyenne' => number_format($moyenneParCharge, 2, ',', ' '),
+            'count' => count($allCharges),
+            'stats' => $stats
+        ]);
+    }
+
+    private function translateType(string $type): string
+    {
+        return match ($type) {
+            'CHARGES_EXPLOITATIONS' => 'Exploitation',
+            'CHARGES_FINANCIERES' => 'Financière',
+            'CHARGES_EXCEPTIONNELLES' => 'Exceptionnelle',
+            default => $type,
+        };
+    }
+
+    private function getExtendedAdvice(string $type, float $pourcentage): string
+    {
+        $baseAdvice = match ($type) {
+            'CHARGES_EXPLOITATIONS' => "<b>Exploitation :</b> Ces charges représentent le cœur de votre activité. Si elles sont élevées (>$pourcentage%), envisagez de renégocier les contrats fournisseurs ou d'optimiser vos processus de production.",
+            'CHARGES_FINANCIERES' => "<b>Financier :</b> Ce poste concerne vos frais bancaires et intérêts. Un pourcentage élevé ($pourcentage%) peut indiquer un endettement lourd. Vérifiez vos taux d'intérêt.",
+            'CHARGES_EXCEPTIONNELLES' => "<b>Exceptionnel :</b> Par nature imprévisibles, ces charges ne devraient pas peser lourd ($pourcentage%). Si elles dépassent 10%, analysez leur origine réelle.",
+            default => "Analyse standard pour ce type de charge.",
+        };
+
+        if ($pourcentage > 40) {
+            $baseAdvice .= " <span class='text-danger'><b>Attention :</b> Cette catégorie est prédominante.</span>";
+        }
+
+        return $baseAdvice;
     }
 }

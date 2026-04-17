@@ -13,5 +13,20 @@ class ReclamationsRepository extends ServiceEntityRepository
         parent::__construct($registry, Reclamations::class);
     }
 
-    // Add custom methods as needed
+    public function searchAndSort(?string $search, string $sort, string $direction, $franchise_id = null)
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->andWhere('r.sujet LIKE :search')
+            ->setParameter('search', '%' . $search . '%');
+
+        // for non admin
+        if ($franchise_id !== null) {
+            $qb->andWhere('r.franchise_id = :f')
+               ->setParameter('f', $franchise_id);
+        }
+
+        return $qb->orderBy('r.' . $sort, $direction)
+            ->getQuery()
+            ->getResult();
+    }
 }

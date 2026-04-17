@@ -134,16 +134,16 @@
 <main>
 
 <!-- Sidebar START -->
-<nav class="navbar sidebar navbar-expand-xl navbar-dark bg-dark">
+<nav class="navbar sidebar navbar-expand-xl">
 
 	<!-- Navbar brand for xl START -->
-<div class="d-flex align-items-center mt-2 px-3 pb-2 pt-2 border-bottom border-secondary border-opacity-25" style="background-color: #1a1b24;">
+<div class="d-flex align-items-center mt-2 px-3 pb-2 pt-2 border-bottom border-secondary border-opacity-25" style="background-color: transparent;">
 <a class="navbar-brand d-flex align-items-center" href="{{ path('app_siege_dashboard') }}">
 <div class="header-logo-icon rounded me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; border: 2px solid #00e5ff !important; box-shadow: 0 0 12px rgba(0, 229, 255, 0.4); background-color: transparent;">
-                <i class="bi bi-display text-white fs-4"></i>
+                <i class="bi bi-display fs-4" style="color: #00e5ff;"></i>
             </div>
             <div>
-                <h4 class="text-white mb-0 fw-bold" style="letter-spacing: 0.5px;">Boussole</h4>
+                <h4 class="mb-0 fw-bold text-body" style="letter-spacing: 0.5px;">Boussole</h4>
                 <small class="mb-0 fw-bold" style="color: #00e5ff; font-size: 0.65rem; letter-spacing: 1.5px;">MANAGEMENT</small>
             </div>
 </a>
@@ -151,7 +151,7 @@
 <!-- Navbar brand for xl END -->
 
 	<div class="offcanvas offcanvas-start flex-row custom-scrollbar h-100" data-bs-backdrop="true" tabindex="-1" id="offcanvasSidebar">
-		<div class="offcanvas-body sidebar-content d-flex flex-column bg-dark" style="overflow-y: auto; overflow-x: hidden;">
+		<div class="offcanvas-body sidebar-content d-flex flex-column" style="overflow-y: auto; overflow-x: hidden;">
 
 			<!-- Sidebar menu START -->
 			<ul class="navbar-nav flex-column mt-3" id="navbar-sidebar" style="flex: 1; overflow-y: auto; overflow-x: hidden;">
@@ -189,19 +189,19 @@
 			<!-- Sidebar footer START -->
 			<div class="px-3 mt-auto pt-3 pb-4">
                 <!-- User profile box -->
-				<div class="d-flex align-items-center p-3 mb-3 rounded shadow" style="background-color: #2b2b36;">
+				<div class="d-flex align-items-center p-3 mb-3 rounded shadow" style="background-color: rgba(128, 128, 128, 0.1);">
                     <div class="avatar avatar-sm me-3 d-flex align-items-center justify-content-center fw-bold" style="background-color: #00e5ff; color: #1a1a24; border-radius: 8px;">
                         AD
                     </div>
                     <div>
-                        <h6 class="mb-0 text-white fw-bold" style="font-size: 0.85rem;">admin@boussole.tn</h6>
+                        <h6 class="mb-0 fw-bold text-body" style="font-size: 0.85rem;">admin@boussole.tn</h6>
                         <small class="mb-0" style="color: #00ff88; font-size: 0.75rem;"><i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i>En ligne</small>
                     </div>
 				</div>
 
                 
                 <!-- Logout -->
-                <a class="h6 mb-0 text-danger d-flex align-items-center ms-1 d-inline-block" href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Déconnexion" style="transition: all 0.3s;">
+                <a class="h6 mb-0 text-danger d-flex align-items-center ms-1 d-inline-block" href="{{ path('app_logout') }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Déconnexion" style="transition: all 0.3s;">
                     <i class="bi bi-power me-2 text-danger"></i> Déconnexion
                 </a>
 			</div>
@@ -224,9 +224,9 @@
 				<div class="d-flex align-items-center d-xl-none">
 					<a class="navbar-brand d-flex align-items-center" href="{{ path('app_siege_dashboard') }}">
 						<div class="header-logo-icon rounded me-2 d-flex align-items-center justify-content-center" style="width: 30px; height: 30px; border: 2px solid #00e5ff !important; box-shadow: 0 0 10px rgba(0, 229, 255, 0.5); background-color: transparent;">
-                            <i class="bi bi-display text-white" style="font-size: 0.8rem;"></i>
+                            <i class="bi bi-display" style="font-size: 0.8rem; color: #00e5ff;"></i>
                         </div>
-                        <h5 class="text-white mb-0 fw-bold ms-2">Boussole</h5>
+                        <h5 class="mb-0 fw-bold ms-2 text-body">Boussole</h5>
 					</a>
 				</div>
 				<!-- Logo END -->
@@ -272,6 +272,14 @@
 				<!-- Top bar right START -->
 				<div class="ms-xl-auto">
 					<ul class="navbar-nav flex-row align-items-center">
+
+						<!-- Gesture Mode Toggle START -->
+						<li class="nav-item ms-2 ms-md-3">
+							<a class="btn btn-outline-primary btn-round mb-0" href="javascript:void(0)" id="toggle-gesture-mode" title="Mode Capture par Geste">
+								<i class="bi bi-hand-index-thumb"></i>
+							</a>
+						</li>
+						<!-- Gesture Mode Toggle END -->
 
 						<!-- Notification dropdown START -->
 						<li class="nav-item ms-2 ms-md-3 dropdown">
@@ -417,7 +425,7 @@
 								<li><a class="dropdown-item" href="#"><i class="bi bi-person fa-fw me-2"></i>Edit Profile</a></li>
 								<li><a class="dropdown-item" href="#"><i class="bi bi-gear fa-fw me-2"></i>Account Settings</a></li>
 								<li><a class="dropdown-item" href="#"><i class="bi bi-info-circle fa-fw me-2"></i>Help</a></li>
-								<li><a class="dropdown-item bg-danger-soft-hover" href="#"><i class="bi bi-power fa-fw me-2"></i>Sign Out</a></li>
+								<li><a class="dropdown-item bg-danger-soft-hover" href="{{ path('app_logout') }}"><i class="bi bi-power fa-fw me-2"></i>Sign Out</a></li>
 								<li> <hr class="dropdown-divider"></li>
 
 								<!-- Dark mode options START -->
@@ -450,7 +458,6 @@
 <script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
 
 <!-- Vendors -->
-<script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
 
 <script src="{{ asset('assets/vendor/purecounterjs/dist/purecounter_vanilla.js') }}"></script>
 <script src="{{ asset('assets/vendor/apexcharts/js/apexcharts.min.js') }}"></script>
@@ -465,30 +472,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // 1. Système de Notifications (Toasts SweetAlert2 via app.flashes Symfony)
-    {% for label, messages in app.flashes %}
-        {% for message in messages %}
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 4000,
-                timerProgressBar: true,
-                didOpen: (toast) => {
-                    toast.addEventListener('mouseenter', Swal.stopTimer)
-                    toast.addEventListener('mouseleave', Swal.resumeTimer)
-                }
-            });
-
-            let iconType = '{{ label }}';
-            if (iconType === 'danger') iconType = 'error';
-
-            Toast.fire({
-                icon: iconType,
-                title: '{{ message | escape('js') }}'
-            });
-        {% endfor %}
-    {% endfor %}
+    // Le système de notifications est désormais géré automatiquement par PHP Flasher (Flasher SweetAlert Bundle)
 
     // 2. Système de Recherche (Filtrage du menu latéral en direct)
     const searchInput = document.getElementById('back-search-input');
@@ -517,6 +501,257 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
+<!-- Gesture & Screenshot Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", async function() {
+    const toggleBtn = document.getElementById('toggle-gesture-mode');
+    if (!toggleBtn) return;
+
+    let gestureRecognizer;
+    let gestureActive = false;
+    let video;
+    let overlayCanvas;
+    let screenStream;
+    let screenVideo;
+    let lastPoints = [];
+    const MAX_POINTS = 60;
+
+    function createOverlay() {
+        overlayCanvas = document.createElement('canvas');
+        overlayCanvas.style.position = 'fixed';
+        overlayCanvas.style.top = '0';
+        overlayCanvas.style.left = '0';
+        overlayCanvas.style.width = '100vw';
+        overlayCanvas.style.height = '100vh';
+        overlayCanvas.style.zIndex = '9999';
+        overlayCanvas.style.pointerEvents = 'none';
+        document.body.appendChild(overlayCanvas);
+        resizeOverlay();
+    }
+
+    function resizeOverlay() {
+        if (!overlayCanvas) return;
+        overlayCanvas.width = window.innerWidth;
+        overlayCanvas.height = window.innerHeight;
+    }
+
+    window.addEventListener('resize', resizeOverlay);
+
+    // Load MediaPipe safely using ESM Dynamic Import
+    async function initMediaPipe() {
+        try {
+            if (gestureRecognizer) return true;
+            
+            const mediapipe = await import("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/vision_bundle.mjs");
+            const { FilesetResolver, GestureRecognizer } = mediapipe;
+
+            const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm");
+            gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
+                baseOptions: {
+                    modelAssetPath: `https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task`,
+                    delegate: "GPU"
+                },
+                runningMode: "VIDEO",
+                numHands: 1
+            });
+            return true;
+        } catch (e) {
+            console.error("MediaPipe Init Error:", e);
+            Swal.fire({ icon: 'error', title: 'Erreur IA', text: 'Détail : ' + e.message.substring(0, 100) });
+            return false;
+        }
+    }
+
+    toggleBtn.addEventListener('click', async () => {
+        if (!gestureRecognizer) {
+            const ok = await initMediaPipe();
+            if (!ok) return;
+        }
+
+        gestureActive = !gestureActive;
+        if (gestureActive) {
+            try {
+                // Request Screen Sharing for Full Screen Capture
+                screenStream = await navigator.mediaDevices.getDisplayMedia({ 
+                    video: { cursor: "always" }, 
+                    audio: false 
+                });
+                
+                // Handle "Stop Sharing" button in browser
+                screenStream.getVideoTracks()[0].onended = () => {
+                    if (gestureActive) toggleBtn.click();
+                };
+
+                screenVideo = document.createElement('video');
+                screenVideo.srcObject = screenStream;
+                await screenVideo.play();
+
+                toggleBtn.classList.remove('btn-outline-primary');
+                toggleBtn.classList.add('btn-primary');
+                if (!overlayCanvas) createOverlay();
+                overlayCanvas.style.display = 'block';
+                
+                await startCamera(); // Human tracking camera
+                predictLoop();
+            } catch (e) {
+                console.error("Screen Share Error:", e);
+                gestureActive = false;
+                toggleBtn.classList.replace('btn-primary', 'btn-outline-primary');
+                Swal.fire({ icon: 'info', title: 'Capture annulée', text: 'Le partage d\'écran est requis pour la capture complète.' });
+            }
+        } else {
+            toggleBtn.classList.replace('btn-primary', 'btn-outline-primary');
+            if (overlayCanvas) overlayCanvas.style.display = 'none';
+            stopAllStreams();
+        }
+    });
+
+    async function startCamera() {
+        video = document.createElement('video');
+        video.style.display = 'none';
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        await video.play();
+    }
+
+    function stopAllStreams() {
+        if (video && video.srcObject) video.srcObject.getTracks().forEach(t => t.stop());
+        if (screenStream) screenStream.getTracks().forEach(t => t.stop());
+    }
+
+    function predictLoop() {
+        if (!gestureActive) return;
+        
+        const ctx = overlayCanvas.getContext('2d');
+        ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+        const now = performance.now();
+        const results = gestureRecognizer.recognizeForVideo(video, now);
+
+        if (results.landmarks && results.landmarks.length > 0) {
+            const landmarks = results.landmarks[0];
+            const indexTip = landmarks[8];
+            const x = (1 - indexTip.x) * overlayCanvas.width;
+            const y = indexTip.y * overlayCanvas.height;
+
+            // Handle Detected Gestures
+            if (results.gestures && results.gestures.length > 0) {
+                const gesture = results.gestures[0][0];
+                const label = gesture.categoryName;
+                const score = gesture.score;
+
+                if (score > 0.6) {
+                    processGesture(label);
+                    
+                    // Draw gesture text for feedback
+                    ctx.font = 'bold 24px Inter';
+                    ctx.fillStyle = '#00e5ff';
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                    ctx.fillText(`Geste : ${label}`, x + 20, y);
+                }
+            }
+
+            // Draw current finger position
+            ctx.beginPath();
+            ctx.arc(x, y, 10, 0, Math.PI * 2);
+            ctx.fillStyle = '#00e5ff';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = '#00e5ff';
+            ctx.fill();
+        }
+        
+        requestAnimationFrame(predictLoop);
+    }
+
+    let lastGestureTime = 0;
+    function processGesture(label) {
+        const now = Date.now();
+        if (now - lastGestureTime < 3000) return; // Anti-rebond global
+
+        // ✋ MAIN LEVÉE = CAPTURE
+        if (label === 'Open_Palm') {
+            lastGestureTime = now;
+            takeGestureScreenshot();
+        } 
+        
+        // 👍 POUCE LEVÉ = LOGOUT
+        else if (label === 'Thumb_Up') {
+            lastGestureTime = now;
+            Swal.fire({
+                title: 'Déconnexion ?',
+                text: "Vous allez être déconnecté par geste.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Oui, me déconnecter',
+                timer: 4000,
+                timerProgressBar: true
+            }).then((result) => {
+                if (result.isConfirmed || result.dismiss === Swal.DismissReason.timer) {
+                    window.location.href = "{{ path('app_logout') }}";
+                }
+            });
+        }
+    }
+
+    async function takeGestureScreenshot() {
+        const flash = document.createElement('div');
+        flash.style.position = 'fixed'; flash.style.top = '0'; flash.style.left = '0';
+        flash.style.width = '100vw'; flash.style.height = '100vh';
+        flash.style.backgroundColor = 'white'; flash.style.zIndex = '99999';
+        flash.style.transition = 'opacity 0.3s ease-out';
+        document.body.appendChild(flash);
+        
+        setTimeout(() => { flash.style.opacity = '0'; setTimeout(() => flash.remove(), 300); }, 50);
+
+        try {
+            // New Full Screen Capture logic using the Screen Stream
+            const captureCanvas = document.createElement('canvas');
+            captureCanvas.width = screenVideo.videoWidth;
+            captureCanvas.height = screenVideo.videoHeight;
+            const captureCtx = captureCanvas.getContext('2d');
+            captureCtx.drawImage(screenVideo, 0, 0, captureCanvas.width, captureCanvas.height);
+            
+            const link = document.createElement('a');
+            link.download = `Boussole_Full_Screen_${new Date().getTime()}.png`;
+            link.href = captureCanvas.toDataURL('image/png');
+            link.click();
+            
+            Swal.fire({
+                icon: 'success', title: 'Écran complet capturé !',
+                toast: true, position: 'top-end', showConfirmButton: false, timer: 3000
+            });
+        } catch (e) {
+            console.error("Screenshot Error:", e);
+        }
+    }
+});
+</script>
+<!-- SweetAlert2 Native Flashes for Standard Commits -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: '{{ label == "success" ? "success" : (label == "danger" or label == "error" ? "error" : "info") }}',
+                    title: '{{ message|e("js") }}',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true,
+                    background: '#1e293b',
+                    color: '#fff'
+                });
+            {% endfor %}
+        {% endfor %}
+    });
+</script>
 </body>
 
 <!-- Mirrored from eduport.webestica.com/admin-dashboard.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 07 Nov 2023 13:15:39 GMT -->

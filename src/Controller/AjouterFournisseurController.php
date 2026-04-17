@@ -27,7 +27,7 @@ class AjouterFournisseurController extends AbstractController
             $em->persist($fournisseur);
             $em->flush();
 
-            $this->addFlash('success', 'Fournisseur ajouté ! ID généré : ' . $manualId);
+            $this->addFlash('success', 'Fournisseur ajouté avec succès !');
             return $this->redirectToRoute('app_ajouter_fournisseur');
         }
 

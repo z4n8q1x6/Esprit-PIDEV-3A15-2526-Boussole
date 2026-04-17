@@ -11,6 +11,7 @@ use App\Form\BudgetPrevisionnelType;
 use App\Repository\TransactionRepository;
 use App\Repository\BilanRepository;
 use App\Repository\Budget_previsionnelRepository;
+use App\Service\CurrencyConverterService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,12 +19,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 #[Route('/transaction')]
 final class TransactionController extends AbstractController
 {
     #[Route(name: 'app_transaction_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, EntityManagerInterface $entityManager, TransactionRepository $transactionRepo): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, TransactionRepository $transactionRepo, CurrencyConverterService $currencyConverter, \App\Service\TelegramService $telegramService): Response
     {
         $transaction = new Transaction();
         $transaction->setDate(new \DateTime());
@@ -31,18 +35,65 @@ final class TransactionController extends AbstractController
         $form = $this->createForm(TransactionType::class, $transaction);
         $form->handleRequest($request);
 
-        // --- CODE TEMPORAIRE (En attendant l'authentification) ---
-        $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+        // On récupère la franchise de l'utilisateur connecté s'il y en a une
+        $user = $this->getUser();
+        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
+            $dummyFranchise = $user->getIdFranchise();
+        } else {
+            $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $transaction->setType('RECETTE');
             if ($dummyFranchise) {
                 $transaction->setFranchise_id($dummyFranchise);
             }
             $entityManager->persist($transaction);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Recette validée avec succès !');
+            // === API Alternative : VÉRIFICATION DU NOUVEAU SOLDE POUR DÉCLENCHER TELEGRAM ===
+            if ($dummyFranchise) {
+                $toutesLesTransactions = $transactionRepo->findBy(['franchise_id' => $dummyFranchise]);
+                $nouveauSolde = 0;
+                $depensesMois = 0;
+                $moisActuel = (int) (new \DateTime())->format('n');
+                $anneeActuelle = (int) (new \DateTime())->format('Y');
+
+                foreach ($toutesLesTransactions as $t) {
+                    if ($t->getType() === 'RECETTE') {
+                        $nouveauSolde += $t->getMontant();
+                    } elseif ($t->getType() === 'DEPENSE') {
+                        $nouveauSolde -= $t->getMontant();
+                        if ((int)$t->getDate()->format('n') === $moisActuel && (int)$t->getDate()->format('Y') === $anneeActuelle) {
+                            $depensesMois += $t->getMontant();
+                        }
+                    }
+                }
+
+                $budget = $entityManager->getRepository(\App\Entity\Budget_previsionnel::class)->findOneBy([
+                    'type_budget' => 'LIMITE_DEPENSE'
+                ], ['id' => 'DESC']);
+
+                $limiteDepasse = ($budget && $depensesMois > $budget->getMontant_cible());
+
+                // Condition : Solde Négatif OU Limite de Dépenses du mois dépassée
+                if ($nouveauSolde < 0 || $limiteDepasse) {
+                    $motif = ($nouveauSolde < 0) ? "Solde Négatif" : "Budget Dépassé";
+                    $messageAlerte = "🚨 <b>ALERTE CRITIQUE BOUSSOLE</b> 🚨\n\n";
+                    $messageAlerte .= "Attention ! Votre dernière transaction a déclenché une alerte automatique de type : <b>{$motif}</b>.\n\n";
+                    $messageAlerte .= "💰 Nouveau solde : <b>" . number_format($nouveauSolde, 2, ',', ' ') . " TND</b>.\n";
+                    $messageAlerte .= "📈 Dépenses cumulées du mois : <b>" . number_format($depensesMois, 2, ',', ' ') . " TND</b>.\n\n";
+                    $messageAlerte .= "<i>Veuillez vérifier vos finances au plus vite sur votre Dashboard.</i>";
+
+                    $telegramService->envoyerAlerteBudget($messageAlerte);
+                    
+                    sweetalert()->error('ALERTE ROUGE : Budget saturé ou Solde Négatif ! Une notification Telegram a été envoyée sur votre mobile.', 'Découvert !');
+                } else {
+                    $this->addFlash('success', 'Transaction validée avec succès !');
+                }
+            } else {
+                $this->addFlash('success', 'Transaction validée avec succès !');
+            }
+
             return $this->redirectToRoute('app_transaction_index',[], Response::HTTP_SEE_OTHER);
         }
 
@@ -81,12 +132,16 @@ final class TransactionController extends AbstractController
             if ($lastObjectif) { $objectifRevenu = $lastObjectif->getMontant_cible(); }
         }
 
+        // --- API 2 : Conversion du solde TND → EUR + USD en temps réel ---
+        $conversion = $currencyConverter->convertirDepuisTND($solde);
+
         return $this->render('franchise/dashboard.html.twig',[
             'transactions' => $derniersMouvements,
             'form' => $form->createView(),
             'solde' => $solde,
             'limiteDepenses' => $limiteDepenses,
             'objectifRevenu' => $objectifRevenu,
+            'conversion' => $conversion,
         ]);
     }
 
@@ -120,7 +175,13 @@ final class TransactionController extends AbstractController
         EntityManagerInterface $entityManager
     ): Response
     {
-        $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+        // On récupère la franchise de l'utilisateur connecté s'il y en a une
+        $user = $this->getUser();
+        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
+            $dummyFranchise = $user->getIdFranchise();
+        } else {
+            $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+        }
 
         $typeFilter = $request->query->get('type', 'TOUT');
         $searchQuery = $request->query->get('search', '');
@@ -165,7 +226,7 @@ final class TransactionController extends AbstractController
 
         $soldeFiltre = $totalRecettes - $totalCharges;
 
-        return $this->render('franchise/historique.html.twig',[
+        $templateVars = [
             'transactions' => $transactions,
             'nombreTransactions' => count($transactions),
             'totalRecettes' => $totalRecettes,
@@ -178,8 +239,122 @@ final class TransactionController extends AbstractController
             'currentEnd' => $dateEnd,
             'currentSort' => $sort,
             'currentDirection' => $direction
-        ]);
+        ];
+
+        // --- AJAX : renvoyer uniquement le fragment HTML (partiel) ---
+        if ($request->headers->get('X-Requested-With') === 'XMLHttpRequest') {
+            $html = $this->renderView('franchise/_transactions_list.html.twig', $templateVars);
+            return new Response($html);
+        }
+
+        return $this->render('franchise/historique.html.twig', $templateVars);
     }
+    // =========================================================================
+
+    #[Route('/historique/export', name: 'app_export_excel', methods: ['GET'])]
+    public function exportExcel(Request $request, TransactionRepository $transactionRepo, EntityManagerInterface $entityManager): Response
+    {
+        // On récupère la franchise
+        $user = $this->getUser();
+        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
+            $dummyFranchise = $user->getIdFranchise();
+        } else {
+            $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
+        }
+
+        // On récupère les mêmes filtres que l'affichage
+        $typeFilter = $request->query->get('type', 'TOUT');
+        $searchQuery = $request->query->get('search', '');
+        $periode = $request->query->get('periode', 'this_month');
+        $dateStart = $request->query->get('date_start', '');
+        $dateEnd = $request->query->get('date_end', '');
+        $sort = $request->query->get('sort', 'date');
+        $direction = $request->query->get('direction', 'DESC');
+
+        if (!in_array($sort, ['date', 'type', 'description', 'montant'])) {
+            $sort = 'date';
+        }
+
+        if ($dummyFranchise) {
+            $transactions = $transactionRepo->findFilteredTransactions(
+                $dummyFranchise, $typeFilter, $searchQuery, $periode, $dateStart, $dateEnd, $sort, $direction
+            );
+        } else {
+            $transactions = [];
+        }
+
+        // Création du fichier Excel
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Le Design Personnalisé (L'en-tête)
+        $sheet->setCellValue('A1', 'Historique des Transactions - Boussole');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(16);
+        $sheet->mergeCells('A1:D1');
+
+        // Les Colonnes du Tableau (Ligne 3)
+        $sheet->setCellValue('A3', 'Date');
+        $sheet->setCellValue('B3', 'Type');
+        $sheet->setCellValue('C3', 'Description');
+        $sheet->setCellValue('D3', 'Montant (TND)');
+
+        // Fond gris et texte blanc
+        $sheet->getStyle('A3:D3')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FF6C757D');
+        $sheet->getStyle('A3:D3')->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_WHITE);
+        $sheet->getStyle('A3:D3')->getFont()->setBold(true);
+
+        // Remplissage Dynamique (La Boucle)
+        $row = 4;
+        $totalRecettes = 0;
+        $totalCharges = 0;
+
+        foreach ($transactions as $tx) {
+            $sheet->setCellValue('A' . $row, $tx->getDate()->format('Y-m-d'));
+            $sheet->setCellValue('B' . $row, $tx->getType());
+            $sheet->setCellValue('C' . $row, $tx->getDescription());
+            $sheet->setCellValue('D' . $row, $tx->getMontant());
+
+            if ($tx->getType() === 'DEPENSE') {
+                $sheet->getStyle('D' . $row)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+                $totalCharges += $tx->getMontant();
+            } else {
+                $sheet->getStyle('D' . $row)->getFont()->getColor()->setARGB('FF198754'); // Vert Bootstrap #198754
+                $totalRecettes += $tx->getMontant();
+            }
+            $row++;
+        }
+
+        // Le Calcul Final
+        $row++; // Espace pur esthétique ou directement en dessous
+        $sheet->setCellValue('C' . $row, 'SOLDE TOTAL :');
+        $sheet->getStyle('C' . $row)->getFont()->setBold(true);
+
+        $solde = $totalRecettes - $totalCharges;
+        $sheet->setCellValue('D' . $row, $solde . ' TND');
+        $sheet->getStyle('D' . $row)->getFont()->setBold(true);
+        if ($solde < 0) {
+            $sheet->getStyle('D' . $row)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+        } else {
+            $sheet->getStyle('D' . $row)->getFont()->getColor()->setARGB('FF198754');
+        }
+
+        // Ajustement automatique des colonnes
+        foreach (range('A', 'D') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Forçage du téléchargement
+        $writer = new Xlsx($spreadsheet);
+        $response = new StreamedResponse(function () use ($writer) {
+            $writer->save('php://output');
+        });
+
+        $response->headers->set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $response->headers->set('Content-Disposition', 'attachment;filename="historique_transactions.xlsx"');
+
+        return $response;
+    }
+
     // =========================================================================
 
     #[Route('/{id}', name: 'app_transaction_show', methods: ['GET'])]
@@ -197,6 +372,10 @@ final class TransactionController extends AbstractController
         EntityManagerInterface $entityManager,
         ValidatorInterface $validator
     ): JsonResponse {
+        if ($transaction->isEstCloture()) {
+            return new JsonResponse(['success' => false, 'message' => 'Interdit : Cette transaction est archivée et ne peut plus être modifiée.'], 403);
+        }
+
         try {
             $data = json_decode($request->getContent(), true);
             if (!is_array($data) || empty($data)) {
@@ -275,6 +454,10 @@ final class TransactionController extends AbstractController
     #[Route('/{id}', name: 'app_transaction_delete', methods: ['POST'])]
     public function delete(Transaction $transaction, EntityManagerInterface $entityManager): JsonResponse
     {
+        if ($transaction->isEstCloture()) {
+             return new JsonResponse(['success' => false, 'message' => 'Interdit : Cette transaction est archivée et ne peut plus être supprimée.'], 403);
+        }
+
         $entityManager->remove($transaction);
         $entityManager->flush();
 
