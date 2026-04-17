@@ -328,3 +328,15 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
   * **Description** : Injection de dépendance de `FinancialRatingService`. Boucle sur toutes les entreprises pour récupérer leur chiffre d'affaires et leur assigner une note financière en temps réel calculée sur le comportement du mois en cours. Création du tableau `$franchisesToRank` transmis à Twig.
 * **Fichier modifié** : `templates/dashboard_siege/index.html.twig`
   * **Description** : Création d'un tout nouvel onglet ("Classement Financier") qui vient s'ajouter aux statistiques globales. Développement d'un tableau d'analyse "Top/Flop", trié par Résultat Net, affichant les recettes, dépenses et intégrant la fameuse colonne **"Rating"**. Affichage des badges visuels aux couleurs strictes (Vert pour A, Jaune pour B, Orange pour C, Rouge pour D), centralisant l'expérience pour le Directeur Financier au sein de *son* module.
+
+---
+
+## Tâche 20 : [API / Métier Avancé] Intégration de Telegram Bot (Alerte Mobile de Budget)
+**Date** : 17/04/2026
+* **Installation Requise** : `composer require symfony/http-client`
+* **Configuration (.env & services.yaml)** : Ajout des variables d'environnement `TELEGRAM_BOT_TOKEN` et `TELEGRAM_CHAT_ID`. Configuration de l'autowiring dans `config/services.yaml` pour injecter ces variables secrètes dans le constructeur du service Telegram.
+* **Fichier créé** : `src/Service/TelegramService.php`
+  * **Description** : Création d'un Service dédié encapsulant le HttpClient de Symfony. La méthode `envoyerAlerteBudget($message)` gère l'envoi d'un message d'alerte rouge sur le téléphone du gérant via l'API Telegram, avec formatage HTML pour mettre en gras les chiffres critiques (Solde). Sécurisation avec un Logger en cas d'indisponibilité réseau ou de token manquant.
+* **Fichier modifié** : `src/Controller/TransactionController.php`
+  * **Lignes exactes** : Autour des lignes 55-85 (après la validation du formulaire de transaction).
+  * **Description** : Immédiatement après l'ajout en base d'une nouvelle transaction, recalcule dynamiquement le solde réel de la franchise et la somme mensuelle de ses dépenses. Si le nouveau solde est en découvert (`< 0`) OU si la `Limite_Dépense` est dépassée, le script déclenche automatiquement le `TelegramService` vers le mobile et génère une alerte Flash *SweetAlert*.

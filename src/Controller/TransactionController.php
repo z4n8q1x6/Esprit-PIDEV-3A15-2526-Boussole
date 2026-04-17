@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 final class TransactionController extends AbstractController
 {
     #[Route(name: 'app_transaction_index', methods: ['GET', 'POST'])]
-    public function index(Request $request, EntityManagerInterface $entityManager, TransactionRepository $transactionRepo, CurrencyConverterService $currencyConverter): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, TransactionRepository $transactionRepo, CurrencyConverterService $currencyConverter, \App\Service\TelegramService $telegramService): Response
     {
         $transaction = new Transaction();
         $transaction->setDate(new \DateTime());
@@ -50,7 +50,50 @@ final class TransactionController extends AbstractController
             $entityManager->persist($transaction);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Transaction validée avec succès !');
+            // === API Alternative : VÉRIFICATION DU NOUVEAU SOLDE POUR DÉCLENCHER TELEGRAM ===
+            if ($dummyFranchise) {
+                $toutesLesTransactions = $transactionRepo->findBy(['franchise_id' => $dummyFranchise]);
+                $nouveauSolde = 0;
+                $depensesMois = 0;
+                $moisActuel = (int) (new \DateTime())->format('n');
+                $anneeActuelle = (int) (new \DateTime())->format('Y');
+
+                foreach ($toutesLesTransactions as $t) {
+                    if ($t->getType() === 'RECETTE') {
+                        $nouveauSolde += $t->getMontant();
+                    } elseif ($t->getType() === 'DEPENSE') {
+                        $nouveauSolde -= $t->getMontant();
+                        if ((int)$t->getDate()->format('n') === $moisActuel && (int)$t->getDate()->format('Y') === $anneeActuelle) {
+                            $depensesMois += $t->getMontant();
+                        }
+                    }
+                }
+
+                $budget = $entityManager->getRepository(\App\Entity\Budget_previsionnel::class)->findOneBy([
+                    'type_budget' => 'LIMITE_DEPENSE'
+                ], ['id' => 'DESC']);
+
+                $limiteDepasse = ($budget && $depensesMois > $budget->getMontant_cible());
+
+                // Condition : Solde Négatif OU Limite de Dépenses du mois dépassée
+                if ($nouveauSolde < 0 || $limiteDepasse) {
+                    $motif = ($nouveauSolde < 0) ? "Solde Négatif" : "Budget Dépassé";
+                    $messageAlerte = "🚨 <b>ALERTE CRITIQUE BOUSSOLE</b> 🚨\n\n";
+                    $messageAlerte .= "Attention ! Votre dernière transaction a déclenché une alerte automatique de type : <b>{$motif}</b>.\n\n";
+                    $messageAlerte .= "💰 Nouveau solde : <b>" . number_format($nouveauSolde, 2, ',', ' ') . " TND</b>.\n";
+                    $messageAlerte .= "📈 Dépenses cumulées du mois : <b>" . number_format($depensesMois, 2, ',', ' ') . " TND</b>.\n\n";
+                    $messageAlerte .= "<i>Veuillez vérifier vos finances au plus vite sur votre Dashboard.</i>";
+
+                    $telegramService->envoyerAlerteBudget($messageAlerte);
+                    
+                    sweetalert()->error('ALERTE ROUGE : Budget saturé ou Solde Négatif ! Une notification Telegram a été envoyée sur votre mobile.', 'Découvert !');
+                } else {
+                    $this->addFlash('success', 'Transaction validée avec succès !');
+                }
+            } else {
+                $this->addFlash('success', 'Transaction validée avec succès !');
+            }
+
             return $this->redirectToRoute('app_transaction_index',[], Response::HTTP_SEE_OTHER);
         }
 
