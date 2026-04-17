@@ -236,7 +236,7 @@
 					<li><a class="dropdown-item" href="#"><i class="bi bi-person fa-fw me-2"></i>Edit Profile</a></li>
 					<li><a class="dropdown-item" href="#"><i class="bi bi-gear fa-fw me-2"></i>Account Settings</a></li>
 					<li><a class="dropdown-item" href="#"><i class="bi bi-info-circle fa-fw me-2"></i>Help</a></li>
-					<li><a class="dropdown-item bg-danger-soft-hover" href="#"><i class="bi bi-power fa-fw me-2"></i>Sign Out</a></li>
+					<li><a class="dropdown-item bg-danger-soft-hover" href="{{ path('app_logout') }}"><i class="bi bi-power fa-fw me-2"></i>Sign Out</a></li>
 
 				</ul>
 			</div>
@@ -255,18 +255,15 @@
 <!-- =======================
 Page content START -->
 <section class="pt-0">
-	<div class="container">
-		<div class="row">
-			<!-- Main content START -->
-			<div class="col-xl-9">
-            {% block content %}
-                    {# el page mte3ek fel block hedha #}
-            {% endblock %}
-
-			</div>
-			<!-- Main content END -->
-		</div><!-- Row END -->
-	</div>
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-11 col-12 px-4">
+                {% block content %}
+                <!-- 7ot pagek lehné -->
+                {% endblock %}
+            </div>
+        </div>
+    </div>
 </section>
 <!-- =======================
 Page content END -->
@@ -352,7 +349,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     resultsBox.appendChild(li);
                 }
 
-                
+
                 resultsBox.style.display = 'block';
             } else {
                 resultsBox.style.display = 'none';
@@ -366,7 +363,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 
-        
+
         // Show results if clicking on input and there is text
         searchInput.addEventListener('click', function() {
             if(searchInput.value.trim().length > 0) {

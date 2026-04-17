@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/reclamations')]  
+#[Route('/reclamations')]
 final class ReclamationController extends AbstractController
 {
     private EntityManagerInterface $em;
@@ -26,9 +26,16 @@ final class ReclamationController extends AbstractController
     }
 
     #[Route('/', name: 'reclamation_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-        $reclamations = $this->repo->findBy(['franchise_id' => $this->franchise_id]);
+        $search = $request->query->get('q', '');
+        $sort = $request->query->get('sort', 'id');
+        $direction = $request->query->get('direction', 'DESC');
+
+        if (!in_array($sort, ['sujet', 'description', 'statut', 'date_creation'])) {
+            $sort = 'id';
+        }
+        $reclamations = $this->repo->searchAndSort($search, $sort, $direction);
         return $this->render('reclamation/index.html.twig', [
             'reclamations' => $reclamations,
         ]);

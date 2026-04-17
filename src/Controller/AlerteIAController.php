@@ -16,7 +16,9 @@ use Gemini\Enums\DataType;
 use Gemini\Enums\ResponseMimeType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
+#[Route('/alertes')]
 final class AlerteIAController extends AbstractController
 {
     private EntityManagerInterface $em;
@@ -29,10 +31,17 @@ final class AlerteIAController extends AbstractController
         $this->repo = $repo;
     }
 
-    #[Route('/alertes', name: 'alerte_index')]
-    public function index(): Response
+    #[Route('/', name: 'alerte_index')]
+    public function index(Request $request): Response
     {
-        $alertes = $this->repo->findBy(['franchise_id' => $this->franchise_id]);
+        $search = $request->query->get('q', '');
+        $sort = $request->query->get('sort', 'id');
+        $direction = $request->query->get('direction', 'DESC');
+
+        if (!in_array($sort, ['type_alerte', 'message', 'score_gravite', 'date_detection'])) {
+            $sort = 'id';
+        }
+        $alertes = $this->repo->searchAndSort($search, $sort, $direction);
         return $this->render('alerte_ia/index.html.twig', [
             'alertes' => $alertes,
         ]);
@@ -50,46 +59,88 @@ final class AlerteIAController extends AbstractController
         return $this->redirectToRoute('alerte_index');
     }
 
-    #[Route('/new', name: 'alerte_new')]
-    public function new(SerializerInterface $serializer): Response
+    #[Route('/new', name: 'alerte_new', methods: ['POST'])]
+    public function new(Request $request, SerializerInterface $serializer): Response
     {
-        $yourApiKey = getenv('GOOGLE_API_KEY');
-        $client = Gemini::client($yourApiKey);
-        $prompt = <<<TEXT
-            Génère une alerte de sécurité avec ces champs:
-            - type_alerte: Une catégorie courte
-            - message: Une description détaillée
-            - score_gravite: Score de sévérité
-            TEXT;
-        $request = $client
-            ->generativeModel(model: 'gemini-2.5-flash')
-            ->withGenerationConfig(
-                generationConfig: new GenerationConfig(
-                    responseMimeType: ResponseMimeType::APPLICATION_JSON,
-                    responseSchema: new Schema(
-                        type: DataType::ARRAY,
-                        items: new Schema(
+        $token = $request->getPayload()->get('token');
+        if (!$this->isCsrfTokenValid('generate-alerte', $token)) {
+            return new JsonResponse(['success' => false, 'error' => 'Invalid CSRF token'], 403);
+        }
+
+        try {
+            $apiKey = getenv('GOOGLE_API_KEY');
+            $client = Gemini::client($apiKey);
+
+            $financialData = $this->repo->getFinancialData($this->franchise_id, date('n'), date('Y'));
+            $prompt = $this->buildPrompt($financialData, date('n'), date('Y'));
+
+            $result = $client
+                ->generativeModel(model: 'gemini-3-flash-preview')
+                ->withGenerationConfig(
+                    generationConfig: new GenerationConfig(
+                        responseMimeType: ResponseMimeType::APPLICATION_JSON,
+                        responseSchema: new Schema(
                             type: DataType::OBJECT,
                             properties: [
-                                'type_alerte' => new Schema(type: DataType::STRING),
-                                'message' => new Schema(type: DataType::STRING),
-                                'score_gravite' => new Schema(type: DataType::NUMBER),
+                                'type_alerte' => new Schema(type: DataType::STRING, maxLength: 35),
+                                'message' => new Schema(type: DataType::STRING, minLength: 100, maxLength: 1000),
+                                'score_gravite' => new Schema(type: DataType::NUMBER, minimum: 0.0, maximum: 10.0),
                             ],
                             required: ['type_alerte', 'message', 'score_gravite'],
                         )
                     )
                 )
-            )
-            ->generateContent($prompt);
-        $data = $request->json();
-        $alerte = $serializer->denormalize(
-            $data[0],
-            Alerteias::class,
+                ->generateContent($prompt);
+
+            $data = (array) $result->json();
+            $data['score_gravite'] = (float) $data['score_gravite'];
+
+            $alerte = $serializer->denormalize($data, Alerteias::class);
+
+            $franchise = $this->em->getRepository(Franchises::class)->find($this->franchise_id);
+            $alerte->setFranchise_id($franchise);
+
+            $this->em->persist($alerte);
+            $this->em->flush();
+
+            return new JsonResponse(['success' => true]);
+
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => 'Erreur technique: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    private function buildPrompt(array $financialData, int $month, int $year): string
+    {
+        return sprintf(
+            "Analyse les données financières pour %d/%d:\n\n"
+            . "RÉSULTATS FINANCIERS:\n"
+            . "- Chiffre d'affaires: %.2f TND\n"
+            . "- Charges opérationnelles: %.2f TND\n"
+            . "- Charges financières: %.2f TND\n"
+            . "- Charges exceptionnelles: %.2f TND\n"
+            . "- Résultat net: %.2f TND\n"
+            . "- Solde actuel: %.2f TND\n\n"
+            . "STATUT DES CHARGES:\n"
+            . "- Charges en attente: %d\n"
+            . "- Charges rejetées: %d\n\n"
+            . "ACTIVITÉ:\n"
+            . "- Transactions ce mois: %d\n\n"
+            . "Détecte les anomalies et risques financiers. Formule une alerte basée sur ces données.\n\n",
+            $month,
+            $year,
+            $financialData['totalRecettes'],
+            $financialData['totalChargesExploitation'],
+            $financialData['totalChargesFinanciere'],
+            $financialData['totalChargesExceptionnelle'],
+            $financialData['resultatNet'],
+            $financialData['soldeActuel'],
+            $financialData['pendingChargesCount'],
+            $financialData['rejectedChargesCount'],
+            $financialData['transactionCount']
         );
-        $franchise = $this->em->getRepository(Franchises::class)->find($this->franchise_id);
-        $alerte->setFranchise_id($franchise);
-        $this->em->persist($alerte);
-        $this->em->flush();
-        return $this->redirectToRoute('alerte_index');
     }
 }
