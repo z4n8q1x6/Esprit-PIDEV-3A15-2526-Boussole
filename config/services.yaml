@@ -25,3 +25,15 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Service\CurrencyConverterService:
+        arguments:
+            $exchangeRateApiKey: '%env(EXCHANGE_RATE_API_KEY)%'
+
+    App\Service\TelegramService:
+        arguments:
+            $botToken: '%env(TELEGRAM_BOT_TOKEN)%'
+            $chatId: '%env(TELEGRAM_CHAT_ID)%'
+
+    App\Service\AiAssistantService:
+        arguments: ~

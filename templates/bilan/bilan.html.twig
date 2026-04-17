@@ -116,8 +116,9 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-auto ms-auto d-flex gap-3 align-items-center">
-                <button id="btn-generate" class="btn-action btn-generate">
+            <div class="col-auto ms-auto d-flex gap-3 align-items-center">                <button id="btn-delete-selected" class="btn-action" style="background-color: #ef4444; color: white; display: none;">
+                    <i class="fas fa-trash"></i> Supprimer la sélection
+                </button>                <button id="btn-generate" class="btn-action btn-generate">
                     <i class="fas fa-plus"></i> Générer / Recalculer
                 </button>
                 <button class="btn-action btn-export">
@@ -135,6 +136,9 @@
             <table class="custom-table" id="bilansTable">
                 <thead>
                     <tr>
+                        <th class="text-center" style="width: 40px;">
+                            <input type="checkbox" id="selectAllBilans" style="cursor: pointer; transform: scale(1.2);">
+                        </th>
                         <th>FRANCHISE</th>
                         <th>MOIS</th>
                         <th>ANNÉE</th>
@@ -148,6 +152,9 @@
                 <tbody>
                 {% for bilan in bilans %}
                     <tr data-id="{{ bilan.id }}">
+                        <td class="text-center align-middle" onclick="event.stopPropagation();">
+                            <input type="checkbox" class="row-checkbox" value="{{ bilan.id }}" style="cursor: pointer; transform: scale(1.2);">
+                        </td>
                         <td style="color: #cbd5e1;">
                             {% if bilan.franchiseId %}
                                 {{ bilan.franchiseId.nom }}
@@ -196,7 +203,7 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="8" class="text-center py-5 text-muted">Aucun historique disponible.</td>
+                        <td colspan="9" class="text-center py-5 text-muted">Aucun historique disponible.</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -228,7 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btnGenerate.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Traitement...';
 
             try {
-                const response = await fetch('/bilan/generate-ajax', {
+                const response = await fetch('/admin/bilan/generate-ajax', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ cible, mois, annee })
@@ -256,6 +263,74 @@ document.addEventListener('DOMContentLoaded', () => {
         const table = document.getElementById('bilansTable');
 
         if (table) {
+            // -- LOGIQUE DE SELECTION (CHECKBOXES) --
+            const selectAllCheckbox = document.getElementById('selectAllBilans');
+            const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+            const btnDeleteSelected = document.getElementById('btn-delete-selected');
+
+            function updateDeleteButtonVisibility() {
+                const anyChecked = Array.from(rowCheckboxes).some(cb => cb.checked);
+                btnDeleteSelected.style.display = anyChecked ? 'inline-flex' : 'none';
+            }
+
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', (e) => {
+                    const isChecked = e.target.checked;
+                    rowCheckboxes.forEach(cb => { cb.checked = isChecked; });
+                    updateDeleteButtonVisibility();
+                });
+            }
+
+            rowCheckboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    // Update "Select All" state
+                    const allChecked = Array.from(rowCheckboxes).every(cb => cb.checked);
+                    if (selectAllCheckbox) selectAllCheckbox.checked = allChecked;
+                    updateDeleteButtonVisibility();
+                });
+            });
+
+            // LOGIQUE DE SUPPRESSION MULTIPLE
+            if (btnDeleteSelected) {
+                btnDeleteSelected.addEventListener('click', async () => {
+                    const selectedIds = Array.from(rowCheckboxes)
+                        .filter(cb => cb.checked)
+                        .map(cb => cb.value);
+
+                    if (selectedIds.length === 0) return;
+
+                    const confirm = await Swal.fire({
+                        title: 'Supprimer ' + selectedIds.length + ' bilan(s) ?',
+                        text: 'Cette action est définitive.',
+                        icon: 'warning',
+                        background: '#1e293b', color: '#fff',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444', cancelButtonColor: '#334155',
+                        confirmButtonText: 'Oui, supprimer tout', cancelButtonText: 'Annuler'
+                    });
+
+                    if (confirm.isConfirmed) {
+                        try {
+                            const res = await fetch('/admin/bilan/delete-batch-ajax', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ ids: selectedIds })
+                            });
+                            const data = await res.json();
+                            
+                            if (data.success) {
+                                await Toast.fire({ icon: 'success', title: data.message });
+                                window.location.reload(); // Recharger la page pour mettre à jour le tableau
+                            } else {
+                                Toast.fire({ icon: 'error', title: data.message });
+                            }
+                        } catch (err) {
+                            Toast.fire({ icon: 'error', title: 'Erreur lors de la suppression multiple.' });
+                        }
+                    }
+                });
+            }
+
             // 2. SUPPRESSION VIA ICONE CORBEILLE (CRUD Delete)
             document.querySelectorAll('.delete-row-btn').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
@@ -284,7 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             setTimeout(() => {
                                 row.remove();
                                 if (document.querySelectorAll('#bilansTable tbody tr').length === 0) {
-                                  document.querySelector('#bilansTable tbody').innerHTML = '<tr><td colspan="8" class="text-center py-5 text-muted">Aucun historique disponible.</td></tr>';
+                                    document.querySelector('#bilansTable tbody').innerHTML = '<tr><td colspan="9" class="text-center py-5 text-muted">Aucun historique disponible.</td></tr>';
                                 }
                             }, 400);
                             Toast.fire({ icon: 'success', title: 'Bilan supprimé.' });
@@ -295,6 +370,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
+
+        // -- SELECTION D'UNE SEULE LIGNE POUR L'EXPORT PDF --
+        let selectedRowId = null;
+        const tbodyRows = document.querySelectorAll('#bilansTable tbody tr[data-id]');
+        
+        tbodyRows.forEach(tr => {
+            tr.addEventListener('click', (e) => {
+                // Éviter de sélectionner si on a cliqué sur un bouton/input
+                if (e.target.closest('input') || e.target.closest('.delete-row-btn')) return;
+
+                // Enlever la classe selected de tout le monde
+                tbodyRows.forEach(r => r.classList.remove('selected'));
+                
+                // Si on a cliqué sur une ligne différente, on la sélectionne
+                if (selectedRowId !== tr.dataset.id) {
+                    tr.classList.add('selected');
+                    selectedRowId = tr.dataset.id;
+                } else {
+                    // Si on a recliqué sur la ligne déjà sélectionnée, on la désélectionne
+                    selectedRowId = null;
+                }
+            });
+        });
+
+        // -- ACTION BতারাTON EXPORTER PDF --
+        const btnExport = document.querySelector('.btn-export');
+        if (btnExport) {
+            btnExport.addEventListener('click', () => {
+                if (!selectedRowId) {
+                    Toast.fire({ icon: 'warning', title: 'Veuillez sélectionner une ligne d\'abord.' });
+                    return;
+                }
+                
+                // Rediriger vers l'url du contrôleur pour télécharger le PDF
+                window.location.href = `/admin/bilan/pdf/${selectedRowId}`;
+            });
+        }
+
+        // -- ACTION BতারাTON ENVOYER EMAIL --
+        const btnEmail = document.querySelector('.btn-email');
+        if (btnEmail) {
+            btnEmail.addEventListener('click', () => {
+                if (!selectedRowId) {
+                    Toast.fire({ icon: 'warning', title: 'Veuillez sélectionner une ligne d\'abord.' });
+                    return;
+                }
+                
+                // Envoyer l'email (Redirection vers le contrôleur qui s'occupe de l'envoi)
+                window.location.href = `/admin/bilan/email/${selectedRowId}`;
+            });
+        }
 
         // 3. INLINE EDIT (DOUBLE CLICK)
         table.addEventListener('dblclick', (e) => {

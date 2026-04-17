@@ -17,17 +17,25 @@ class TransactionType extends AbstractType
             ->add('date', null, [
                 'widget' => 'single_text',
                 'label' => 'Date',
-                'attr' => ['class' => 'form-control bg-dark text-light border-secondary']
+                'attr' => ['class' => 'form-control']
             ])
             ->add('montant', null, [
                 'label' => 'Montant (TND)',
                 'invalid_message' => 'Veuillez entrer un nombre valide.',
-                'attr' => ['class' => 'form-control bg-dark text-light border-secondary', 'placeholder' => '0.00']
+                'attr' => ['class' => 'form-control', 'placeholder' => '0.00']
+            ])
+            ->add('type', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+                'label' => 'Type de Transaction',
+                'choices' => [
+                    'Recette (Entrée d\'argent)' => 'RECETTE',
+                    'Dépense / Charge (Sortie)' => 'DEPENSE',
+                ],
+                'attr' => ['class' => 'form-select']
             ])
             ->add('description', null, [
                 'label' => 'Description',
                 'attr' => [
-                    'class' => 'form-control bg-dark text-light border-secondary',
+                    'class' => 'form-control',
                     'placeholder' => 'Ex: Vente du jour'
                 ]
             ])

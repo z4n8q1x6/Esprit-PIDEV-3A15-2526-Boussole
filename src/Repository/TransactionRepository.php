@@ -121,4 +121,50 @@ class TransactionRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * Récupère le total des recettes et dépenses par franchise pour le clustering K-Means.
+     */
+    public function getFinancialDataForClustering(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        
+        $sql = '
+            SELECT 
+                f.id AS franchise_id,
+                f.nom AS nom_franchise,
+                SUM(CASE WHEN t.type = \'RECETTE\' THEN t.montant ELSE 0 END) AS total_recettes,
+                SUM(CASE WHEN t.type = \'DEPENSE\' THEN t.montant ELSE 0 END) AS total_depenses
+            FROM franchises f
+            LEFT JOIN transaction t ON t.franchise_id = f.id
+            GROUP BY f.id, f.nom
+            HAVING total_recettes > 0 OR total_depenses > 0
+        ';
+
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery();
+        
+        return $result->fetchAllAssociative();
+    }
+
+    /**
+     * Récupère toutes les transactions non clôturées pour un mois et une année donnés.
+     */
+    public function findTransactionsNonClotureesPourMois($franchise, int $mois, int $annee): array
+    {
+        // Création des dates de début et de fin de mois
+        $start = new \DateTime(sprintf('%d-%02d-01 00:00:00', $annee, $mois));
+        $end = clone $start;
+        $end->modify('last day of this month 23:59:59');
+
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.franchise_id = :franchise')
+            ->andWhere('t.est_cloture = false')
+            ->andWhere('t.date >= :start AND t.date <= :end')
+            ->setParameter('franchise', $franchise)
+            ->setParameter('start', $start)
+            ->setParameter('end', $end)
+            ->getQuery()
+            ->getResult();
+    }
 }

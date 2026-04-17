@@ -85,9 +85,6 @@
         </div>
     </div>
     
-    {% for message in app.flashes('success') %}
-        <div class="alert alert-success border-0 shadow" style="background-color: #10b981; color: #fff;">{{ message }}</div>
-    {% endfor %}
 
     <div class="row g-4">
         <!-- Formulaire Unifié avec validation HTML5 intégrée -->
@@ -202,15 +199,7 @@
     </div>
 </div>
 
-<!-- Toast Notification -->
-<div class="toast-container" style="position: fixed; bottom: 20px; right: 20px; top: auto; z-index: 1055;">
-    <div id="statusToast" class="toast align-items-center text-white border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body fw-bold" id="toastMessage"></div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-    </div>
-</div>
+
 {% endblock %}
 
 {% block javascripts %}
@@ -219,13 +208,23 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-    const toastEl = document.getElementById('statusToast');
-    const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
-    
     function showToast(message, isSuccess = true) {
-        document.getElementById('toastMessage').textContent = message;
-        toastEl.className = isSuccess ? 'toast align-items-center text-white bg-success border-0 shadow-lg' : 'toast align-items-center text-white bg-danger border-0 shadow-lg';
-        toast.show();
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 4000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            }
+        });
+
+        Toast.fire({
+            icon: isSuccess ? 'success' : 'error',
+            title: message
+        });
     }
 
     // --- Inline Double-Click Editing ---

@@ -54,7 +54,7 @@ final class AlerteIAController extends AbstractController
         if ($this->isCsrfTokenValid('delete-item', $token)) {
             $this->em->remove($alerte);
             $this->em->flush();
-            $this->addFlash('success', 'Reclamation deleted successfully.');
+            $this->addFlash('success', 'Alerte supprimée avec succès.');
         }
         return $this->redirectToRoute('alerte_index');
     }
