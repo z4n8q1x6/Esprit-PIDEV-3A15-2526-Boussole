@@ -6,8 +6,10 @@ use App\Entity\Transaction;
 use App\Entity\Budget_previsionnel;
 use App\Service\CurrencyConverterService;
 use App\Service\AiClusteringService;
+use App\Service\AiAssistantService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
@@ -17,7 +19,7 @@ use App\Service\FinancialRatingService;
 class DashboardSiegeController extends AbstractController
 {
     #[Route('/admin/dashboard', name: 'app_siege_dashboard')]
-    public function index(EntityManagerInterface $em, ChartBuilderInterface $chartBuilder, CurrencyConverterService $currencyConverter, AiClusteringService $aiClustering, FinancialRatingService $ratingService): Response
+    public function index(Request $request, EntityManagerInterface $em, ChartBuilderInterface $chartBuilder, CurrencyConverterService $currencyConverter, AiClusteringService $aiClustering, FinancialRatingService $ratingService, AiAssistantService $aiAssistant): Response
     {
         $transactions = $em->getRepository(Transaction::class)->findAll();
 
@@ -255,6 +257,29 @@ class DashboardSiegeController extends AbstractController
             ];
         }
 
+        // --- Mission IA : Chatbot Assistant Financier ---
+        $reponseIa = null;
+        $questionIa = $request->query->get('question', null); // Use GET for simpler state if preferred, but usually POST is used for forms
+        
+        if ($request->isMethod('POST') && $request->request->get('question_ia')) {
+            $questionIa = trim($request->request->get('question_ia'));
+            
+            // Constuire le contexte
+            $contexte = "Le mois d'avril 2026 a été clôturé. ";
+            $contexte .= "Le siège a généré {$solde} TND au global. ";
+            
+            foreach ($franchisesToRank as $f) {
+                $status = $f['solde'] >= 0 ? "bénéficiaire" : "déficitaire";
+                $contexte .= "La franchise {$f['nom']} a généré {$f['revenus']} TND de recettes et {$f['depenses']} TND de dépenses. Son résultat net est de {$f['solde']} TND, elle est {$status} et a une note de {$f['rating']}. ";
+            }
+            
+            // Appel
+            $reponseIa = $aiAssistant->poserQuestionFinanciere($questionIa, $contexte);
+        }
+
+
+
+
         return $this->render('dashboard_siege/index.html.twig', [
             'revenus' => $revenus,
             'depenses' => $depenses,
@@ -265,7 +290,9 @@ class DashboardSiegeController extends AbstractController
             'taux_depenses' => $tauxDepenses,
             'conversion' => $conversion,
             'hasClusters' => !empty($clustersData),
-            'franchisesRanking' => $franchisesToRank
+            'franchisesRanking' => $franchisesToRank,
+            'reponse_ia' => $reponseIa,
+            'question_ia' => $questionIa
         ]);
     }
 

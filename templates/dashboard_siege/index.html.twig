@@ -101,7 +101,7 @@
 <!-- TABS (Statistiques Globales / Radar) -->
 <ul class="nav nav-tabs nav-bottom-line nav-responsive border-0 mb-4" role="tablist">
     <li class="nav-item" role="presentation">
-        <a class="nav-link active pb-3" data-bs-toggle="tab" href="#tab-stats" role="tab" style="color: #00e5ff; border-bottom: 2px solid #00e5ff; background: transparent;">
+        <a class="nav-link {% if question_ia is empty and reponse_ia is empty %}active{% endif %} pb-3" data-bs-toggle="tab" href="#tab-stats" role="tab" style="{% if question_ia is empty and reponse_ia is empty %}color: #00e5ff; border-bottom: 2px solid #00e5ff;{% else %}color: #6c757d; border: none;{% endif %} background: transparent;">
             Statistiques Globales
         </a>
     </li>
@@ -114,12 +114,15 @@
         <a class="nav-link text-muted pb-3" data-bs-toggle="tab" href="#tab-ranking" role="tab" style="border: none; background: transparent;">
             <i class="bi bi-star-fill text-warning me-1"></i> Classement Financier
         </a>
-    </li>
-</ul>
+    </li>    <li class="nav-item" role="presentation">
+        <a class="nav-link {% if question_ia is not empty or reponse_ia is not empty %}active{% else %}text-muted{% endif %} pb-3" data-bs-toggle="tab" href="#tab-chatbot" role="tab" style="{% if question_ia is not empty or reponse_ia is not empty %}color: #00e5ff; border-bottom: 2px solid #00e5ff;{% else %}border: none;{% endif %} background: transparent;">
+            <i class="bi bi-robot text-success me-1"></i> Assistant IA
+        </a>
+    </li></ul>
 
 <!-- Cible pour le contenu des onglets -->
 <div class="tab-content">
-    <div class="tab-pane fade show active" id="tab-stats" role="tabpanel">
+    <div class="tab-pane fade {% if question_ia is empty and reponse_ia is empty %}show active{% endif %}" id="tab-stats" role="tabpanel">
         <div class="card border shadow" style="border-radius: 12px;">
             <div class="card-body p-4">
                 <h5 class="mb-1">Réel vs Budget – Réseau Global (3 derniers mois)</h5>
@@ -203,6 +206,76 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    {# === ONGLET CHATBOT IA === #}
+    <div class="tab-pane fade {% if question_ia is not empty or reponse_ia is not empty %}show active{% endif %}" id="tab-chatbot" role="tabpanel">
+        <div class="card border shadow" style="border-radius: 12px;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px;">
+                        <i class="bi bi-robot" style="font-size: 1.5rem; color: white;"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0">Assistant IA Boussole</h5>
+                        <p class="text-muted small mb-0">Posez une question sur vos données financières. L'IA analyse vos chiffres en temps réel.</p>
+                    </div>
+                </div>
+
+                {# Zone de conversation #}
+                <div style="background: rgba(0,0,0,0.15); border-radius: 12px; padding: 20px; min-height: 200px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    
+                    {# Message de bienvenue par défaut #}
+                    {% if reponse_ia is empty and question_ia is empty %}
+                        <div style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 10px;">
+                                <i class="bi bi-robot" style="color: white; font-size: 0.8rem;"></i>
+                            </div>
+                            <div style="background: rgba(102, 126, 234, 0.15); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 0 12px 12px 12px; padding: 12px 16px; max-width: 85%; color: #e2e8f0;">
+                                👋 Bonjour ! Je suis votre <b>Assistant IA Financier</b>. Posez-moi une question sur vos franchises, vos revenus, ou vos dépenses.<br>
+                                <small class="text-muted mt-2 d-block">Exemples : "Quel est le solde global ?", "Combien de recettes ?", "Quelle franchise a la meilleure note ?"</small>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {# Question de l'utilisateur #}
+                    {% if question_ia is not empty %}
+                        <div style="display: flex; align-items: flex-start; justify-content: flex-end; margin-bottom: 12px;">
+                            <div style="background: rgba(0, 229, 255, 0.15); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 12px 0 12px 12px; padding: 12px 16px; max-width: 75%; color: #e2e8f0;">
+                                "{{ question_ia }}"
+                            </div>
+                            <div style="width: 32px; height: 32px; background: #00e5ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-left: 10px;">
+                                <i class="bi bi-person-fill" style="color: #0f172a; font-size: 0.9rem;"></i>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {# Réponse de l'IA #}
+                    {% if reponse_ia is not empty %}
+                        <div style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 10px;">
+                                <i class="bi bi-robot" style="color: white; font-size: 0.8rem;"></i>
+                            </div>
+                            <div style="background: rgba(102, 126, 234, 0.15); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 0 12px 12px 12px; padding: 12px 16px; max-width: 85%; color: #e2e8f0;">
+                                🤖 <b>Réponse :</b> {{ reponse_ia }}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Formulaire de saisie #}
+                <form method="POST" action="{{ path('app_siege_dashboard') }}" class="d-flex gap-2">
+                    <input type="text" name="question_ia" class="form-control" 
+                           placeholder="Posez votre question..." 
+                           value="{{ question_ia ?? '' }}"
+                           style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; border-radius: 10px; padding: 12px 16px;"
+                           required autocomplete="off">
+                    <button type="submit" class="btn px-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px; white-space: nowrap;">
+                        <i class="bi bi-send-fill me-1"></i> Demander
+                    </button>
+                </form>
             </div>
         </div>
     </div>

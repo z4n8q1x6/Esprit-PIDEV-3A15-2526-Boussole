@@ -1,4 +1,4 @@
-# Suivi des Modifications du Projet Boussole
+﻿# Suivi des Modifications du Projet Boussole
 
 Ce fichier répertorie toutes les modifications apportées au code source, organisées par tâches.
 
@@ -24,7 +24,8 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
   * **Description** : Ajout d'une colonne de Checkboxes dans le tableau HTML. Ajout d'un bouton rouge "Supprimer la sélection" et d'un script JavaScript gérant la sélection multiple et l'appel AJAX de suppression.
 * **Fichier modifié** : src/Controller/BilanController.php
   * **Lignes exactes** : Lignes 85-105
-  * **Description** : Ajout de la méthode deleteBatchAjax avec la route #[Route('/delete-batch-ajax')] pour supprimer plusieurs bilans en une seule action (Boucle de emove() + lush()).
+  * **Description** : Ajout de la méthode deleteBatchAjax avec la route #[Route('/delete-batch-ajax')] pour supprimer plusieurs bilans en une seule action (Boucle de 
+emove() + lush()).
 
 ---
 
@@ -340,3 +341,20 @@ Ce fichier répertorie toutes les modifications apportées au code source, organ
 * **Fichier modifié** : `src/Controller/TransactionController.php`
   * **Lignes exactes** : Autour des lignes 55-85 (après la validation du formulaire de transaction).
   * **Description** : Immédiatement après l'ajout en base d'une nouvelle transaction, recalcule dynamiquement le solde réel de la franchise et la somme mensuelle de ses dépenses. Si le nouveau solde est en découvert (`< 0`) OU si la `Limite_Dépense` est dépassée, le script déclenche automatiquement le `TelegramService` vers le mobile et génère une alerte Flash *SweetAlert*.
+
+---
+
+## Tâche 21 : Mission IA : Chatbot Assistant Financier (via Hugging Face)
+**Date** : 17/04/2026
+* **Fichier modifié** : .env
+  * **Lignes exactes** : Lignes 64 - 65
+  * **Description** : Ajout de la clé d'API HUGGINGFACE_API_KEY.
+* **Fichier créé** : src/Service/AiAssistantService.php
+  * **Lignes exactes** : Lignes 1 - 55
+  * **Description** : Création du service d'appel à l'API d'Inférence Hugging Face (modèle multilingue 	impal0l/mdeberta-v3-base-squad2) permettant de répondre aux questions financières à partir du contexte du Dashboard.
+* **Fichier modifié** : src/Controller/DashboardSiegeController.php
+  * **Lignes exactes** : Lignes 260 - 279
+  * **Description** : Interception de la soumission de la question_ia, construction dynamique du texte de contexte (solde global, détail des revenus, dépenses, résultat net et notes des franchises) et appel au service d'IA.
+* **Fichier modifié** : 	emplates/dashboard_siege/index.html.twig
+  * **Lignes exactes** : Lignes 118 - 121 et 214 - 275
+  * **Description** : Intégration de l'interface utilisateur du Chatbot (onglet dédié "Assistant IA", zone d'affichage conditionnelle du message d'accueil, de la question de l'utilisateur et de la réponse de l'IA, plus formulaire de saisie POST pour la question_ia).
