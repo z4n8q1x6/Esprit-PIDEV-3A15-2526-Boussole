@@ -244,7 +244,7 @@ HTML;
                ->setParameter('search', '%' . $search . '%');
         }
 
-        // Utilisation de getArrayResult pour correspondre à la vue index
+        // Utilisation de getArrayResult pour correspondre à la vue indexssss
         $allCharges = $qb->getQuery()->getArrayResult();
         
         if (empty($allCharges)) {
