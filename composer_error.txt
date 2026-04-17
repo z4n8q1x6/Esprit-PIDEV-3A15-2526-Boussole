@@ -1,0 +1,29 @@
+﻿composer : 
+Au caractère Ligne:1 : 1
++ composer validate 2>&1 | Out-File 
+-FilePath composer_error.txt -Encod ...
++ ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecif 
+   ied: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCom 
+   mandError
+ 
+In JsonFile.php line 398:
+                                        
+  "./symfony.lock" does not contain va  
+  lid JSON                              
+  Parse error on line 119:              
+  ...symfony/mailer": {
+<<<<<<< Update   
+  d upst                                
+  ---------------------^                
+  Expected one of: 'STRING', '}'        
+                                        
+
+validate [--no-check-all] 
+[--check-lock] [--no-check-lock] 
+[--no-check-publish] 
+[--no-check-version] 
+[-A|--with-dependencies] [--strict] 
+[--] [<file>]
+

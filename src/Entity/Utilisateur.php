@@ -43,6 +43,12 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: "text", nullable: true)]
     private ?string $face_token = null;
 
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $google_id = null;
+
+    #[ORM\Column(type: "text", nullable: true)]
+    private ?string $google_access_token = null;
+
     public function getId_user()
     {
         return $this->id_user;
@@ -151,6 +157,28 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFace_token($value)
     {
         $this->face_token = $value;
+    }
+
+    public function getGoogle_id(): ?string
+    {
+        return $this->google_id;
+    }
+
+    public function setGoogle_id(?string $google_id): self
+    {
+        $this->google_id = $google_id;
+        return $this;
+    }
+
+    public function getGoogle_access_token(): ?string
+    {
+        return $this->google_access_token;
+    }
+
+    public function setGoogle_access_token(?string $google_access_token): self
+    {
+        $this->google_access_token = $google_access_token;
+        return $this;
     }
 
     /**

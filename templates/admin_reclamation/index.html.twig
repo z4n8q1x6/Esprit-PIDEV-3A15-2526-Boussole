@@ -265,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
             analysisModal.show();
 
             try {
-                const response = await fetch(`/admin/${reclamationId}/analyse`, {
+                const response = await fetch(`/admin/reclamations/${reclamationId}/analyse`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -313,3 +313,5 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 {% endblock %}
+
+
