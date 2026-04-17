@@ -3,16 +3,19 @@
 namespace App\Controller;
 
 use App\Entity\Alerteias;
+use App\Entity\AlertReport;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Repository\AlerteiasRepository;
+use App\Repository\AlertReportRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Gemini;
+use App\Service\UploaderService;
 
 #[Route('/admin/alertes')]
 final class AdminAlerteIAController extends AbstractController
@@ -52,7 +55,7 @@ final class AdminAlerteIAController extends AbstractController
         return $this->redirectToRoute('admin_alerte_index');
     }
     #[Route('/pdf', name: 'admin_alerte_pdf')]
-    public function pdf(): Response
+    public function pdf(UploaderService $uploader): Response
     {
         $options = new Options();
         $options->set('defaultFont', 'DejaVu Sans');
@@ -67,13 +70,29 @@ final class AdminAlerteIAController extends AbstractController
             'alertes' => $alertes,
         ]);
         $dompdf->loadHtml($html);
-
         $dompdf->setPaper('A4', 'landscape');
-
         // Render the HTML as PDF
         $dompdf->render();
-        // Output the generated PDF to Browser
-        $dompdf->stream();
+
+        //  Get the PDF binary and save to a temporary file
+        $pdfOutput = $dompdf->output();
+        $tempFile = tempnam(sys_get_temp_dir(), 'pdf_');
+        file_put_contents($tempFile, $pdfOutput);
+        try {
+            // Upload to Cloudinary
+            $cloudinaryUrl = $uploader->uploadPdf($tempFile);
+            $report = new AlertReport();
+            $report->setUrl($cloudinaryUrl);
+            $report->setGeneratedAt(new \DateTimeImmutable());
+            $report->setAlertCount(count($alertes));
+            $this->em->persist($report);
+            $this->em->flush();
+            $this->addFlash('success', 'The global report has been generated and saved to the cloud.');
+        } finally {
+            unlink($tempFile);
+        }
+
+        /* $dompdf->stream();  Output the generated PDF to Browser  */
         return $this->redirectToRoute('admin_alerte_index');
     }
 
@@ -151,9 +170,9 @@ final class AdminAlerteIAController extends AbstractController
             PROMPT;
 
         try {
-            $apiKey = getenv('GOOGLE_API_KEY');
+            $apiKey = $_ENV['GOOGLE_API_KEY'] ?? getenv('GOOGLE_API_KEY');
             $client = Gemini::client($apiKey);
-            $result = $client->generativeModel(model: 'gemini-3-flash-preview')->generateContent($prompt);
+            $result = $client->generativeModel(model: 'gemini-1.5-flash')->generateContent($prompt);
             $analysisText = $result->text();
 
             return new JsonResponse([
@@ -166,5 +185,13 @@ final class AdminAlerteIAController extends AbstractController
                 'error' => 'Erreur lors de la génération du rapport d\'escalade.',
             ]);
         }
+    }
+
+    #[Route('/rapports', name: 'admin_alerte_rapports')]
+    public function listReports(AlertReportRepository $reportRepo): Response
+    {
+        return $this->render('admin_alerte_ia/rapports.html.twig', [
+            'reports' => $reportRepo->findBy([], ['generatedAt' => 'DESC']),
+        ]);
     }
 }

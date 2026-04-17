@@ -69,30 +69,35 @@ final class AdminReclamationController extends AbstractController
     }
 
     #[Route('/{id}/analyse', name: 'admin_reclamation_analyse', methods: ['POST'])]
-    public function analyse(Request $request, Reclamations $reclamation): Response
+    public function analyse(Request $request, Reclamations $reclamation): JsonResponse
     {
         $token = $request->getPayload()->get('token');
-        if ($this->isCsrfTokenValid('analyse-item', $token)) {
-            $apiKey = getenv('GOOGLE_API_KEY');
-            $client = Gemini::client($apiKey);
+        if (!$this->isCsrfTokenValid('analyse-item', $token)) {
+            return new JsonResponse(['success' => false, 'error' => 'Invalid CSRF token'], 403);
+        }
 
+        try {
+            $apiKey = $_ENV['GOOGLE_API_KEY'] ?? getenv('GOOGLE_API_KEY');
+
+            if (!$apiKey) {
+                return new JsonResponse(['success' => false, 'error' => 'API key not configured'], 500);
+            }
+
+            $client = Gemini::client($apiKey);
             $sujet = $reclamation->getSujet();
             $description = $reclamation->getDescription();
+
             $prompt = <<<PROMPT
-
-                        Tu es un expert en gestion de la relation client. Analyse la réclamation suivante et réponds uniquement en suivant strictement ce format, sans texte d'introduction ni de conclusion.
-
-                        DONNÉES :
-                        Sujet : $sujet
-                        Description : $description
-
-                        FORMAT DE RÉPONSE :
-                        Gravité : [Critique | Élevée | Moyenne | Faible]
-                        Justification : [1-2 phrases maximum]
-                        Action : [en attente | en cours | résolue]
+                    Tu es un expert en gestion de la relation client. Analyse la réclamation suivante...
+                    Sujet : $sujet
+                    Description : $description
+                    FORMAT DE RÉPONSE :
+                    Gravité : [Critique | Élevée | Moyenne | Faible]
+                    Justification : [1-2 phrases maximum]
+                    Action : [en attente | en cours | résolue]
                 PROMPT;
 
-            $result = $client->generativeModel(model: 'gemini-3-flash-preview')->generateContent($prompt);
+            $result = $client->generativeModel(model: 'gemini-1.5-flash')->generateContent($prompt);
             $analysisText = $result->text();
 
             return new JsonResponse([
@@ -101,12 +106,13 @@ final class AdminReclamationController extends AbstractController
                 'reclamation_id' => $reclamation->getId(),
                 'sujet' => $reclamation->getSujet(),
             ]);
-        }
 
-        return new JsonResponse([
-            'success' => false,
-            'error' => 'Invalid CSRF token',
-        ], 403);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
 }
