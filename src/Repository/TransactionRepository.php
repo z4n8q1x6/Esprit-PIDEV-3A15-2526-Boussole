@@ -15,7 +15,7 @@ class TransactionRepository extends ServiceEntityRepository
 
     // START alerte ia functions
     // Get total monthly transactions by type (RECETTE, etc)
-    public function getTotalByType(int $franchiseId, string $transactionType, int $month, int $year): float
+    public function getTotalByType($franchiseId, string $transactionType, int $month, int $year): float
     {
         $startDate = new \DateTime("$year-$month-01 00:00:00");
         $endDate = new \DateTime("$year-$month-01 23:59:59");
@@ -38,7 +38,7 @@ class TransactionRepository extends ServiceEntityRepository
     }
 
     // Count transactions for a specific month/year/franchise
-    public function countByMonth(int $franchiseId, int $month, int $year): int
+    public function countByMonth($franchiseId, int $month, int $year): int
     {
         $startDate = new \DateTime("$year-$month-01 00:00:00");
         $endDate = new \DateTime("$year-$month-01 23:59:59");

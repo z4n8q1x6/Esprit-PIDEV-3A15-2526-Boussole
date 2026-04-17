@@ -17,6 +17,7 @@ final class ReclamationController extends AbstractController
 {
     private EntityManagerInterface $em;
     private ReclamationsRepository $repo;
+    private int $franchise_id = 2;
 
     public function __construct(EntityManagerInterface $em, ReclamationsRepository $repo)
     {
@@ -26,22 +27,22 @@ final class ReclamationController extends AbstractController
 
     private function getFranchiseId()
     {
+
         /** @var Utilisateur $user */
         $user = $this->getUser();
 
         // non admin
-        if (!$user || !$user->getIdFranchise()) {
+        if (!$user || !$user->getId_franchise()) {
             return null;
         }
 
-        return $user->getIdFranchise();
+        return $user->getId_franchise();
     }
 
     #[Route('/', name: 'reclamation_index', methods: ['GET'])]
     public function index(Request $request): Response
     {
         $franchise_id = $this->getFranchiseId();
-
 
         $search = $request->query->get('q', '');
         $sort = $request->query->get('sort', 'id');
@@ -50,11 +51,11 @@ final class ReclamationController extends AbstractController
         if (!in_array($sort, ['sujet', 'description', 'statut', 'date_creation'])) {
             $sort = 'id';
         }
-        if ($franchise_id != null) {
-            $reclamations = $this->repo->searchAndSort($search, $sort, $direction, $franchise_id);
+        if ($franchise_id !== null) {
+            $reclamations = $this->repo->searchAndSort($search, $sort, $direction, $franchise);
         } else {
             $reclamations = [];
-            $this->addFlash('error', 'Aucune franchise associée.');
+            $this->addFlash('error', 'Aucune franchise associée. Accès restreint.');
         }
         return $this->render('reclamation/index.html.twig', [
             'reclamations' => $reclamations,
@@ -67,12 +68,12 @@ final class ReclamationController extends AbstractController
         $reclamation = new Reclamations();
         $form = $this->createForm(ReclamationsType::class, $reclamation);
         $form->handleRequest($request);
-        $franchise = $this->em->getRepository(Franchises::class)->find($this->getFranchiseId());
+        $franchise = $this->em->getRepository(Franchises::class)->find($this->franchise_id);
         if ($form->isSubmitted() && $form->isValid()) {
             $reclamation->setFranchise_id($franchise);
             $this->em->persist($reclamation);
             $this->em->flush();
-            $this->addFlash('success', 'Réclamation ajoutée avec succès.');
+            $this->addFlash('success', 'Reclamation added successfully.');
             return $this->redirectToRoute('reclamation_index');
         }
         return $this->render('reclamation/new.html.twig', [
@@ -87,7 +88,7 @@ final class ReclamationController extends AbstractController
         if ($this->isCsrfTokenValid('delete-item', $submitedToken)) {
             $this->em->remove($reclamation);
             $this->em->flush();
-            $this->addFlash('success', 'Réclamation supprimée avec succès.');
+            $this->addFlash('success', 'Reclamation deleted successfully.');
         }
         return $this->redirectToRoute('reclamation_index');
     }

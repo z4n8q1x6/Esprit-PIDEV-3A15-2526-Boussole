@@ -18,17 +18,23 @@ class AlerteiasRepository extends ServiceEntityRepository
         $this->transactionRepository = $transactionRepository;
     }
 
-    public function searchAndSort(?string $search, string $sort, string $direction)
+    public function searchAndSort(?string $search, string $sort, string $direction, $franchise_id = null)
     {
-        return $this->createQueryBuilder('a')
+        $qb = $this->createQueryBuilder('a')
             ->andWhere('a.type_alerte LIKE :search')
-            ->setParameter('search', '%' . $search . '%')
-            ->orderBy('a.' . $sort, $direction)
+            ->setParameter('search', '%' . $search . '%');
+
+        if ($franchise_id !== null) {
+            $qb->andWhere('a.franchise_id= :f')
+               ->setParameter('f', $franchise_id);
+        }
+
+        return $qb->orderBy('a.' . $sort, $direction)
             ->getQuery()
             ->getResult();
     }
 
-    public function getFinancialData(int $franchiseId, int $month, int $year): array
+    public function getFinancialData($franchiseId, int $month, int $year): array
     {
         $totalRecettes = $this->transactionRepository->getTotalByType($franchiseId, 'RECETTE', $month, $year);
         $totalChargesExploitation = $this->chargeRepository->getTotalByType($franchiseId, 'CHARGES_EXPLOITATIONS', $month, $year);
