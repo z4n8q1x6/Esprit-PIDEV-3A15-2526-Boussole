@@ -196,9 +196,21 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function getRoles(): array
     {
-        $roleStr = $this->role ?? 'ROLE_USER';
-        // guarantee every user at least has ROLE_USER
-        $roles = ['ROLE_USER', $roleStr];
+        $roleStr = $this->role ?? '';
+        $roles = ['ROLE_USER'];
+
+        if ($roleStr !== '') {
+            $roles[] = $roleStr;
+        }
+
+        // Normalize persisted enum roles to Symfony-style role names used elsewhere in the app.
+        if ($roleStr === 'SIEGE') {
+            $roles[] = 'ROLE_ADMIN';
+        }
+
+        if ($roleStr === 'ENTREPRISE') {
+            $roles[] = 'ROLE_ENTREPRISE';
+        }
 
         return array_unique($roles);
     }

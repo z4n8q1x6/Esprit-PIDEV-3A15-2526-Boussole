@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Mailer\MailerInterface;
@@ -23,22 +24,36 @@ final class SecurityController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        if (in_array('ROLE_ADMIN', $user->getRoles())) {
-            return $this->redirectToRoute('app_admin_user');
+        if (in_array('SIEGE', $user->getRoles()) || in_array('ROLE_ADMIN', $user->getRoles())) {
+            return $this->redirectToRoute('app_siege_dashboard');
         }
 
         return $this->redirectToRoute('app_front_home');
     }
 
     #[Route(path: '/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(
+        Request $request,
+        AuthenticationUtils $authenticationUtils,
+        CsrfTokenManagerInterface $csrfTokenManager
+    ): Response
     {
         if ($this->getUser()) {
             $user = $this->getUser();
-            if (in_array('ROLE_ADMIN', $user->getRoles())) {
-                return $this->redirectToRoute('app_admin_user');
+            if (in_array('SIEGE', $user->getRoles()) || in_array('ROLE_ADMIN', $user->getRoles())) {
+                return $this->redirectToRoute('app_siege_dashboard');
             }
             return $this->redirectToRoute('app_front_home');
+        }
+
+        if ($request->hasSession() && !$request->getSession()->isStarted()) {
+            $request->getSession()->start();
+        }
+
+        $csrfToken = $csrfTokenManager->refreshToken('authenticate')->getValue();
+
+        if ($request->hasSession() && $request->getSession()->isStarted()) {
+            $request->getSession()->save();
         }
 
         // get the login error if there is one
@@ -46,7 +61,11 @@ final class SecurityController extends AbstractController
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('login/index.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
+        return $this->render('login/index.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error,
+            'login_csrf_token' => $csrfToken,
+        ]);
     }
 
     #[Route(path: '/logout', name: 'app_logout')]

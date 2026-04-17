@@ -186,7 +186,7 @@
                 {% endfor %}
             {% endfor %}
 
-            <form method="post">
+            <form method="post" action="{{ path('app_login') }}">
                 <div class="form-group">
                     <label for="username">Email Professionnel</label>
                     <input type="email" value="{{ last_username }}" name="_username" id="username" class="form-control" placeholder="nom@boussole.tn" required autofocus>
@@ -195,7 +195,7 @@
                     <label for="password">Mot de passe</label>
                     <input type="password" name="_password" id="password" class="form-control" placeholder="••••••••" required>
                 </div>
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <input type="hidden" name="_csrf_token" value="{{ login_csrf_token }}">
                 <button type="submit" class="btn-submit">Se connecter maintenant</button>
                 <a href="javascript:void(0)" id="go-to-forgot" style="display:block; text-align:center; margin-top:15px; font-size:13px; color:#64748b; text-decoration:none; font-weight:500;">Mot de passe oublié ?</a>
             </form>

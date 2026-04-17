@@ -39,7 +39,7 @@ class CreateAdminCommand extends Command
         $user->setNom('Admin');
         $user->setPrenom('User');
         $user->setEmail('admin@gmail.com');
-        $user->setRole('ROLE_ADMIN');
+        $user->setRole('SIEGE');
         $user->setActif(true);
         $user->setDate_creation(new \DateTime());
         
