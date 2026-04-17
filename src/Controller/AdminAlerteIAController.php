@@ -170,9 +170,9 @@ final class AdminAlerteIAController extends AbstractController
             PROMPT;
 
         try {
-            $apiKey = $_ENV['GOOGLE_API_KEY'] ?? getenv('GOOGLE_API_KEY');
+            $apiKey = getenv('GOOGLE_API_KEY');
             $client = Gemini::client($apiKey);
-            $result = $client->generativeModel(model: 'gemini-1.5-flash')->generateContent($prompt);
+            $result = $client->generativeModel(model: 'gemini-2.5-flash-lite')->generateContent($prompt);
             $analysisText = $result->text();
 
             return new JsonResponse([

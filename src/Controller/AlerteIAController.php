@@ -68,14 +68,14 @@ final class AlerteIAController extends AbstractController
         }
 
         try {
-            $apiKey = $_ENV['GOOGLE_API_KEY'] ?? getenv('GOOGLE_API_KEY');
+            $apiKey = getenv('GOOGLE_API_KEY');
             $client = Gemini::client($apiKey);
 
             $financialData = $this->repo->getFinancialData($this->franchise_id, date('n'), date('Y'));
             $prompt = $this->buildPrompt($financialData, date('n'), date('Y'));
 
             $result = $client
-                ->generativeModel(model: 'gemini-1.5-flash')
+                ->generativeModel(model: 'gemini-3-flash-preview')
                 ->withGenerationConfig(
                     generationConfig: new GenerationConfig(
                         responseMimeType: ResponseMimeType::APPLICATION_JSON,
