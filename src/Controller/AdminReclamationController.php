@@ -98,7 +98,7 @@ final class AdminReclamationController extends AbstractController
                     Action : [en attente | en cours | résolue]
                 PROMPT;
 
-            $result = $client->generativeModel(model: 'gemini-3-flash-preview')->generateContent($prompt);
+            $result = $client->generativeModel(model: 'gemini-1.5-flash')->generateContent($prompt);
             $analysisText = $result->text();
 
             return new JsonResponse([

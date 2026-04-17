@@ -29,6 +29,7 @@ security:
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            user_checker: App\Security\UserChecker
 
         api:
             pattern: ^/api
@@ -43,6 +44,10 @@ security:
                 check_path: app_login
                 enable_csrf: true
                 default_target_path: app_home
+            user_checker: App\Security\UserChecker
+            custom_authenticators:
+                - App\Security\GoogleAuthenticator
+                - App\Security\FaceAuthenticator
             logout:
                 path: app_logout
                 # where to redirect after logout
