@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 use App\Entity\Franchises;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use App\Entity\Ligne_commande;
 
 #[ORM\Entity]
@@ -13,8 +14,9 @@ class Commande
 {
 
     #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "AUTO")]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: "datetime")]
     private \DateTimeInterface $date_creation;
@@ -25,9 +27,26 @@ class Commande
     #[ORM\Column(type: "string")]
     private string $statut;
 
+    #[ORM\Column(type: "integer", options: ["default" => 0])]
+    private int $points_utilises = 0;
+
+    #[ORM\Column(type: "integer", options: ["default" => 0])]
+    private int $points_gagnes = 0;
+
+    #[ORM\Column(type: "string", length: 10, nullable: true)]
+    private ?string $coupon_code = null;
+
+    #[ORM\Column(type: "float", nullable: true)]
+    private ?float $remise_coupon = null;
+
         #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "commandes")]
     #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
     private Franchises $franchise_id;
+
+    public function __construct()
+    {
+        $this->ligne_commandes = new ArrayCollection();
+    }
 
     public function getId()
     {
@@ -67,6 +86,50 @@ class Commande
     public function setStatut($value)
     {
         $this->statut = $value;
+    }
+
+    public function getPointsUtilises(): int
+    {
+        return $this->points_utilises;
+    }
+
+    public function setPointsUtilises(int $points_utilises): self
+    {
+        $this->points_utilises = $points_utilises;
+        return $this;
+    }
+
+    public function getPointsGagnes(): int
+    {
+        return $this->points_gagnes;
+    }
+
+    public function setPointsGagnes(int $points_gagnes): self
+    {
+        $this->points_gagnes = $points_gagnes;
+        return $this;
+    }
+
+    public function getCouponCode(): ?string
+    {
+        return $this->coupon_code;
+    }
+
+    public function setCouponCode(?string $coupon_code): self
+    {
+        $this->coupon_code = $coupon_code;
+        return $this;
+    }
+
+    public function getRemiseCoupon(): ?float
+    {
+        return $this->remise_coupon;
+    }
+
+    public function setRemiseCoupon(?float $remise_coupon): self
+    {
+        $this->remise_coupon = $remise_coupon;
+        return $this;
     }
 
     public function getFranchise_id()

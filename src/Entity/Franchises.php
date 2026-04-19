@@ -36,6 +36,9 @@ class Franchises
     #[ORM\Column(type: "float")]
     private float $solde_actuel;
 
+    #[ORM\Column(type: "integer", options: ["default" => 0])]
+    private int $points_fidelite = 0;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -114,6 +117,17 @@ class Franchises
     public function setSolde_actuel($value)
     {
         $this->solde_actuel = $value;
+    }
+
+    public function getPointsFidelite(): int
+    {
+        return $this->points_fidelite;
+    }
+
+    public function setPointsFidelite(int $points_fidelite): self
+    {
+        $this->points_fidelite = $points_fidelite;
+        return $this;
     }
 
     #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Alerteias::class)]

@@ -1,0 +1,98 @@
+{% extends 'back_base.html.twig' %}
+
+{% block title %}Carte des Entreprises (Franchises){% endblock %}
+
+{% block stylesheets %}
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+{% endblock %}
+
+{% block body %}
+<div class="row mb-3">
+    <div class="col-12">
+        <h1 class="h3 mb-2">Carte des Entreprises</h1>
+        <p class="text-muted">Visualisez la localisation géographique de toutes les franchises actives. (Alimenté par OpenStreetMap - 100% Gratuit)</p>
+    </div>
+</div>
+
+<div class="card shadow border-0">
+    <div class="card-body p-0">
+        <!-- Container de la carte -->
+        <div id="map" style="width: 100%; height: 600px; border-radius: 0.5rem; z-index: 1;"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Liste des franchises récupérées depuis le serveur
+            const franchisesData = [
+                {% for franchise in franchises %}
+                {
+                    id: {{ franchise.id }},
+                    nom: "{{ franchise.nom|escape('js') }}",
+                    adresse: "{{ franchise.adresse|escape('js') }}",
+                    telephone: "{{ franchise.telephone|escape('js') }}",
+                    email: "{{ franchise.email|escape('js') }}"
+                }{% if not loop.last %},{% endif %}
+                {% endfor %}
+            ];
+
+            // 1. Initialisation de la carte (centrée sur la Tunisie)
+            const map = L.map('map').setView([33.8869, 9.5375], 6);
+
+            // 2. Ajout du fond de carte gratuit OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // 3. Fonction pour convertir l'adresse en coordonnées via Nominatim (API gratuite d'OSM)
+            // L'API impose une limite de 1 requête par seconde, on ajoute donc un petit délai
+            function geocodeAndPlaceMarker(franchise, index) {
+                setTimeout(() => {
+                    const query = encodeURIComponent(franchise.adresse);
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${query}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data && data.length > 0) {
+                                const lat = data[0].lat;
+                                const lon = data[0].lon;
+                                
+                                // Placer le marqueur
+                                const marker = L.marker([lat, lon]).addTo(map);
+                                
+                                // Créer la popup avec les informations
+                                const contentString = `
+                                    <div style="min-width: 200px;">
+                                        <h6 class="fw-bold mb-1">${franchise.nom}</h6>
+                                        <hr class="my-1">
+                                        <p class="mb-1 small" style="margin-top: 5px;"><i class="bi bi-geo-alt me-1 text-primary"></i> ${franchise.adresse}</p>
+                                        <p class="mb-1 small"><i class="bi bi-telephone me-1 text-success"></i> ${franchise.telephone}</p>
+                                        <p class="mb-0 small"><i class="bi bi-envelope me-1 text-info"></i> <a href="mailto:${franchise.email}">${franchise.email}</a></p>
+                                    </div>
+                                `;
+                                
+                                marker.bindPopup(contentString);
+                            } else {
+                                console.warn("Impossible de trouver l'adresse : " + franchise.adresse);
+                            }
+                        })
+                        .catch(error => console.error("Erreur de géocodage:", error));
+                }, index * 1200); // 1.2 seconde d'intervalle entre chaque recherche
+            }
+
+            // 4. Lancer la recherche pour toutes les adresses
+            let validIndex = 0;
+            franchisesData.forEach((franchise) => {
+                if (franchise.adresse && franchise.adresse.trim() !== '') {
+                    geocodeAndPlaceMarker(franchise, validIndex);
+                    validIndex++;
+                }
+            });
+        });
+    </script>
+{% endblock %}

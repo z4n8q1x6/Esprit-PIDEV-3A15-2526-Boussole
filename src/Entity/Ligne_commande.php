@@ -11,8 +11,9 @@ class Ligne_commande
 {
 
     #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "AUTO")]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: "integer")]
     private int $quantite;
