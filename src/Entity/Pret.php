@@ -13,6 +13,7 @@ class Pret
 {
 
     #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     #[ORM\Column(type: "integer")]
     private int $id;
 
@@ -34,8 +35,8 @@ class Pret
     #[ORM\Column(type: "string")]
     private string $statut;
 
-        #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "prets")]
-    #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: Franchises::class, inversedBy: "prets")]
+    #[ORM\JoinColumn(name: 'franchise_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     private Franchises $franchise_id;
 
     public function getId()

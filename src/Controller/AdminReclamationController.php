@@ -26,6 +26,7 @@ final class AdminReclamationController extends AbstractController
     #[Route('/', name: 'admin_reclamation_index')]
     public function index(Request $request): Response
     {
+       
         $search = $request->query->get('q', '');
         $sort = $request->query->get('sort', 'id');
         $direction = $request->query->get('direction', 'DESC');
@@ -78,8 +79,7 @@ final class AdminReclamationController extends AbstractController
         }
 
         try {
-            $apiKey = getenv('GOOGLE_API_KEY');
-
+               $apiKey = $_ENV['GOOGLE_API_KEY'];
             if (!$apiKey) {
                 return new JsonResponse(['success' => false, 'error' => 'API key not configured'], 500);
             }
