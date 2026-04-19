@@ -294,7 +294,11 @@ final class BilanController extends AbstractController
     {
         // 1. Déterminer le destinataire
         $franchise = $bilan->getFranchiseId();
-        $destinataire = $franchise && $franchise->getEmail() ? $franchise->getEmail() : 'franchise.test@boussole.com';
+        $destinataire_original = $franchise && $franchise->getEmail() ? $franchise->getEmail() : 'franchise.test@boussole.com';
+        
+        // Utiliser MAILER_TO en priorité (comme dans AfficherBackFournisseurController)
+        $destinataire = $_ENV['MAILER_TO'] ?? $destinataire_original;
+        
         $franchiseNom = $franchise ? $franchise->getNom() : 'SIEGE PRINCIPAL';
 
         // 2. Générer le PDF (recyclage de la logique exportPdf)

@@ -18,37 +18,63 @@ class FacePlusPlusService
     public function detectFace(string $base64Image): ?string
     {
         $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $base64Image);
-        $logFile = 'C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/log/facepp_debug.log';
+        $logFile = __DIR__ . '/../../var/log/facepp_debug.log';
 
-        try {
-            $response = $this->httpClient->request('POST', self::BASE_URL . 'detect', [
-                'body' => [
-                    'api_key' => $this->faceppKey,
-                    'api_secret' => $this->faceppSecret,
-                    'image_base64' => $base64Data,
-                    'return_landmark' => 0,
-                    'return_attributes' => 'none'
-                ]
-            ]);
+        $attempts = 0;
+        $maxAttempts = 2;
 
-            $data = $response->toArray(false);
-            file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Detect Response: " . json_encode($data) . "\n", FILE_APPEND);
+        while ($attempts < $maxAttempts) {
+            try {
+                $response = $this->httpClient->request('POST', self::BASE_URL . 'detect', [
+                    'body' => [
+                        'api_key' => $this->faceppKey,
+                        'api_secret' => $this->faceppSecret,
+                        'image_base64' => $base64Data,
+                        'return_landmark' => 0,
+                        'return_attributes' => 'none'
+                    ]
+                ]);
 
-            if (isset($data['faces'][0]['face_token'])) {
-                return $data['faces'][0]['face_token'];
+                $data = $response->toArray(false);
+                file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Detect Response: " . json_encode($data) . "\n", FILE_APPEND);
+
+                if (isset($data['faces'][0]['face_token'])) {
+                    return $data['faces'][0]['face_token'];
+                }
+
+                // Handle rate limit (Free Tier: 1 QPS)
+                if (isset($data['error_message']) && str_contains($data['error_message'], 'CONCURRENCY_LIMIT_EXCEEDED')) {
+                    $attempts++;
+                    if ($attempts < $maxAttempts) {
+                        sleep(1); // Wait 1s and retry
+                        continue;
+                    }
+                }
+
+                if (empty($data['faces'])) {
+                    file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Detect: No face found in image.\n", FILE_APPEND);
+                } else {
+                    error_log('Face++ Detect failed: ' . json_encode($data));
+                }
+                
+                return null;
+            } catch (\Exception $e) {
+                file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Detect Exception: " . $e->getMessage() . "\n", FILE_APPEND);
+                
+                $attempts++;
+                if ($attempts < $maxAttempts) {
+                    sleep(1);
+                    continue;
+                }
+                return null;
             }
-
-            error_log('Face++ Detect failed: ' . json_encode($data));
-            return null;
-        } catch (\Exception $e) {
-            file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "Detect Exception: " . $e->getMessage() . "\n", FILE_APPEND);
-            return null;
         }
+        return null;
     }
 
     public function addFaceToFaceSet(string $faceToken): bool
     {
-        $logFile = 'C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/log/facepp_debug.log';
+        $logFile = __DIR__ . '/../../var/log/facepp_debug.log';
         try {
             $response = $this->httpClient->request('POST', self::BASE_URL . 'faceset/addface', [
                 'body' => [
@@ -62,10 +88,19 @@ class FacePlusPlusService
             $data = $response->toArray(false);
             file_put_contents($logFile, date('[Y-m-d H:i:s] ') . "AddFace Response: " . json_encode($data) . "\n", FILE_APPEND);
             
-            // If FaceSet doesn't exist, create it and try again
-            if (isset($data['error_message']) && (str_contains($data['error_message'], 'FACESET_NOT_FOUND') || str_contains($data['error_message'], 'INVALID_OUTER_ID'))) {
-                $this->createFaceSet();
-                sleep(1); // Wait 1s to avoid CONCURRENCY_LIMIT_EXCEEDED on free tier
+            // Handle rate limit (Free Tier: 1 QPS) or missing FaceSet
+            $retry = false;
+            if (isset($data['error_message'])) {
+                if (str_contains($data['error_message'], 'FACESET_NOT_FOUND') || str_contains($data['error_message'], 'INVALID_OUTER_ID')) {
+                    $this->createFaceSet();
+                    $retry = true;
+                } elseif (str_contains($data['error_message'], 'CONCURRENCY_LIMIT_EXCEEDED')) {
+                    $retry = true;
+                }
+            }
+
+            if ($retry) {
+                sleep(1); // Wait to respect QPS limit
                 
                 $response = $this->httpClient->request('POST', self::BASE_URL . 'faceset/addface', [
                     'body' => [
@@ -98,7 +133,7 @@ class FacePlusPlusService
     public function searchFace(string $base64Image, float $threshold = 80.0): ?string
     {
         $base64Data = preg_replace('/^data:image\/\w+;base64,/', '', $base64Image);
-        $logFile = 'C:/Users/Technologie/Desktop/Esprit-PIDEV-3A15-2526-Boussole/var/log/facepp_debug.log';
+        $logFile = __DIR__ . '/../../var/log/facepp_debug.log';
 
         try {
             $response = $this->httpClient->request('POST', self::BASE_URL . 'search', [

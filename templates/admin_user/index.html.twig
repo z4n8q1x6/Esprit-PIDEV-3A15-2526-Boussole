@@ -1051,12 +1051,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('stat-total').innerText = parseInt(document.getElementById('stat-total').innerText) + 1;
                 document.getElementById('stat-active').innerText = parseInt(document.getElementById('stat-active').innerText) + 1;
 
+                // Informative message based on face status
+                let mainMsg = 'Membre créé avec succès !';
+                let isWarn = false;
+
+                if (data.user.face_status === 'detection_failed') {
+                    mainMsg = 'Utilisateur créé, mais AUCUN VISAGE n\'a été détecté dans l\'image.';
+                    isWarn = true;
+                } else if (data.user.face_status === 'cloud_sync_failed') {
+                    mainMsg = 'Utilisateur créé, mais la synchronisation Cloud (FaceSet) a échoué.';
+                    isWarn = true;
+                } else if (data.user.face_status === 'error') {
+                    mainMsg = 'Utilisateur créé, mais une erreur est survenue lors du traitement biométrique.';
+                    isWarn = true;
+                }
+
                 if (data.user.temp_password) {
-                    showToast('Créé avec succès ! Mot de passe temporaire : ' + data.user.temp_password, false, 8000);
+                    showToast(`${mainMsg} Mot de passe : ${data.user.temp_password}`, isWarn, 8000);
                 } else {
-                    showToast('Membre et entreprise créés avec succès !');
+                    showToast(mainMsg, isWarn);
                 }
                 closeAddModal();
+                resetFaceEnroll();
             } else {
                 const errorMsg = data.errors ? data.errors.join(' ') : 'Erreur lors de la création.';
                 showToast(errorMsg, true);
