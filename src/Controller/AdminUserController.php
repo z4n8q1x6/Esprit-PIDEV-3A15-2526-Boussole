@@ -152,20 +152,28 @@ final class AdminUserController extends AbstractController
         $utilisateur->setId_franchise($franchise);
 
         // Handle Face Biometrics with Face++
+        $faceStatus = 'skipped';
         try {
             if (!empty($data['face_image'])) {
+                $faceStatus = 'detection_failed';
                 $faceToken = $faceppService->detectFace($data['face_image']);
                 if ($faceToken) {
                     // ALWAYS save the token to the database first
                     $utilisateur->setFace_token($faceToken);
+                    $faceStatus = 'enrolled';
+                    
                     // Wait 2s to respect Face++ free tier 1 QPS limit
                     sleep(2);
+                    
                     // Then try to add to FaceSet (for search during login)
-                    $faceppService->addFaceToFaceSet($faceToken);
+                    if (!$faceppService->addFaceToFaceSet($faceToken)) {
+                        $faceStatus = 'cloud_sync_failed';
+                    }
                 }
             }
         } catch (\Exception $e) {
             error_log('Biometric enrollment failed: ' . $e->getMessage());
+            $faceStatus = 'error';
         }
 
         // Generate password (8 chars, readable)
@@ -216,7 +224,8 @@ final class AdminUserController extends AbstractController
                 'email' => $utilisateur->getEmail(),
                 'role' => 'Entreprise',
                 'actif' => true,
-                'temp_password' => $randomPassword // Passed back so they can see it even if the local email failed
+                'temp_password' => $randomPassword, // Passed back so they can see it even if the local email failed
+                'face_status' => $faceStatus
             ]
         ]);
     }

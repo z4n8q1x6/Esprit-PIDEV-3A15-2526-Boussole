@@ -1,0 +1,1 @@
+<?php require __DIR__.'/vendor/autoload.php'; $k = new App\Kernel('dev', true); $k->boot(); $em = $k->getContainer()->get('doctrine')->getManager(); $u = $em->getRepository(App\Entity\Utilisateur::class)->findOneBy(['email' => 'admin@gmail.com']); $u->setRole('ROLE_ADMIN'); $em->flush(); echo 'OK';

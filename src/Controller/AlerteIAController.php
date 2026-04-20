@@ -55,7 +55,7 @@ final class AlerteIAController extends AbstractController
             $sort = 'id';
         }
         if ($franchise_id != null) {
-            $alertes = $this->repo->searchAndSort($search, $sort, $direction, 13);
+            $alertes = $this->repo->searchAndSort($search, $sort, $direction, $franchise_id);
         } else {
             $alertes = [];
             $this->addFlash('error', 'Aucune franchise associée.');
@@ -86,7 +86,7 @@ final class AlerteIAController extends AbstractController
         }
 
         try {
-            $apiKey = getenv('GOOGLE_API_KEY');
+            $apiKey = $_ENV['GOOGLE_API_KEY'];
             $client = Gemini::client($apiKey);
 
 

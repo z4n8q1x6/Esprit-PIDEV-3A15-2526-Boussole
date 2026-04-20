@@ -1,0 +1,1 @@
+<?php require 'vendor/autoload.php'; use Symfony\Component\Dotenv\Dotenv; $dotenv = new Dotenv(); $dotenv->load(__DIR__.'/.env', __DIR__.'/.env.local'); $client = \Symfony\Component\HttpClient\HttpClient::create(); $res = $client->request('POST', 'http://127.0.0.1:8000/admin/bilan/generate-ajax', ['json' => ['cible' => '', 'mois' => 4, 'annee' => 2026]]); echo $res->getContent();

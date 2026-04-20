@@ -169,8 +169,9 @@
 				
                 <li class="nav-item mt-1"><a class="nav-link text-body py-2 px-4" href="{{ path('app_admin_user') }}"><i class="bi bi-people fa-fw me-3 fs-6"></i>Utilisateurs</a></li>
                 <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('app_admin_entreprise') }}"><i class="bi bi-building fa-fw me-3 fs-6"></i>Entreprises</a></li>
-                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="#"><i class="bi bi-bag fa-fw me-3 fs-6"></i>Gestion catalogue</a></li>
-                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="#"><i class="bi bi-download fa-fw me-3 fs-6"></i>Commandes reçues</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('app_produit') }}"><i class="bi bi-bag fa-fw me-3 fs-6"></i>Gestion catalogue</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('app_admin_commande') }}"><i class="bi bi-download fa-fw me-3 fs-6"></i>Commandes reçues</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('app_admin_coupon_index') }}"><i class="bi bi-ticket-detailed fa-fw me-3 fs-6"></i>Coupons de réduction</a></li>
 
 				<!-- Title -->
 				<li class="nav-item ms-3 mt-4 mb-2" style="font-size: 0.75rem; letter-spacing: 1px; color: #6c757d; font-weight: bold; text-transform: uppercase;">Outils</li>
@@ -179,7 +180,7 @@
                 <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('app_afficher_back_fournisseur') }}"><i class="bi bi-truck fa-fw me-3 fs-6"></i>Fournisseurs</a></li>
                 <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('admin_reclamation_index') }}"><i class="bi bi-megaphone fa-fw me-3 fs-6"></i>Réclamations</a></li>
                 <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('admin_alerte_index') }}"><i class="bi bi-robot fa-fw me-3 fs-6"></i>Alertes IA</a></li>
-                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="#"><i class="bi bi-globe fa-fw me-3 fs-6"></i>Carte franchises</a></li>
+                <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('app_admin_carte') }}"><i class="bi bi-globe fa-fw me-3 fs-6"></i>Carte franchises</a></li>
                 <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('app_bilan_index') }}"><i class="bi bi-bar-chart-line fa-fw me-3 fs-6"></i>Bilans</a></li>
                 <li class="nav-item"><a class="nav-link text-body py-2 px-4" href="{{ path('app_budget_index') }}"><i class="bi bi-piggy-bank fa-fw me-3 fs-6"></i>Budgets</a></li>
 

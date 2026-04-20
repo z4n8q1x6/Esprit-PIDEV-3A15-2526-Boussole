@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Facture Commande #{{ commande.id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            font-size: 14px;
+        }
+        .header {
+            width: 100%;
+            margin-bottom: 40px;
+        }
+        .header td {
+            vertical-align: top;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00e5ff;
+        }
+        .company-info {
+            text-align: right;
+            color: #555;
+        }
+        .invoice-details {
+            margin-bottom: 30px;
+        }
+        .invoice-details th {
+            text-align: left;
+            width: 150px;
+        }
+        .table-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .table-items th {
+            background-color: #f4f4f4;
+            padding: 10px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+        }
+        .table-items td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .totals-table {
+            width: 50%;
+            margin-left: 50%;
+            border-collapse: collapse;
+        }
+        .totals-table th, .totals-table td {
+            padding: 8px;
+        }
+        .totals-table .total-row th, .totals-table .total-row td {
+            border-top: 2px solid #333;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <table class="header">
+        <tr>
+            <td>
+                <div class="logo">BOUSSOLE</div>
+                <div style="font-size: 12px; letter-spacing: 2px; color: #8a2be2;">ENTREPRISE</div>
+            </td>
+            <td class="company-info">
+                <strong>Plateforme Boussole B2B</strong><br>
+                123 Avenue de l'Innovation<br>
+                1000 Tunis, Tunisie<br>
+                contact@boussole.tn
+            </td>
+        </tr>
+    </table>
+
+    <div style="background: #f8f9fa; padding: 15px; margin-bottom: 30px; border-left: 4px solid #00e5ff;">
+        <h2 style="margin: 0 0 10px 0; color: #333;">FACTURE</h2>
+        <table class="invoice-details">
+            <tr>
+                <th>N° Commande :</th>
+                <td>#{{ commande.id }}</td>
+            </tr>
+            <tr>
+                <th>Date :</th>
+                <td>{{ commande.date_creation|date('d/m/Y H:i') }}</td>
+            </tr>
+            <tr>
+                <th>Client :</th>
+                <td><strong>{{ commande.franchise_id ? commande.franchise_id.nom : 'Client inconnu' }}</strong></td>
+            </tr>
+            <tr>
+                <th>Email :</th>
+                <td>{{ commande.franchise_id ? commande.franchise_id.email : '-' }}</td>
+            </tr>
+            <tr>
+                <th>Statut :</th>
+                <td>{{ commande.statut }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <table class="table-items">
+        <thead>
+            <tr>
+                <th>Produit</th>
+                <th class="text-right">Prix Unitaire</th>
+                <th class="text-right">Quantité</th>
+                <th class="text-right">Total HT</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set sousTotal = 0 %}
+            {% for ligne in commande.ligne_commandes %}
+                {% set totalLigne = ligne.prix_unitaire * ligne.quantite %}
+                {% set sousTotal = sousTotal + totalLigne %}
+                <tr>
+                    <td>{{ ligne.produit_id ? ligne.produit_id.nom : 'Produit retiré' }}</td>
+                    <td class="text-right">{{ ligne.prix_unitaire|number_format(2, ',', ' ') }} DT</td>
+                    <td class="text-right">{{ ligne.quantite }}</td>
+                    <td class="text-right">{{ totalLigne|number_format(2, ',', ' ') }} DT</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <table class="totals-table">
+        <tr>
+            <th class="text-right">Sous-total :</th>
+            <td class="text-right">{{ sousTotal|number_format(2, ',', ' ') }} DT</td>
+        </tr>
+        
+        {% if commande.pointsUtilises > 0 %}
+        <tr>
+            <th class="text-right" style="color: #28a745; font-weight: normal;">Remise (Points de fidélité) :</th>
+            <td class="text-right" style="color: #28a745;">-{{ (commande.pointsUtilises / 10)|number_format(2, ',', ' ') }} DT</td>
+        </tr>
+        {% endif %}
+        
+        {% if commande.remiseCoupon > 0 %}
+        <tr>
+            <th class="text-right" style="color: #28a745; font-weight: normal;">Remise (Coupon {{ commande.couponCode }}) :</th>
+            <td class="text-right" style="color: #28a745;">-{{ commande.remiseCoupon|number_format(2, ',', ' ') }} DT</td>
+        </tr>
+        {% endif %}
+
+        <tr class="total-row">
+            <th class="text-right">Total à Payer :</th>
+            <td class="text-right">{{ commande.montant_total|number_format(2, ',', ' ') }} DT</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <p>Merci pour votre confiance. Ceci est un document généré électroniquement, aucune signature n'est requise.</p>
+        <p>Boussole Enterprise - N° SIRET : 12345678900012</p>
+    </div>
+
+</body>
+</html>

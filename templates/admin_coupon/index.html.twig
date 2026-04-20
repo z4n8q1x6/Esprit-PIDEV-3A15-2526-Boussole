@@ -1,0 +1,66 @@
+{% extends 'back_base.html.twig' %}
+
+{% block title %}Gestion des Coupons{% endblock %}
+
+{% block body %}
+<div class="row mb-3">
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="h3 mb-2">Coupons de Réduction</h1>
+            <p class="text-muted">Générez et gérez les coupons de réduction (-10 DT) à usage unique.</p>
+        </div>
+        <form action="{{ path('app_admin_coupon_generate') }}" method="post">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-plus me-2"></i>Générer un coupon
+            </button>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3">ID</th>
+                        <th class="py-3">Code</th>
+                        <th class="py-3">Valeur</th>
+                        <th class="py-3">Date de création</th>
+                        <th class="py-3">Statut</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for coupon in coupons %}
+                        <tr>
+                            <td class="ps-4 fw-bold">{{ coupon.id }}</td>
+                            <td>
+                                <span class="badge bg-dark text-white p-2" style="font-family: monospace; font-size: 1.1em;">
+                                    {{ coupon.code }}
+                                </span>
+                            </td>
+                            <td class="fw-bold text-success">-{{ coupon.valeur }} DT</td>
+                            <td>{{ coupon.dateCreation|date('d/m/Y H:i') }}</td>
+                            <td>
+                                {% if coupon.isUsed %}
+                                    <span class="badge bg-secondary"><i class="fas fa-check-circle me-1"></i>Utilisé</span>
+                                {% else %}
+                                    <span class="badge bg-success"><i class="fas fa-ticket-alt me-1"></i>Valide</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="fas fa-ticket-alt fa-3x mb-3 text-secondary"></i>
+                                <h5>Aucun coupon généré</h5>
+                                <p>Cliquez sur "Générer un coupon" pour créer un nouveau code.</p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
