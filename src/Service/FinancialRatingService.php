@@ -25,9 +25,9 @@ class FinancialRatingService
         $end = clone $start;
         $end->modify('last day of this month 23:59:59');
 
-        // Récupérer les totaux (Recettes / Dépenses) de la franchise pour le mois spécifié
-        $transactions = $this->em->createQueryBuilder()
-            ->select('t.type, SUM(t.montant) as total')
+        // Récupérer les totaux (Recettes / Dépenses) de la franchise pour le mois spécifié en utilisant un DTO pour la performance
+        $transactionsDTO = $this->em->createQueryBuilder()
+            ->select('NEW App\DTO\TransactionTypeTotalDTO(t.type, SUM(t.montant))')
             ->from(Transaction::class, 't')
             ->where('t.franchise_id = :franchise')
             ->andWhere('t.date >= :start AND t.date <= :end')
@@ -40,11 +40,11 @@ class FinancialRatingService
 
         $recettes = 0.0;
         $depenses = 0.0;
-        foreach ($transactions as $t) {
-            if ($t['type'] === 'RECETTE') {
-                $recettes = (float) $t['total'];
-            } elseif ($t['type'] === 'DEPENSE') {
-                $depenses = (float) $t['total'];
+        foreach ($transactionsDTO as $dto) {
+            if ($dto->type === 'RECETTE') {
+                $recettes = $dto->total;
+            } elseif ($dto->type === 'DEPENSE') {
+                $depenses = $dto->total;
             }
         }
 

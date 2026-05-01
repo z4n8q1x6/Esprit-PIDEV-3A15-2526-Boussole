@@ -1,0 +1,22 @@
+doctrine_doctor:
+    analyzers:
+        dto_hydration:
+            enabled: false
+        overprivileged_database_user:
+            enabled: false
+        hardcoded_database_credentials:
+            enabled: false
+        doctrine_cache:
+            enabled: false
+        strict_mode:
+            enabled: false
+        time_zone:
+            enabled: false
+        bidirectional_consistency:
+            enabled: false
+        collection_initialization:
+            enabled: false
+        float_for_money:
+            enabled: false
+        naming_convention:
+            enabled: false
