@@ -32,9 +32,9 @@ class TransactionRepository extends ServiceEntityRepository
             ->setParameter('startDate', $startDate)
             ->setParameter('endDate', $endDate)
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getSingleScalarResult();
 
-        return $result['total'] ?? 0.0;
+        return (float) ($result ?? 0.0);
     }
 
     // Count transactions for a specific month/year/franchise
@@ -53,9 +53,9 @@ class TransactionRepository extends ServiceEntityRepository
             ->setParameter('startDate', $startDate)
             ->setParameter('endDate', $endDate)
             ->getQuery()
-            ->getOneOrNullResult();
+            ->getSingleScalarResult();
 
-        return $result['count'] ?? 0;
+        return (int) ($result ?? 0);
     }
     // END alerte ai function
 
