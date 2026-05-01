@@ -1,0 +1,66 @@
+﻿ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Controller\PanierController.php                                                                                
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  111    Negated boolean expression is always false.                                                                    
+         ­ƒ¬¬  booleanNot.alwaysFalse                                                                                     
+         ­ƒÆí  Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain  
+         : false in your phpstan.neon.                                                                                  
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------------------------ 
+  Line   Entity\Franchises.php                                                               
+ ------ ------------------------------------------------------------------------------------ 
+  178    No error with identifier property.onlyWritten is reported on line 178.              
+         ­ƒ¬¬  ignore.unmatchedIdentifier (non-ignorable)                                      
+  179    Property App\Entity\Franchises::$bilans is never read, only written.                
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  182    No error with identifier property.onlyWritten is reported on line 182.              
+         ­ƒ¬¬  ignore.unmatchedIdentifier (non-ignorable)                                      
+  183    Property App\Entity\Franchises::$budget_previsionnels is never read, only written.  
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  186    No error with identifier property.onlyWritten is reported on line 186.              
+         ­ƒ¬¬  ignore.unmatchedIdentifier (non-ignorable)                                      
+  187    Property App\Entity\Franchises::$charges is never read, only written.               
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  190    No error with identifier property.onlyWritten is reported on line 190.              
+         ­ƒ¬¬  ignore.unmatchedIdentifier (non-ignorable)                                      
+  191    Property App\Entity\Franchises::$commandes is never read, only written.             
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  194    No error with identifier property.onlyWritten is reported on line 194.              
+         ­ƒ¬¬  ignore.unmatchedIdentifier (non-ignorable)                                      
+  195    Property App\Entity\Franchises::$fournisseurs is never read, only written.          
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  198    No error with identifier property.onlyWritten is reported on line 198.              
+         ­ƒ¬¬  ignore.unmatchedIdentifier (non-ignorable)                                      
+  199    Property App\Entity\Franchises::$prets is never read, only written.                 
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  202    No error with identifier property.onlyWritten is reported on line 202.              
+         ­ƒ¬¬  ignore.unmatchedIdentifier (non-ignorable)                                      
+  203    Property App\Entity\Franchises::$reclamationss is never read, only written.         
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  206    No error with identifier property.onlyWritten is reported on line 206.              
+         ­ƒ¬¬  ignore.unmatchedIdentifier (non-ignorable)                                      
+  207    Property App\Entity\Franchises::$transactions is never read, only written.          
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+ ------ ------------------------------------------------------------------------------------ 
+
+ ------ ----------------------------------------------------------------------------------- 
+  Line   Entity\Pret.php                                                                    
+ ------ ----------------------------------------------------------------------------------- 
+  127    No error with identifier property.onlyWritten is reported on line 127.             
+         ­ƒ¬¬  ignore.unmatchedIdentifier (non-ignorable)                                     
+  128    Property App\Entity\Pret::$mensualites is never read, only written.                
+         ­ƒ¬¬  property.onlyWritten                                                           
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+ ------ ----------------------------------------------------------------------------------- 
+
+ [ERROR] Found 19 errors                                                                                               
+

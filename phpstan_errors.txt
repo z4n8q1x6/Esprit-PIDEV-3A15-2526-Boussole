@@ -1,0 +1,199 @@
+﻿ ------ ----------------------------------------------------------------------------------------------- 
+  Line   Command\GenerateEntitiesCommand.php                                                            
+ ------ ----------------------------------------------------------------------------------------------- 
+  33     Constructor of class App\Command\GenerateEntitiesCommand has an unused parameter $filesystem.  
+         ­ƒ¬¬  constructor.unusedParameter                                                                
+  180    PHPDoc tag @param references unknown parameter: $oneToManyRelations                            
+         ­ƒ¬¬  parameter.notFound                                                                         
+ ------ ----------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Controller\AlerteIAController.php                                                                              
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  36     PHPDoc tag @var for variable $user contains unknown class App\Controller\Utilisateur.                          
+         ­ƒ¬¬  class.notFound                                                                                             
+         ­ƒÆí  Learn more at https://phpstan.org/user-guide/discovering-symbols                                           
+  36     PHPDoc tag @var with type App\Controller\Utilisateur is not subtype of native type                             
+         Symfony\Component\Security\Core\User\UserInterface|null.                                                       
+         ­ƒ¬¬  varTag.nativeType                                                                                          
+  39     Call to method getIdFranchise() on an unknown class App\Controller\Utilisateur.                                
+         ­ƒ¬¬  class.notFound                                                                                             
+         ­ƒÆí  Learn more at https://phpstan.org/user-guide/discovering-symbols                                           
+  39     Negated boolean expression is always false.                                                                    
+         ­ƒ¬¬  booleanNot.alwaysFalse                                                                                     
+         ­ƒÆí  Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain  
+         : false in your phpstan.neon.                                                                                  
+  43     Call to method getIdFranchise() on an unknown class App\Controller\Utilisateur.                                
+         ­ƒ¬¬  class.notFound                                                                                             
+         ­ƒÆí  Learn more at https://phpstan.org/user-guide/discovering-symbols                                           
+  93     Parameter #2 $month of method App\Repository\AlerteiasRepository::getFinancialData() expects int, string       
+         given.                                                                                                         
+         ­ƒ¬¬  argument.type                                                                                              
+  93     Parameter #3 $year of method App\Repository\AlerteiasRepository::getFinancialData() expects int, string        
+         given.                                                                                                         
+         ­ƒ¬¬  argument.type                                                                                              
+  96     Parameter #2 $month of method App\Controller\AlerteIAController::buildPrompt() expects int, string given.      
+         ­ƒ¬¬  argument.type                                                                                              
+  96     Parameter #3 $year of method App\Controller\AlerteIAController::buildPrompt() expects int, string given.       
+         ­ƒ¬¬  argument.type                                                                                              
+  107    Parameter $maxLength of class Gemini\Data\Schema constructor expects string|null, int given.                   
+         ­ƒ¬¬  argument.type                                                                                              
+  108    Parameter $maxLength of class Gemini\Data\Schema constructor expects string|null, int given.                   
+         ­ƒ¬¬  argument.type                                                                                              
+  108    Parameter $minLength of class Gemini\Data\Schema constructor expects string|null, int given.                   
+         ­ƒ¬¬  argument.type                                                                                              
+  120    Call to an undefined method Symfony\Component\Serializer\SerializerInterface::denormalize().                   
+         ­ƒ¬¬  method.notFound                                                                                            
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------- 
+  Line   Controller\CommandeController.php                                                                  
+ ------ --------------------------------------------------------------------------------------------------- 
+  23     Call to an undefined method Symfony\Component\Security\Core\User\UserInterface::getIdFranchise().  
+         ­ƒ¬¬  method.notFound                                                                                
+  29     Call to an undefined method Symfony\Component\Security\Core\User\UserInterface::getIdFranchise().  
+         ­ƒ¬¬  method.notFound                                                                                
+ ------ --------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Controller\DashboardSiegeController.php                                                                        
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  177    Call to an undefined method Doctrine\ORM\EntityRepository<App\Entity\Transaction>::getFinancialDataForCluster  
+         ing().                                                                                                         
+         ­ƒ¬¬  method.notFound                                                                                            
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Controller\GoogleController.php                                                                                
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  23     Method KnpU\OAuth2ClientBundle\Client\OAuth2ClientInterface::redirect() invoked with 1 parameter, 2 required.  
+         ­ƒ¬¬  arguments.count                                                                                            
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------- 
+  Line   Controller\PanierController.php                                                                    
+ ------ --------------------------------------------------------------------------------------------------- 
+  40     Call to an undefined method Symfony\Component\Security\Core\User\UserInterface::getIdFranchise().  
+         ­ƒ¬¬  method.notFound                                                                                
+  41     Call to an undefined method Symfony\Component\Security\Core\User\UserInterface::getIdFranchise().  
+         ­ƒ¬¬  method.notFound                                                                                
+  119    Call to an undefined method Symfony\Component\Security\Core\User\UserInterface::getIdFranchise().  
+         ­ƒ¬¬  method.notFound                                                                                
+ ------ --------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Controller\ReclamationController.php                                                                           
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  30     PHPDoc tag @var for variable $user contains unknown class App\Controller\Utilisateur.                          
+         ­ƒ¬¬  class.notFound                                                                                             
+         ­ƒÆí  Learn more at https://phpstan.org/user-guide/discovering-symbols                                           
+  30     PHPDoc tag @var with type App\Controller\Utilisateur is not subtype of native type                             
+         Symfony\Component\Security\Core\User\UserInterface|null.                                                       
+         ­ƒ¬¬  varTag.nativeType                                                                                          
+  33     Call to method getIdFranchise() on an unknown class App\Controller\Utilisateur.                                
+         ­ƒ¬¬  class.notFound                                                                                             
+         ­ƒÆí  Learn more at https://phpstan.org/user-guide/discovering-symbols                                           
+  33     Negated boolean expression is always false.                                                                    
+         ­ƒ¬¬  booleanNot.alwaysFalse                                                                                     
+         ­ƒÆí  Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain  
+         : false in your phpstan.neon.                                                                                  
+  37     Call to method getIdFranchise() on an unknown class App\Controller\Utilisateur.                                
+         ­ƒ¬¬  class.notFound                                                                                             
+         ­ƒÆí  Learn more at https://phpstan.org/user-guide/discovering-symbols                                           
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------------------------------------------- 
+  Line   Entity\AlertReport.php                                                                                        
+ ------ -------------------------------------------------------------------------------------------------------------- 
+  14     Property App\Entity\AlertReport::$id (int|null) is never assigned int so it can be removed from the property  
+         type.                                                                                                         
+         ­ƒ¬¬  property.unusedType                                                                                       
+ ------ -------------------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Entity\Coupon.php                                                                                              
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  14     Property App\Entity\Coupon::$id (int|null) is never assigned int so it can be removed from the property type.  
+         ­ƒ¬¬  property.unusedType                                                                                        
+  23     Property App\Entity\Coupon::$is_used (bool|null) is never assigned null so it can be removed from the          
+         property type.                                                                                                 
+         ­ƒ¬¬  property.unusedType                                                                                        
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------- 
+  Line   Entity\Franchises.php                                                              
+ ------ ----------------------------------------------------------------------------------- 
+  164    Property App\Entity\Franchises::$bilans is unused.                                 
+         ­ƒ¬¬  property.unused                                                                
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+  167    Property App\Entity\Franchises::$budget_previsionnels is unused.                   
+         ­ƒ¬¬  property.unused                                                                
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+  170    Property App\Entity\Franchises::$charges is unused.                                
+         ­ƒ¬¬  property.unused                                                                
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+  173    Property App\Entity\Franchises::$commandes is unused.                              
+         ­ƒ¬¬  property.unused                                                                
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+  176    Property App\Entity\Franchises::$fournisseurs is unused.                           
+         ­ƒ¬¬  property.unused                                                                
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+  179    Property App\Entity\Franchises::$prets is unused.                                  
+         ­ƒ¬¬  property.unused                                                                
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+  182    Property App\Entity\Franchises::$reclamationss is unused.                          
+         ­ƒ¬¬  property.unused                                                                
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+  185    Property App\Entity\Franchises::$transactions is unused.                           
+         ­ƒ¬¬  property.unused                                                                
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+ ------ ----------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------- 
+  Line   Entity\Pret.php                                                                    
+ ------ ----------------------------------------------------------------------------------- 
+  123    Property App\Entity\Pret::$mensualites is unused.                                  
+         ­ƒ¬¬  property.unused                                                                
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+ ------ ----------------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------------------------------------------- 
+  Line   EventSubscriber\BudgetAlertSubscriber.php                                                              
+ ------ ------------------------------------------------------------------------------------------------------- 
+  132    Call to an undefined method Symfony\Component\HttpFoundation\Session\SessionInterface::getFlashBag().  
+         ­ƒ¬¬  method.notFound                                                                                    
+ ------ ------------------------------------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------------------------------------------- 
+  Line   Security\FaceAuthenticator.php                                                                         
+ ------ ------------------------------------------------------------------------------------------------------- 
+  71     Call to an undefined method Symfony\Component\HttpFoundation\Session\SessionInterface::getFlashBag().  
+         ­ƒ¬¬  method.notFound                                                                                    
+ ------ ------------------------------------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------------------------------------------- 
+  Line   Security\GoogleAuthenticator.php                                                                       
+ ------ ------------------------------------------------------------------------------------------------------- 
+  84     Call to an undefined method Symfony\Component\HttpFoundation\Session\SessionInterface::getFlashBag().  
+         ­ƒ¬¬  method.notFound                                                                                    
+ ------ ------------------------------------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------------------------------------------------ 
+  Line   Service\CurrencyConverterService.php                                                                        
+ ------ ------------------------------------------------------------------------------------------------------------ 
+  62     Offset 'CAD'|'EUR'|'GBP'|'USD' on array{EUR: 'Ôé¼', USD: '$', GBP: '┬ú', CAD: 'C$'} on left side of ?? always  
+         exists and is not nullable.                                                                                 
+         ­ƒ¬¬  nullCoalesce.offset                                                                                     
+ ------ ------------------------------------------------------------------------------------------------------------ 
+
+ ------ ------------------------------------------------------------ 
+  Line   Service\FacePlusPlusService.php                             
+ ------ ------------------------------------------------------------ 
+  26     Comparison operation "<" between 0|1 and 2 is always true.  
+         ­ƒ¬¬  smaller.alwaysTrue                                      
+  72     Unreachable statement - code above always terminates.       
+         ­ƒ¬¬  deadCode.unreachable                                    
+ ------ ------------------------------------------------------------ 
+
+ [ERROR] Found 45 errors                                                                                               
+
