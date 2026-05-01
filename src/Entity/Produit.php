@@ -3,32 +3,48 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
 use Doctrine\Common\Collections\Collection;
 use App\Entity\Ligne_commande;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity]
+#[UniqueEntity(fields: ['reference'], message: 'Cette référence existe déjà')]
 class Produit
 {
-
     #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: "AUTO")]
     #[ORM\Column(type: "integer")]
-    private int $id;
+    private ?int $id = null;
 
     #[ORM\Column(type: "string", length: 100)]
+    #[Assert\NotBlank(message: "Le nom ne peut pas être vide")]
+    #[Assert\Regex(pattern: "/^[^0-9]*$/", message: "Le nom ne doit pas contenir de chiffres")]
     private string $nom;
 
     #[ORM\Column(type: "string", length: 50)]
+    #[Assert\NotBlank(message: "La référence ne peut pas être vide")]
+    #[Assert\Regex(pattern: "/^(?!0+$).+/", message: "La référence ne peut pas être uniquement des zéros")]
     private string $reference;
 
     #[ORM\Column(type: "float")]
+    #[Assert\NotBlank(message: "Le prix ne peut pas être vide")]
+    #[Assert\Positive(message: "Le prix doit être supérieur à 0")]
     private float $prix_achat;
 
     #[ORM\Column(type: "integer")]
+    #[Assert\NotBlank(message: "Le stock ne peut pas être vide")]
+    #[Assert\PositiveOrZero(message: "Le stock ne peut pas être négatif")]
     private int $stock_dispo;
 
-    #[ORM\Column(type: "string", length: 255)]
-    private string $image;
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $image = null;
+
+    #[ORM\Column(type: "integer", options: ["default" => 0])]
+    private int $pourcentage_reduction = 0;
+
+    #[ORM\OneToMany(mappedBy: "produit_id", targetEntity: Ligne_commande::class, cascade: ["remove"], orphanRemoval: true)]
+    private Collection $ligne_commandes;
 
     public function getId()
     {
@@ -60,63 +76,79 @@ class Produit
         $this->reference = $value;
     }
 
-    public function getPrix_achat()
+    public function getPrixAchat()
     {
         return $this->prix_achat;
     }
 
-    public function setPrix_achat($value)
+    public function setPrixAchat($value)
     {
         $this->prix_achat = $value;
     }
 
-    public function getStock_dispo()
+    public function getStockDispo()
     {
         return $this->stock_dispo;
     }
 
-    public function setStock_dispo($value)
+    public function setStockDispo($value)
     {
         $this->stock_dispo = $value;
     }
 
-    public function getImage()
+    public function getImage(): ?string
     {
         return $this->image;
     }
 
-    public function setImage($value)
+    public function setImage(?string $image): self
     {
-        $this->image = $value;
+        $this->image = $image;
+        return $this;
     }
 
-    #[ORM\OneToMany(mappedBy: "produit_id", targetEntity: Ligne_commande::class)]
-    private Collection $ligne_commandes;
+    public function getPourcentageReduction(): int
+    {
+        return $this->pourcentage_reduction;
+    }
 
-        public function getLigne_commandes(): Collection
-        {
-            return $this->ligne_commandes;
+    public function setPourcentageReduction(int $pourcentage_reduction): self
+    {
+        $this->pourcentage_reduction = $pourcentage_reduction;
+        return $this;
+    }
+
+    public function getPrixApresReduction(): float
+    {
+        if ($this->pourcentage_reduction > 0) {
+            return $this->prix_achat * (1 - ($this->pourcentage_reduction / 100));
+        }
+        return $this->prix_achat;
+    }
+
+    public function getLigne_commandes(): Collection
+    {
+        return $this->ligne_commandes;
+    }
+
+    public function addLigne_commande(Ligne_commande $ligne_commande): self
+    {
+        if (!$this->ligne_commandes->contains($ligne_commande)) {
+            $this->ligne_commandes[] = $ligne_commande;
+            $ligne_commande->setProduit_id($this);
         }
 
-        public function addLigne_commande(Ligne_commande $ligne_commande): self
-        {
-            if (!$this->ligne_commandes->contains($ligne_commande)) {
-                $this->ligne_commandes[] = $ligne_commande;
-                $ligne_commande->setProduit_id($this);
+        return $this;
+    }
+
+    public function removeLigne_commande(Ligne_commande $ligne_commande): self
+    {
+        if ($this->ligne_commandes->removeElement($ligne_commande)) {
+            if ($ligne_commande->getProduit_id() === $this) {
+                $ligne_commande->setProduit_id(null);
             }
-
-            return $this;
         }
 
-        public function removeLigne_commande(Ligne_commande $ligne_commande): self
-        {
-            if ($this->ligne_commandes->removeElement($ligne_commande)) {
-                // set the owning side to null (unless already changed)
-                if ($ligne_commande->getProduit_id() === $this) {
-                    $ligne_commande->setProduit_id(null);
-                }
-            }
-
-            return $this;
-        }
+        return $this;
+    }
 }

@@ -1,0 +1,1 @@
+<?php $ini = 'C:\wamp64\bin\php\php8.4.15\php.ini'; $content = file_get_contents($ini); $content = preg_replace('/;?curl\.cainfo\s*=.*/', 'curl.cainfo="C:\Users\siwar\Desktop\Boussole_Symfony\cacert.pem"', $content); file_put_contents($ini, $content); echo 'Updated php.ini';

@@ -16,12 +16,44 @@
 <!-- KPI (Statistiques globales du réseau) -->
 <div class="row g-4 mb-4">
     <!-- CARTE SOLDE TOTAL -->
-    <div class="col-md-4">
-        <div class="card card-body border p-4 h-100 shadow" style="border-radius: 12px;">
-            <h6 class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">SOLDE TOTAL</h6>
+    <div class="col-md-4" style="z-index: 50;">
+        <div class="card card-body border p-4 h-100 shadow" style="border-radius: 12px; position: relative; z-index: 50; overflow: visible !important;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <h6 class="text-muted mb-2 text-uppercase font-weight-bold" style="font-size: 0.75rem; letter-spacing: 1px;">SOLDE TOTAL</h6>
+                {% if conversion is not null %}
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="currencyDropdownSiege" data-bs-toggle="dropdown" aria-expanded="false" style="font-size: 0.85rem; padding: 4px 12px; border-color: #444; color: #a0aec0;">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="currencyDropdownSiege" style="min-width: 100px;">
+                        {% for code, data in conversion %}
+                        <li>
+                            <a class="dropdown-item currency-option-siege {% if code == 'EUR' %}active{% endif %}" href="#"
+                               data-devise="{{ code }}"
+                               data-montant="{{ data.montant|number_format(2, ',', ' ') }}"
+                               data-symbole="{{ data.symbole }}"
+                               data-taux="{{ data.taux }}"
+                               style="color: #ccc; font-size: 0.9rem; padding: 6px 16px;">
+                                {{ code }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
             <h2 class="mb-0 fw-bold" style="color: #00e5ff;">
                 {{ solde|number_format(2, ',', ' ') }} TND
             </h2>
+            {% if conversion is not null %}
+                <div class="mt-2" id="conversionDisplaySiege" style="color: #a0aec0; font-size: 0.95rem; font-style: italic;">
+                    (soit ≈ <span id="convertedAmountSiege" style="color: #00e5ff;">{{ conversion.EUR.montant|number_format(2, ',', ' ') }} {{ conversion.EUR.symbole }}</span>)
+                </div>
+            {% else %}
+                <small class="text-muted mt-2 d-block" style="font-size: 0.8rem;">
+                    <i class="bi bi-exclamation-circle"></i> Conversion indisponible
+                </small>
+            {% endif %}
         </div>
     </div>
     
@@ -69,7 +101,7 @@
 <!-- TABS (Statistiques Globales / Radar) -->
 <ul class="nav nav-tabs nav-bottom-line nav-responsive border-0 mb-4" role="tablist">
     <li class="nav-item" role="presentation">
-        <a class="nav-link active pb-3" data-bs-toggle="tab" href="#tab-stats" role="tab" style="color: #00e5ff; border-bottom: 2px solid #00e5ff; background: transparent;">
+        <a class="nav-link {% if question_ia is empty and reponse_ia is empty %}active{% endif %} pb-3" data-bs-toggle="tab" href="#tab-stats" role="tab" style="{% if question_ia is empty and reponse_ia is empty %}color: #00e5ff; border-bottom: 2px solid #00e5ff;{% else %}color: #6c757d; border: none;{% endif %} background: transparent;">
             Statistiques Globales
         </a>
     </li>
@@ -78,18 +110,26 @@
             Radar de Performance
         </a>
     </li>
-</ul>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link text-muted pb-3" data-bs-toggle="tab" href="#tab-ranking" role="tab" style="border: none; background: transparent;">
+            <i class="bi bi-star-fill text-warning me-1"></i> Classement Financier
+        </a>
+    </li>    <li class="nav-item" role="presentation">
+        <a class="nav-link {% if question_ia is not empty or reponse_ia is not empty %}active{% else %}text-muted{% endif %} pb-3" data-bs-toggle="tab" href="#tab-chatbot" role="tab" style="{% if question_ia is not empty or reponse_ia is not empty %}color: #00e5ff; border-bottom: 2px solid #00e5ff;{% else %}border: none;{% endif %} background: transparent;">
+            <i class="bi bi-robot text-success me-1"></i> Assistant IA
+        </a>
+    </li></ul>
 
 <!-- Cible pour le contenu des onglets -->
 <div class="tab-content">
-    <div class="tab-pane fade show active" id="tab-stats" role="tabpanel">
+    <div class="tab-pane fade {% if question_ia is empty and reponse_ia is empty %}show active{% endif %}" id="tab-stats" role="tabpanel">
         <div class="card border shadow" style="border-radius: 12px;">
             <div class="card-body p-4">
                 <h5 class="mb-1">Réel vs Budget – Réseau Global (3 derniers mois)</h5>
                 <p class="text-muted small mb-4">Comparaison entre les montants réels (transactions) et les budgets prévisionnels de toutes les franchises</p>
                 
                 <div style="height: 350px;">
-                    <canvas id="budgetChart"></canvas>
+                    {{ render_chart(chart) }}
                 </div>
             </div>
         </div>
@@ -97,12 +137,147 @@
     
     <div class="tab-pane fade" id="tab-radar" role="tabpanel">
         <div class="card border shadow" style="border-radius: 12px;">
-            <div class="card-body p-4 text-center">
-                <p class="text-muted mb-0 py-5">Radar de performance en cours de développement...</p>
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h5 class="mb-1"><i class="bi bi-robot text-info me-2"></i>Analyse IA : Typologie des franchises</h5>
+                        <p class="text-muted small mb-0">L'Intelligence Artificielle (K-Means) regroupe automatiquement vos franchises selon leurs équilibres financiers.</p>
+                    </div>
+                </div>
+
+                {% if hasClusters %}
+                    <div style="height: 480px;">
+                        {{ render_chart(scatterChart) }}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-exclamation-triangle display-4 text-warning mb-3"></i>
+                        <h5>Données insuffisantes</h5>
+                        <p class="text-muted">L'IA nécessite au moins 3 franchises avec des données de chiffre d'affaires pour créer les groupes.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="tab-pane fade" id="tab-ranking" role="tabpanel">
+        <div class="card border shadow" style="border-radius: 12px;">
+            <div class="card-body p-4">
+                <h5 class="mb-1">Classement et Performance par Franchise</h5>
+                <p class="text-muted small mb-4">Évaluation logarithmique mensuelle basée sur les limites de dépenses et objectifs de revenus.</p>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="text-muted" style="font-size: 0.85rem; text-transform: uppercase;">
+                            <tr>
+                                <th>Franchise</th>
+                                <th class="text-end">Recettes</th>
+                                <th class="text-end">Dépenses</th>
+                                <th class="text-end">Résultat Net</th>
+                                <th class="text-center">Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for f in franchisesRanking|sort((a, b) => b.solde <=> a.solde) %}
+                            <tr>
+                                <td class="fw-bold" style="color: #e2e8f0;">{{ f.nom }}</td>
+                                <td class="text-end" style="color: #00ff88;">{{ f.revenus|number_format(2, ',', ' ') }}</td>
+                                <td class="text-end text-danger">{{ f.depenses|number_format(2, ',', ' ') }}</td>
+                                <td class="text-end fw-bold {{ f.solde >= 0 ? 'text-info' : 'text-danger' }}">
+                                    {{ f.solde >= 0 ? '+' : '' }}{{ f.solde|number_format(2, ',', ' ') }}
+                                </td>
+                                <td class="text-center">
+                                    {% if f.rating == 'A' %}
+                                        <span class="badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; font-size: 14px; font-weight: bold; width: 35px;">A</span>
+                                    {% elseif f.rating == 'B' %}
+                                        <span class="badge" style="background: rgba(234, 179, 8, 0.15); color: #facc15; font-size: 14px; font-weight: bold; width: 35px;">B</span>
+                                    {% elseif f.rating == 'C' %}
+                                        <span class="badge" style="background: rgba(249, 115, 22, 0.15); color: #fb923c; font-size: 14px; font-weight: bold; width: 35px;">C</span>
+                                    {% else %}
+                                        <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 14px; font-weight: bold; width: 35px;">D</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">Aucune franchise trouvée.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# === ONGLET CHATBOT IA === #}
+    <div class="tab-pane fade {% if question_ia is not empty or reponse_ia is not empty %}show active{% endif %}" id="tab-chatbot" role="tabpanel">
+        <div class="card border shadow" style="border-radius: 12px;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px;">
+                        <i class="bi bi-robot" style="font-size: 1.5rem; color: white;"></i>
+                    </div>
+                    <div>
+                        <h5 class="mb-0">Assistant IA Boussole</h5>
+                        <p class="text-muted small mb-0">Posez une question sur vos données financières. L'IA analyse vos chiffres en temps réel.</p>
+                    </div>
+                </div>
+
+                {# Zone de conversation #}
+                <div style="background: rgba(0,0,0,0.15); border-radius: 12px; padding: 20px; min-height: 200px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05);">
+                    
+                    {# Message de bienvenue par défaut #}
+                    {% if reponse_ia is empty and question_ia is empty %}
+                        <div style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 10px;">
+                                <i class="bi bi-robot" style="color: white; font-size: 0.8rem;"></i>
+                            </div>
+                            <div style="background: rgba(102, 126, 234, 0.15); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 0 12px 12px 12px; padding: 12px 16px; max-width: 85%; color: #e2e8f0;">
+                                👋 Bonjour ! Je suis votre <b>Assistant IA Financier</b>. Posez-moi une question sur vos franchises, vos revenus, ou vos dépenses.<br>
+                                <small class="text-muted mt-2 d-block">Exemples : "Quel est le solde global ?", "Combien de recettes ?", "Quelle franchise a la meilleure note ?"</small>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {# Question de l'utilisateur #}
+                    {% if question_ia is not empty %}
+                        <div style="display: flex; align-items: flex-start; justify-content: flex-end; margin-bottom: 12px;">
+                            <div style="background: rgba(0, 229, 255, 0.15); border: 1px solid rgba(0, 229, 255, 0.3); border-radius: 12px 0 12px 12px; padding: 12px 16px; max-width: 75%; color: #e2e8f0; word-break: break-word; white-space: pre-wrap; line-height: 1.5;">"{{ question_ia }}"</div>
+                            <div style="width: 32px; height: 32px; background: #00e5ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-left: 10px;">
+                                <i class="bi bi-person-fill" style="color: #0f172a; font-size: 0.9rem;"></i>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {# Réponse de l'IA #}
+                    {% if reponse_ia is not empty %}
+                        <div style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                            <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 10px;">
+                                <i class="bi bi-robot" style="color: white; font-size: 0.8rem;"></i>
+                            </div>
+                            <div style="background: rgba(102, 126, 234, 0.15); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 0 12px 12px 12px; padding: 12px 16px; max-width: 85%; color: #e2e8f0; word-break: break-word; white-space: pre-wrap; line-height: 1.5;">🤖 <b>Réponse :</b><br>{{ reponse_ia|nl2br }}</div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Formulaire de saisie #}
+                <form method="POST" action="{{ path('app_siege_dashboard') }}" class="d-flex gap-2">
+                    <input type="text" name="question_ia" class="form-control" 
+                           placeholder="Posez votre question..." 
+                           value=""
+                           style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; border-radius: 10px; padding: 12px 16px;"
+                           required autocomplete="off">
+                    <button type="submit" class="btn px-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 10px; white-space: nowrap;">
+                        <i class="bi bi-send-fill me-1"></i> Demander
+                    </button>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+
 
 {% endblock %}
 
@@ -111,104 +286,58 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Récupération des données passées par Symfony
-    const chartData = {{ chartData|raw }};
+    console.log('DOM Loaded. Looking for charts...');
+    const canvases = document.querySelectorAll('canvas');
     
-    // Inversion pour afficher du mois le plus ancien au plus récent (gauche à droite)
-    const labels = chartData.labels.reverse();
-    const reelData = chartData.reel.reverse();
-    const budgetData = chartData.budget.reverse();
+    canvases.forEach(canvas => {
+        console.log('Canvas found:', canvas);
+        console.dir(canvas.attributes);
+        let viewData = canvas.getAttribute('data-symfony--ux-chartjs--chart-view-value') || canvas.getAttribute('data-view') || canvas.getAttribute('data-controller-new');
+        
+        if (viewData) {
+            const payload = JSON.parse(viewData);
+            
+            // Configuration globale
+            Chart.defaults.color = '#a1a1a8';
+            Chart.defaults.font.family = "'Inter', sans-serif";
 
-    const ctx = document.getElementById('budgetChart').getContext('2d');
-    
-    // Configuration globale de Chart.js pour le thème sombre
-    Chart.defaults.color = '#a1a1a8';
-    Chart.defaults.font.family = "'Inter', sans-serif";
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Réel (Transactions)',
-                    data: reelData,
-                    backgroundColor: '#00e5ff', 
-                    borderRadius: 4,
-                    barPercentage: 0.6,
-                    categoryPercentage: 0.8
-                },
-                {
-                    label: 'Budget Prévu',
-                    data: budgetData,
-                    backgroundColor: '#ff9800', // Orange style
-                    borderRadius: 4,
-                    barPercentage: 0.6,
-                    categoryPercentage: 0.8
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20,
-                        color: '#a1a1a8'
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
-                    padding: 12,
-                    borderColor: '#333',
-                    borderWidth: 1,
+            // Surcharge IA KMeans Scatter chart
+            if (payload.type === 'scatter') {
+                payload.options.plugins = payload.options.plugins || {};
+                payload.options.plugins.tooltip = {
+                    backgroundColor: 'rgba(26, 32, 44, 0.95)',
+                    titleColor: '#00e5ff',
+                    bodyColor: '#ffffff',
+                    borderColor: '#00e5ff',
+                    borderWidth: 2,
+                    padding: 16,
+                    titleFont: { size: 14, family: "'Inter', sans-serif" },
+                    bodyFont: { size: 14, family: "'Inter', sans-serif" },
+                    bodySpacing: 8,
+                    boxPadding: 8,
                     callbacks: {
                         label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
+                            let dataset = context.dataset;
+                            let index = context.dataIndex;
+                            if (dataset.franchises && dataset.franchises[index]) {
+                                let f = dataset.franchises[index];
+                                return [
+                                    '📍 Franchise: ' + f.nom,
+                                    '💰 Recettes: ' + parseFloat(f.recettes).toLocaleString('fr-FR') + ' TND',
+                                    '📉 Dépenses: ' + parseFloat(f.depenses).toLocaleString('fr-FR') + ' TND'
+                                ];
                             }
-                            if (context.parsed.y !== null) {
-                                label += new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'TND' }).format(context.parsed.y);
-                            }
-                            return label;
+                            return 'Point: (' + context.raw.x + ', ' + context.raw.y + ')';
                         }
                     }
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#333333',
-                        drawBorder: false
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return value.toLocaleString('fr-FR');
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Montant (TND)'
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false,
-                        drawBorder: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Période'
-                    }
-                }
+                };
             }
+
+            new Chart(canvas, {
+                type: payload.type,
+                data: payload.data,
+                options: payload.options
+            });
         }
     });
 
@@ -230,6 +359,33 @@ document.addEventListener('DOMContentLoaded', function() {
             this.style.borderBottom = '2px solid #00e5ff';
         });
     });
+
+    // ===== GESTION DU MENU DEROULANT DES DEVISES (SIEGE) =====
+    const currencyOptionsSiege = document.querySelectorAll('.currency-option-siege');
+    const convertedAmountSpanSiege = document.getElementById('convertedAmountSiege');
+
+    currencyOptionsSiege.forEach(function(option) {
+        option.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // Retirer la classe active de tous les liens
+            currencyOptionsSiege.forEach(function(opt) { opt.classList.remove('active'); });
+            
+            // Ajouter la classe active au lien cliqué
+            this.classList.add('active');
+
+            // Récupérer les données
+            const devise = this.getAttribute('data-devise');
+            const montant = this.getAttribute('data-montant');
+            const symbole = this.getAttribute('data-symbole');
+
+            // Mettre à jour l'affichage
+            if (convertedAmountSpanSiege) {
+                convertedAmountSpanSiege.textContent = montant + ' ' + symbole;
+            }
+        });
+    });
+
 });
 </script>
 {% endblock %}

@@ -26,7 +26,7 @@ final class BudgetController extends AbstractController
             $entityManager->persist($budget);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Budget créé avec succès');
+            $this->addFlash('success', 'Le budget a été créé avec succès.');
             return $this->redirectToRoute('app_budget_index', [], Response::HTTP_SEE_OTHER);
         }
 

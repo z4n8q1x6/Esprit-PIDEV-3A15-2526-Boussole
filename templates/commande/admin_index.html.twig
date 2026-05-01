@@ -1,0 +1,118 @@
+{% extends 'back_base.html.twig' %}
+
+{% block title %}Gestion des Commandes{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="col-12 mb-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <h1 class="h3 mb-2">Commandes Reçues</h1>
+        </div>
+        <p class="text-muted">Gérez les commandes passées par les franchises.</p>
+    </div>
+</div>
+
+<div class="card shadow border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3">ID</th>
+                        <th class="py-3">Date</th>
+                        <th class="py-3">Franchise</th>
+                        <th class="py-3">Détails (Produits)</th>
+                        <th class="py-3">Montant</th>
+                        <th class="py-3">Statut Actuel</th>
+                        <th class="py-3 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for commande in commandes %}
+                        <tr>
+                            <td class="ps-4 fw-bold">#{{ commande.id }}</td>
+                            <td>{{ commande.date_creation|date('d/m/Y H:i') }}</td>
+                            <td>
+                                <span class="fw-bold text-dark">{{ commande.franchise_id.nom|default('Inconnu') }}</span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCmd{{ commande.id }}" aria-expanded="false" aria-controls="collapseCmd{{ commande.id }}">
+                                    <i class="fas fa-list me-1"></i>Voir articles ({{ commande.ligne_commandes|length }})
+                                </button>
+                                <div class="collapse mt-2" id="collapseCmd{{ commande.id }}">
+                                    <div class="card card-body bg-light p-2 small border-0 shadow-sm">
+                                        <ul class="list-unstyled mb-0">
+                                            {% for ligne in commande.ligne_commandes %}
+                                                <li class="border-bottom pb-1 mb-1">
+                                                    <span class="fw-bold text-primary">{{ ligne.quantite }}x</span> 
+                                                    {{ ligne.produit_id.nom|default('Produit supprimé') }} 
+                                                    <span class="text-muted">({{ ligne.prix_unitaire|number_format(2, ',', ' ') }} DT)</span>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="fw-bold text-primary">
+                                {{ commande.montant_total|number_format(2, ',', ' ') }} DT
+                                {% if commande.pointsUtilises > 0 %}
+                                    <br><small class="text-success" style="font-size: 0.75rem;"><i class="fas fa-star"></i> Remise fidélité : -{{ (commande.pointsUtilises / 10)|number_format(2, ',', ' ') }} DT</small>
+                                {% endif %}
+                                {% if commande.remiseCoupon > 0 %}
+                                    <br><small class="text-success" style="font-size: 0.75rem;"><i class="fas fa-ticket-alt"></i> Coupon : -{{ commande.remiseCoupon|number_format(2, ',', ' ') }} DT</small>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if commande.statut == 'En attente' %}
+                                    <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>En attente</span>
+                                {% elseif commande.statut == 'Validée' %}
+                                    <span class="badge bg-success"><i class="fas fa-check me-1"></i>Validée</span>
+                                {% elseif commande.statut == 'Refusée' %}
+                                    <span class="badge bg-danger"><i class="fas fa-times me-1"></i>Refusée</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ commande.statut }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if commande.statut == 'En attente' %}
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <form action="{{ path('app_admin_commande_status', {'id': commande.id}) }}" method="post">
+                                            <input type="hidden" name="status" value="Validée">
+                                            <button class="btn btn-sm btn-success" title="Valider">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        <form action="{{ path('app_admin_commande_status', {'id': commande.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir refuser cette commande ? Les stocks seront restaurés.');">
+                                            <input type="hidden" name="status" value="Refusée">
+                                            <button class="btn btn-sm btn-danger" title="Refuser">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                        <a href="{{ path('app_admin_commande_pdf', {'id': commande.id}) }}" class="btn btn-sm btn-outline-danger" title="Télécharger la Facture PDF" target="_blank">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
+                                    </div>
+                                {% elseif commande.statut == 'Validée' or commande.statut == 'Refusée' %}
+                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                        <span class="text-muted small"><i class="fas fa-lock"></i> Traitée</span>
+                                        <a href="{{ path('app_admin_commande_pdf', {'id': commande.id}) }}" class="btn btn-sm btn-outline-danger" title="Télécharger la Facture PDF" target="_blank">
+                                            <i class="fas fa-file-pdf"></i>
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="fas fa-inbox fa-3x mb-3"></i>
+                                <h5>Aucune commande reçue</h5>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

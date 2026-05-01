@@ -15,7 +15,7 @@ class ChargeRepository extends ServiceEntityRepository
 
     // START alerte ia functions
     // Get total charges by type for a specific month/year/franchise
-    public function getTotalByType(int $franchiseId, string $chargeType, int $month, int $year): float
+    public function getTotalByType($franchiseId, string $chargeType, int $month, int $year): float
     {
         $startDate = new \DateTime("$year-$month-01 00:00:00");
         $endDate = new \DateTime("$year-$month-01 23:59:59");
@@ -40,7 +40,7 @@ class ChargeRepository extends ServiceEntityRepository
     }
 
     // Count charges by status for a franchise
-    public function countByStatus(int $franchiseId, string $status): int
+    public function countByStatus($franchiseId, string $status): int
     {
         $result = $this->createQueryBuilder('c')
             ->select('COUNT(c.id) as count')

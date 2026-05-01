@@ -13,18 +13,7 @@
 
     <div class="card bg-transparent border">
 
-        {% if app.flashes %}
-            <div class="px-4 pt-4">
-                {% for type, messages in app.flashes %}
-                    {% for message in messages %}
-                        <div class="alert alert-{{ type == 'error' ? 'danger' : type }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        {% endif %}
+
 
         <div class="card-body">
             <div class="mb-3 pb-0">

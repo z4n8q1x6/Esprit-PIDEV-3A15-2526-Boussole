@@ -1,0 +1,1 @@
+<?php require 'vendor/autoload.php'; $url = $_ENV['CLOUDINARY_URL'] ?? 'cloudinary://dmwloqwuy:123@123'; $c = new \Cloudinary\Configuration\Configuration(); $a = new \Cloudinary\Api\Upload\UploadApi($c); try { $a->upload('cacert.pem'); echo 'Success'; } catch(Exception $e) { echo $e->getMessage(); }

@@ -23,7 +23,6 @@ final class AlerteIAController extends AbstractController
 {
     private EntityManagerInterface $em;
     private AlerteiasRepository $repo;
-    private int $franchise_id = 2;
 
     public function __construct(EntityManagerInterface $em, AlerteiasRepository $repo)
     {
@@ -31,9 +30,23 @@ final class AlerteIAController extends AbstractController
         $this->repo = $repo;
     }
 
+    private function getFranchiseId()
+    {
+        /** @var Utilisateur $user */
+        $user = $this->getUser();
+
+        // non admin
+        if (!$user || !$user->getIdFranchise()) {
+            return null;
+        }
+
+        return  $user->getIdFranchise();
+    }
+
     #[Route('/', name: 'alerte_index')]
     public function index(Request $request): Response
     {
+        $franchise_id = $this->getFranchiseId();
         $search = $request->query->get('q', '');
         $sort = $request->query->get('sort', 'id');
         $direction = $request->query->get('direction', 'DESC');
@@ -41,7 +54,12 @@ final class AlerteIAController extends AbstractController
         if (!in_array($sort, ['type_alerte', 'message', 'score_gravite', 'date_detection'])) {
             $sort = 'id';
         }
-        $alertes = $this->repo->searchAndSort($search, $sort, $direction);
+        if ($franchise_id != null) {
+            $alertes = $this->repo->searchAndSort($search, $sort, $direction, $franchise_id);
+        } else {
+            $alertes = [];
+            $this->addFlash('error', 'Aucune franchise associée.');
+        }
         return $this->render('alerte_ia/index.html.twig', [
             'alertes' => $alertes,
         ]);
@@ -54,7 +72,7 @@ final class AlerteIAController extends AbstractController
         if ($this->isCsrfTokenValid('delete-item', $token)) {
             $this->em->remove($alerte);
             $this->em->flush();
-            $this->addFlash('success', 'Reclamation deleted successfully.');
+            $this->addFlash('success', 'Alerte supprimée avec succès.');
         }
         return $this->redirectToRoute('alerte_index');
     }
@@ -68,11 +86,15 @@ final class AlerteIAController extends AbstractController
         }
 
         try {
-            $apiKey = getenv('GOOGLE_API_KEY');
+            $apiKey = $_ENV['GOOGLE_API_KEY'];
             $client = Gemini::client($apiKey);
 
-            $financialData = $this->repo->getFinancialData($this->franchise_id, date('n'), date('Y'));
+
+            $financialData = $this->repo->getFinancialData($this->getFranchiseId(), date('n'), date('Y'));
+
+            /* return new JsonResponse(['success' => false, 'error' => 'debug']); */
             $prompt = $this->buildPrompt($financialData, date('n'), date('Y'));
+
 
             $result = $client
                 ->generativeModel(model: 'gemini-3-flash-preview')
@@ -97,7 +119,7 @@ final class AlerteIAController extends AbstractController
 
             $alerte = $serializer->denormalize($data, Alerteias::class);
 
-            $franchise = $this->em->getRepository(Franchises::class)->find($this->franchise_id);
+            $franchise = $this->em->getRepository(Franchises::class)->find($this->getFranchiseId());
             $alerte->setFranchise_id($franchise);
 
             $this->em->persist($alerte);

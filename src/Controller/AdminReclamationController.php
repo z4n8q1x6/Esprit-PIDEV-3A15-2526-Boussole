@@ -26,6 +26,7 @@ final class AdminReclamationController extends AbstractController
     #[Route('/', name: 'admin_reclamation_index')]
     public function index(Request $request): Response
     {
+       
         $search = $request->query->get('q', '');
         $sort = $request->query->get('sort', 'id');
         $direction = $request->query->get('direction', 'DESC');
@@ -47,7 +48,7 @@ final class AdminReclamationController extends AbstractController
         if ($this->isCsrfTokenValid('delete-item', $token)) {
             $this->em->remove($reclamation);
             $this->em->flush();
-            $this->addFlash('success', 'Reclamation deleted successfully.');
+            $this->addFlash('success', 'Réclamation supprimée avec succès.');
         }
         return $this->redirectToRoute('admin_reclamation_index');
     }
@@ -63,7 +64,7 @@ final class AdminReclamationController extends AbstractController
         if ($this->isCsrfTokenValid('edit-item', $token) && $statusValid) {
             $reclamation->setStatut($statut);
             $this->em->flush();
-            $this->addFlash('success', 'Reclamation edited successfully.');
+            $this->addFlash('success', 'Réclamation modifiée avec succès.');
         }
         return $this->redirectToRoute('admin_reclamation_index');
     }
@@ -78,8 +79,7 @@ final class AdminReclamationController extends AbstractController
         }
 
         try {
-            $apiKey = getenv('GOOGLE_API_KEY');
-
+               $apiKey = $_ENV['GOOGLE_API_KEY'];
             if (!$apiKey) {
                 return new JsonResponse(['success' => false, 'error' => 'API key not configured'], 500);
             }
