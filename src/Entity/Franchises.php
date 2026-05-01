@@ -130,7 +130,7 @@ class Franchises
         return $this;
     }
 
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Alerteias::class)]
+    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Alerteias::class, orphanRemoval: true)]
     private Collection $alerteiass;
 
     public function getAlerteiass(): Collection
@@ -160,31 +160,31 @@ class Franchises
         return $this;
     }
 
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Bilan::class)]
+    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Bilan::class, orphanRemoval: true)]
     private Collection $bilans;
 
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Budget_previsionnel::class)]
+    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Budget_previsionnel::class, orphanRemoval: true)]
     private Collection $budget_previsionnels;
 
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Charge::class)]
+    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Charge::class, orphanRemoval: true)]
     private Collection $charges;
 
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Commande::class)]
+    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Commande::class, orphanRemoval: true)]
     private Collection $commandes;
 
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Fournisseur::class)]
+    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Fournisseur::class, orphanRemoval: true)]
     private Collection $fournisseurs;
 
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Pret::class)]
+    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Pret::class, orphanRemoval: true)]
     private Collection $prets;
 
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Reclamations::class)]
+    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Reclamations::class, orphanRemoval: true)]
     private Collection $reclamationss;
 
-    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Transaction::class)]
+    #[ORM\OneToMany(mappedBy: "franchise_id", targetEntity: Transaction::class, orphanRemoval: true)]
     private Collection $transactions;
 
-    #[ORM\OneToMany(mappedBy: "id_franchise", targetEntity: Utilisateur::class)]
+    #[ORM\OneToMany(mappedBy: "id_franchise", targetEntity: Utilisateur::class, orphanRemoval: true)]
     private Collection $utilisateurs;
 
     public function getUtilisateurs(): Collection

@@ -1,0 +1,3 @@
+doctrine_doctor:
+    profiler:
+        show_in_toolbar: false
