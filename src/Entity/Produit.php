@@ -43,6 +43,9 @@ class Produit
     #[ORM\Column(type: "integer", options: ["default" => 0])]
     private int $pourcentage_reduction = 0;
 
+    #[ORM\Column(type: "datetime", nullable: true)]
+    private ?\DateTimeInterface $date_fin_reduction = null;
+
     #[ORM\OneToMany(mappedBy: "produit_id", targetEntity: Ligne_commande::class, cascade: ["remove"], orphanRemoval: true)]
     private Collection $ligne_commandes;
 
@@ -109,6 +112,9 @@ class Produit
 
     public function getPourcentageReduction(): int
     {
+        if ($this->date_fin_reduction !== null && $this->date_fin_reduction < new \DateTime()) {
+            return 0;
+        }
         return $this->pourcentage_reduction;
     }
 
@@ -118,10 +124,22 @@ class Produit
         return $this;
     }
 
+    public function getDateFinReduction(): ?\DateTimeInterface
+    {
+        return $this->date_fin_reduction;
+    }
+
+    public function setDateFinReduction(?\DateTimeInterface $date_fin_reduction): self
+    {
+        $this->date_fin_reduction = $date_fin_reduction;
+        return $this;
+    }
+
     public function getPrixApresReduction(): float
     {
-        if ($this->pourcentage_reduction > 0) {
-            return $this->prix_achat * (1 - ($this->pourcentage_reduction / 100));
+        $reduction = $this->getPourcentageReduction();
+        if ($reduction > 0) {
+            return $this->prix_achat * (1 - ($reduction / 100));
         }
         return $this->prix_achat;
     }

@@ -338,7 +338,7 @@ HTML;
 
         $session->set('supplier_trash', $trash);
 
-        // SUPPRESSION RÉELLE DE LA BASE
+        
         $em->remove($fournisseur);
         $em->flush();
 
