@@ -1,6 +1,9 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
+        options:
+            # Force le mode strict et le Timezone UTC au niveau de la connexion pour correspondre à PHP
+            !php/const PDO::MYSQL_ATTR_INIT_COMMAND: "SET SESSION sql_mode='STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION', time_zone='+00:00'"
 
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
@@ -30,12 +33,17 @@ when@test:
 when@prod:
     doctrine:
         orm:
+            auto_generate_proxy_classes: false
+            proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
             query_cache_driver:
                 type: pool
                 pool: doctrine.system_cache_pool
             result_cache_driver:
                 type: pool
                 pool: doctrine.result_cache_pool
+            metadata_cache_driver:
+                type: pool
+                pool: doctrine.system_cache_pool
 
     framework:
         cache:

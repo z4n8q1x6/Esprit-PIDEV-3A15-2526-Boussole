@@ -1,0 +1,102 @@
+﻿ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Controller\AlerteIAController.php                                                                              
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  39     Negated boolean expression is always false.                                                                    
+         ­ƒ¬¬  booleanNot.alwaysFalse                                                                                     
+         ­ƒÆí  Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain  
+         : false in your phpstan.neon.                                                                                  
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Controller\CommandeController.php                                                                              
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  24     Negated boolean expression is always false.                                                                    
+         ­ƒ¬¬  booleanNot.alwaysFalse                                                                                     
+         ­ƒÆí  Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain  
+         : false in your phpstan.neon.                                                                                  
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Controller\PanierController.php                                                                                
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  41     Left side of && is always true.                                                                                
+         ­ƒ¬¬  booleanAnd.leftAlwaysTrue                                                                                  
+         ­ƒÆí  Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain  
+         : false in your phpstan.neon.                                                                                  
+  111    Negated boolean expression is always false.                                                                    
+         ­ƒ¬¬  booleanNot.alwaysFalse                                                                                     
+         ­ƒÆí  Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain  
+         : false in your phpstan.neon.                                                                                  
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Controller\ReclamationController.php                                                                           
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  33     Negated boolean expression is always false.                                                                    
+         ­ƒ¬¬  booleanNot.alwaysFalse                                                                                     
+         ­ƒÆí  Because the type is coming from a PHPDoc, you can turn off this check by setting treatPhpDocTypesAsCertain  
+         : false in your phpstan.neon.                                                                                  
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------- 
+  Line   Entity\AlertReport.php                                                             
+ ------ ----------------------------------------------------------------------------------- 
+  14     Property App\Entity\AlertReport::$id is never written, only read.                  
+         ­ƒ¬¬  property.onlyRead                                                              
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+ ------ ----------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------- 
+  Line   Entity\Coupon.php                                                                  
+ ------ ----------------------------------------------------------------------------------- 
+  14     Property App\Entity\Coupon::$id is never written, only read.                       
+         ­ƒ¬¬  property.onlyRead                                                              
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+ ------ ----------------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------------------------ 
+  Line   Entity\Franchises.php                                                               
+ ------ ------------------------------------------------------------------------------------ 
+  178    Property App\Entity\Franchises::$bilans is never read, only written.                
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  181    Property App\Entity\Franchises::$budget_previsionnels is never read, only written.  
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  184    Property App\Entity\Franchises::$charges is never read, only written.               
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  187    Property App\Entity\Franchises::$commandes is never read, only written.             
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  190    Property App\Entity\Franchises::$fournisseurs is never read, only written.          
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  193    Property App\Entity\Franchises::$prets is never read, only written.                 
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  196    Property App\Entity\Franchises::$reclamationss is never read, only written.         
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+  199    Property App\Entity\Franchises::$transactions is never read, only written.          
+         ­ƒ¬¬  property.onlyWritten                                                            
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties   
+ ------ ------------------------------------------------------------------------------------ 
+
+ ------ ----------------------------------------------------------------------------------- 
+  Line   Entity\Pret.php                                                                    
+ ------ ----------------------------------------------------------------------------------- 
+  127    Property App\Entity\Pret::$mensualites is never read, only written.                
+         ­ƒ¬¬  property.onlyWritten                                                           
+         ­ƒÆí  See: https://phpstan.org/developing-extensions/always-read-written-properties  
+ ------ ----------------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------- 
+  Line   Service\FacePlusPlusService.php             
+ ------ -------------------------------------------- 
+  27     No error to ignore is reported on line 27.  
+         ­ƒ¬¬  ignore.unmatchedLine (non-ignorable)    
+ ------ -------------------------------------------- 
+
+ [ERROR] Found 17 errors                                                                                               
+

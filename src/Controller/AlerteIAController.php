@@ -97,7 +97,7 @@ final class AlerteIAController extends AbstractController
 
 
             $result = $client
-                ->generativeModel(model: 'gemini-3-flash-preview')
+                ->generativeModel(model: 'gemini-2.5-flash-lite')
                 ->withGenerationConfig(
                     generationConfig: new GenerationConfig(
                         responseMimeType: ResponseMimeType::APPLICATION_JSON,
