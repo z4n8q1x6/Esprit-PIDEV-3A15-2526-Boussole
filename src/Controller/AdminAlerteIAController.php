@@ -194,4 +194,24 @@ final class AdminAlerteIAController extends AbstractController
             'reports' => $reportRepo->findBy([], ['generatedAt' => 'DESC']),
         ]);
     }
+
+    #[Route('/rapports/{id}/delete', name: 'admin_alert_report_delete', methods: ['POST'])]
+    public function deleteReport(Request $request, AlertReport $report, UploaderService $uploader): JsonResponse
+    {
+        $token = $request->getPayload()->get('token');
+        if (!$this->isCsrfTokenValid('delete-report', $token)) {
+            return new JsonResponse(['success' => false, 'error' => 'Jeton CSRF invalide.'], 403);
+        }
+
+        try {
+            $uploader->deletePdf($report->getUrl());
+        } catch (\Throwable $e) {
+            // Log but don't block — still remove from DB
+        }
+
+        $this->em->remove($report);
+        $this->em->flush();
+
+        return new JsonResponse(['success' => true]);
+    }
 }

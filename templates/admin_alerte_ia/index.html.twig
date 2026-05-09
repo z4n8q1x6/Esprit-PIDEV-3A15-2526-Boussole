@@ -56,6 +56,15 @@
                         {% set query = app.request.query.get('q') %}
                         <tr>
                             <th scope="col" class="border-0 rounded-start ps-4 fw-600 text-uppercase letter-spacing" style="cursor: pointer;">
+                                {% set isFranchise = currentSort == 'franchise_id' %}
+                                {% set nextDir = (isFranchise and currentDir == 'asc') ? 'desc' : 'asc' %}
+
+                                <a href="{{ path('admin_alerte_index', {q: query, sort: 'franchise_id', direction: nextDir}) }}" class="text-reset text-decoration-none">
+                                    Franchise
+                                    {% if isFranchise %}<i class="bi {{ currentDir == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down' }} ms-1"></i>{% endif %}
+                                </a>
+                            </th>
+                            <th scope="col" class="border-0 ps-3 fw-600 text-uppercase letter-spacing" style="cursor: pointer;">
                                 {% set isType = currentSort == 'type_alerte' %}
                                 {% set nextDir = (isType and currentDir == 'asc') ? 'desc' : 'asc' %}
 
@@ -99,6 +108,14 @@
                         {% for alerte in alertes %}
                             <tr class="border-bottom">
                                 <td class="ps-4 py-3">
+                                    {% if alerte.franchise_id and alerte.franchise_id.nom %}
+                                        <span class="badge bg-secondary rounded-pill px-3 py-2">{{ alerte.franchise_id.nom }}</span>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark rounded-pill px-3 py-2">Global</span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="ps-3 py-3">
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="icon-sm bg-primary bg-opacity-10 text-primary rounded-circle flex-shrink-0">
                                             <i class="bi bi-shield-exclamation"></i>
@@ -138,7 +155,7 @@
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="5" class="text-center py-5">
+                                <td colspan="6" class="text-center py-5">
                                     <div class="text-muted">Aucune alerte trouvée dans la base de données.</div>
                                 </td>
                             </tr>
