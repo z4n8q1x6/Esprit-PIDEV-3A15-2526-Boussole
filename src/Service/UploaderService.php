@@ -12,8 +12,7 @@ class UploaderService
     public function __construct(
         private readonly ?string $cloudinaryUrl,
         private readonly ?string $cloudinaryCaBundle = null,
-    )
-    {
+    ) {
         $this->configureCaBundle();
 
         if (trim((string) $this->cloudinaryUrl) === '') {
@@ -39,6 +38,18 @@ class UploaderService
         ]);
 
         return $result['secure_url'];
+    }
+
+    /**
+     * Deletes a raw file from Cloudinary by its secure URL.
+     */
+    public function deletePdf(string $secureUrl): void
+    {
+        // Extract public_id: everything after /upload/vXXXXX/ (strip version segment)
+        if (preg_match('#/upload/(?:v\d+/)?(.+?)(?:\.[^.]+)?$#', $secureUrl, $matches)) {
+            $publicId = $matches[1];
+            $this->uploadApi->destroy($publicId, ['resource_type' => 'raw']);
+        }
     }
 
     private function configureCaBundle(): void
