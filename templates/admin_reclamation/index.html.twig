@@ -43,6 +43,15 @@
                         {% set query = app.request.query.get('q') %}
                         <tr>
                             <th scope="col" class="border-0 rounded-start ps-4 fw-600 text-uppercase letter-spacing" style="cursor: pointer;">
+                                {% set isFranchise = currentSort == 'franchise_id' %}
+                                {% set nextDir = (isFranchise and currentDir == 'asc') ? 'desc' : 'asc' %}
+
+                                <a href="{{ path('admin_reclamation_index', {q: query, sort: 'franchise_id', direction: nextDir}) }}" class="text-reset text-decoration-none">
+                                    Franchise
+                                    {% if isFranchise %}<i class="bi {{ currentDir == 'asc' ? 'bi-arrow-up' : 'bi-arrow-down' }} ms-1"></i>{% endif %}
+                                </a>
+                            </th>
+                            <th scope="col" class="border-0 ps-3 fw-600 text-uppercase letter-spacing" style="cursor: pointer;">
                                 {% set isSujet = currentSort == 'sujet' %}
                                 {% set nextDir = (isSujet and currentDir == 'asc') ? 'desc' : 'asc' %}
 
@@ -85,6 +94,14 @@
                     <tbody>
                         {% for reclamation in reclamations %}
                             <tr class="border-bottom">
+                                <td class="ps-4 py-3">
+                                    {% if reclamation.franchise_id and reclamation.franchise_id.nom %}
+                                        <span class="badge bg-secondary rounded-pill px-3 py-2">{{ reclamation.franchise_id.nom }}</span>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark rounded-pill px-3 py-2">Global</span>
+                                    {% endif %}
+                                </td>
+
                                 <td class="ps-4 py-3">
                                     <h6 class="mb-0 fw-500">
                                         <span class="text-primary">{{ reclamation.sujet }}</span>
@@ -133,7 +150,7 @@
                             </tr>
                         {% else %}
                             <tr>
-                                <td colspan="5" class="text-center py-5">
+                                <td colspan="6" class="text-center py-5">
                                     <div class="text-muted">Aucune réclamation trouvée.</div>
                                 </td>
                             </tr>

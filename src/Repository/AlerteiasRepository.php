@@ -21,6 +21,8 @@ class AlerteiasRepository extends ServiceEntityRepository
     public function searchAndSort(?string $search, string $sort, string $direction, $franchise_id = null)
     {
         $qb = $this->createQueryBuilder('a')
+            ->leftJoin('a.franchise_id', 'f')
+            ->addSelect('f')
             ->andWhere('a.type_alerte LIKE :search')
             ->setParameter('search', '%' . $search . '%');
 
@@ -29,8 +31,14 @@ class AlerteiasRepository extends ServiceEntityRepository
                ->setParameter('f', $franchise_id);
         }
 
-        return $qb->orderBy('a.' . $sort, $direction)
-            ->getQuery()
+        // Handle sorting by franchise name
+        if ($sort === 'franchise_id') {
+            $qb->orderBy('f.nom', $direction);
+        } else {
+            $qb->orderBy('a.' . $sort, $direction);
+        }
+
+        return $qb->getQuery()
             ->getResult();
     }
 
