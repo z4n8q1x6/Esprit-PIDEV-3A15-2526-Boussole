@@ -26,6 +26,24 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 #[Route('/transaction')]
 final class TransactionController extends AbstractController
 {
+    private function getCurrentFranchise(): ?\App\Entity\Franchises
+    {
+        $user = $this->getUser();
+
+        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
+            return $user->getIdFranchise();
+        }
+
+        return null;
+    }
+
+    private function canAccessTransaction(Transaction $transaction): bool
+    {
+        $franchise = $this->getCurrentFranchise();
+
+        return $franchise !== null && $transaction->getFranchise_id() === $franchise;
+    }
+
     #[Route(name: 'app_transaction_index', methods: ['GET', 'POST'])]
     public function index(Request $request, EntityManagerInterface $entityManager, TransactionRepository $transactionRepo, CurrencyConverterService $currencyConverter, \App\Service\TelegramService $telegramService): Response
     {
@@ -36,12 +54,7 @@ final class TransactionController extends AbstractController
         $form->handleRequest($request);
 
         // On récupère la franchise de l'utilisateur connecté s'il y en a une
-        $user = $this->getUser();
-        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
-            $dummyFranchise = $user->getIdFranchise();
-        } else {
-            $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
-        }
+        $dummyFranchise = $this->getCurrentFranchise();
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($dummyFranchise) {
@@ -70,7 +83,8 @@ final class TransactionController extends AbstractController
                 }
 
                 $budget = $entityManager->getRepository(\App\Entity\Budget_previsionnel::class)->findOneBy([
-                    'type_budget' => 'LIMITE_DEPENSE'
+                    'type_budget' => 'LIMITE_DEPENSE',
+                    'franchise_id' => $dummyFranchise
                 ], ['id' => 'DESC']);
 
                 $limiteDepasse = ($budget && $depensesMois > $budget->getMontant_cible());
@@ -104,30 +118,24 @@ final class TransactionController extends AbstractController
         $objectifRevenu = 0;
 
         if ($dummyFranchise) {
-            $toutesLesTransactions = $transactionRepo->findBy(['franchise_id' => $dummyFranchise]);
-            
-            foreach ($toutesLesTransactions as $t) {
-                if ($t->getType() === 'RECETTE') {
-                    $solde += $t->getMontant();
-                } elseif ($t->getType() === 'DEPENSE') {
-                    $solde -= $t->getMontant();
-                }
-            }
+            $solde = $transactionRepo->getBalanceForFranchise($dummyFranchise);
 
             $derniersMouvements = $transactionRepo->findBy(['franchise_id' => $dummyFranchise],
                 ['date' => 'DESC'],
                 5
             );
 
-            // Charger la DERNIÈRE Limite de Dépenses enregistrée dans tout le système (car pas encore d'authentification)
+            // Charger la DERNIÈRE Limite de Dépenses enregistrée pour cette franchise
             $lastLimite = $entityManager->getRepository(\App\Entity\Budget_previsionnel::class)->findOneBy([
-                "type_budget" => "LIMITE_DEPENSE"
+                "type_budget" => "LIMITE_DEPENSE",
+                "franchise_id" => $dummyFranchise
             ], ["id" => "DESC"]);
             if ($lastLimite) { $limiteDepenses = $lastLimite->getMontant_cible(); }
 
-            // Charger le DERNIER Objectif de Revenu enregistré dans tout le système
+            // Charger le DERNIER Objectif de Revenu enregistré pour cette franchise
             $lastObjectif = $entityManager->getRepository(\App\Entity\Budget_previsionnel::class)->findOneBy([
-                "type_budget" => "OBJECTIF_REVENU"
+                "type_budget" => "OBJECTIF_REVENU",
+                "franchise_id" => $dummyFranchise
             ], ["id" => "DESC"]);
             if ($lastObjectif) { $objectifRevenu = $lastObjectif->getMontant_cible(); }
         }
@@ -176,12 +184,7 @@ final class TransactionController extends AbstractController
     ): Response
     {
         // On récupère la franchise de l'utilisateur connecté s'il y en a une
-        $user = $this->getUser();
-        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
-            $dummyFranchise = $user->getIdFranchise();
-        } else {
-            $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
-        }
+        $dummyFranchise = $this->getCurrentFranchise();
 
         $typeFilter = $request->query->get('type', 'TOUT');
         $searchQuery = $request->query->get('search', '');
@@ -255,12 +258,7 @@ final class TransactionController extends AbstractController
     public function exportExcel(Request $request, TransactionRepository $transactionRepo, EntityManagerInterface $entityManager): Response
     {
         // On récupère la franchise
-        $user = $this->getUser();
-        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
-            $dummyFranchise = $user->getIdFranchise();
-        } else {
-            $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
-        }
+        $dummyFranchise = $this->getCurrentFranchise();
 
         // On récupère les mêmes filtres que l'affichage
         $typeFilter = $request->query->get('type', 'TOUT');
@@ -370,8 +368,13 @@ final class TransactionController extends AbstractController
         Request $request,
         Transaction $transaction,
         EntityManagerInterface $entityManager,
+        TransactionRepository $transactionRepository,
         ValidatorInterface $validator
     ): JsonResponse {
+        if (!$this->canAccessTransaction($transaction)) {
+            return new JsonResponse(['success' => false, 'message' => 'Accès refusé à cette transaction.'], 403);
+        }
+
         if ($transaction->isEstCloture()) {
             return new JsonResponse(['success' => false, 'message' => 'Interdit : Cette transaction est archivée et ne peut plus être modifiée.'], 403);
         }
@@ -420,19 +423,7 @@ final class TransactionController extends AbstractController
 
             $entityManager->flush();
 
-            // Recalculer le solde
-            $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
-            $solde = 0;
-            if ($dummyFranchise) {
-                $allTx = $entityManager->getRepository(Transaction::class)->findBy(['franchise_id' => $dummyFranchise]);
-                foreach ($allTx as $t) {
-                    if ($t->getType() === 'RECETTE') {
-                        $solde += $t->getMontant();
-                    } elseif ($t->getType() === 'DEPENSE') {
-                        $solde -= $t->getMontant();
-                    }
-                }
-            }
+            $solde = $transactionRepository->getBalanceForFranchise($transaction->getFranchise_id());
 
             return new JsonResponse([
                 'success' => true,
@@ -452,28 +443,21 @@ final class TransactionController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_transaction_delete', methods: ['POST'])]
-    public function delete(Transaction $transaction, EntityManagerInterface $entityManager): JsonResponse
+    public function delete(Transaction $transaction, EntityManagerInterface $entityManager, TransactionRepository $transactionRepository): JsonResponse
     {
+        if (!$this->canAccessTransaction($transaction)) {
+            return new JsonResponse(['success' => false, 'message' => 'Accès refusé à cette transaction.'], 403);
+        }
+
         if ($transaction->isEstCloture()) {
              return new JsonResponse(['success' => false, 'message' => 'Interdit : Cette transaction est archivée et ne peut plus être supprimée.'], 403);
         }
 
+        $franchise = $transaction->getFranchise_id();
         $entityManager->remove($transaction);
         $entityManager->flush();
 
-        // Recalculer le solde
-        $dummyFranchise = $entityManager->getRepository(\App\Entity\Franchises::class)->findOneBy([]);
-        $solde = 0;
-        if ($dummyFranchise) {
-            $allTx = $entityManager->getRepository(Transaction::class)->findBy(['franchise_id' => $dummyFranchise]);
-            foreach ($allTx as $t) {
-                if ($t->getType() === 'RECETTE') {
-                    $solde += $t->getMontant();
-                } elseif ($t->getType() === 'DEPENSE') {
-                    $solde -= $t->getMontant();
-                }
-            }
-        }
+        $solde = $transactionRepository->getBalanceForFranchise($franchise);
 
         return new JsonResponse([
             'success' => true,

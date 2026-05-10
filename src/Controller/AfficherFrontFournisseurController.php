@@ -103,9 +103,20 @@ HTML;
 
         // 2. Logique de filtrage et tri
         $queryBuilder = $repository->createQueryBuilder('f');
+
+        // On récupère la franchise de l'utilisateur connecté s'il y en a une
+        $user = $this->getUser();
+        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
+            $franchiseId = $user->getIdFranchise()->getId();
+            $queryBuilder->andWhere('f.franchise_id = :franchiseId')
+                         ->setParameter('franchiseId', $franchiseId);
+        } else {
+            // Si pas d'utilisateur connecté ou pas de franchise, on ne montre rien
+            $queryBuilder->andWhere('1 = 0');
+        }
         
         if ($search) {
-            $queryBuilder->where('f.nom LIKE :s OR f.matricule_fiscal LIKE :s')
+            $queryBuilder->andWhere('(f.nom LIKE :s OR f.matricule_fiscal LIKE :s)')
                          ->setParameter('s', '%'.$search.'%');
         }
 
@@ -198,7 +209,15 @@ HTML;
     {
         // 1. Analyse locale : Franchise la plus représentée (Toujours 100% exact)
         $counts = [];
-        $allFournisseurs = $repository->findAll();
+
+        // Filtrer par franchise
+        $user = $this->getUser();
+        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
+            $allFournisseurs = $repository->findBy(['franchise_id' => $user->getIdFranchise()]);
+        } else {
+            $allFournisseurs = [];
+        }
+
         foreach ($allFournisseurs as $f) {
             $name = $f->getFranchiseId() ? $f->getFranchiseId()->getNom() : 'Indépendant';
             $counts[$name] = ($counts[$name] ?? 0) + 1;

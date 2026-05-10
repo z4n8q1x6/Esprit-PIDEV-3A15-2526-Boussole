@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Franchises;
 use App\Entity\Transaction;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -56,6 +57,35 @@ class TransactionRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
 
         return (int) ($result ?? 0);
+    }
+
+    /**
+     * Calcule le benefice net d'un mois:
+     * total recettes - total depenses.
+     */
+    public function getNetTotalByMonth(?object $franchise, int $month, int $year): float
+    {
+        $startDate = new \DateTime(sprintf('%04d-%02d-01 00:00:00', $year, $month));
+        $endDate = clone $startDate;
+        $endDate->modify('last day of this month')->setTime(23, 59, 59);
+
+        $qb = $this->createQueryBuilder('t')
+            ->select(
+                "COALESCE(SUM(CASE WHEN t.type = 'RECETTE' THEN t.montant WHEN t.type = 'DEPENSE' THEN -t.montant ELSE 0 END), 0) AS total_net"
+            )
+            ->andWhere('t.date >= :startDate')
+            ->andWhere('t.date <= :endDate')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate);
+
+        if ($franchise !== null) {
+            $qb->andWhere('t.franchise_id = :franchise')
+               ->setParameter('franchise', $franchise);
+        }
+
+        $result = $qb->getQuery()->getSingleScalarResult();
+
+        return (float) ($result ?? 0.0);
     }
     // END alerte ai function
 
@@ -166,5 +196,19 @@ class TransactionRepository extends ServiceEntityRepository
             ->setParameter('end', $end)
             ->getQuery()
             ->getResult();
+    }
+
+    public function getBalanceForFranchise(Franchises $franchise): float
+    {
+        $result = $this->createQueryBuilder('t')
+            ->select(
+                "COALESCE(SUM(CASE WHEN t.type = 'RECETTE' THEN t.montant WHEN t.type = 'DEPENSE' THEN -t.montant ELSE 0 END), 0) AS solde"
+            )
+            ->andWhere('t.franchise_id = :franchise')
+            ->setParameter('franchise', $franchise)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (float) ($result ?? 0.0);
     }
 }

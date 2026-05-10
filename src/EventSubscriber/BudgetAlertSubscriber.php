@@ -82,10 +82,11 @@ class BudgetAlertSubscriber
             'type_budget' => 'LIMITE_DEPENSE',
         ]);
 
-        // 2. Fallback (Comme le Dashboard) : S'il n'y en a pas, on prend la dernière limite configurée globalement
+        // 2. Fallback (Comme le Dashboard) : S'il n'y en a pas, on prend la dernière limite configurée globalement (franchise_id null)
         if (!$budget) {
             $budget = $em->getRepository(Budget_previsionnel::class)->findOneBy([
-                'type_budget' => 'LIMITE_DEPENSE'
+                'type_budget' => 'LIMITE_DEPENSE',
+                'franchise_id' => null
             ], ['id' => 'DESC']);
         }
 

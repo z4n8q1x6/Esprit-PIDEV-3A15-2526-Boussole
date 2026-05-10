@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Transaction;
 use App\Entity\Budget_previsionnel;
+use App\Repository\Budget_previsionnelRepository;
+use App\Repository\TransactionRepository;
 use App\Service\CurrencyConverterService;
 use App\Service\AiClusteringService;
 use App\Service\AiAssistantService;
@@ -19,9 +21,9 @@ use App\Service\FinancialRatingService;
 class DashboardSiegeController extends AbstractController
 {
     #[Route('/admin/dashboard', name: 'app_siege_dashboard')]
-    public function index(Request $request, EntityManagerInterface $em, ChartBuilderInterface $chartBuilder, CurrencyConverterService $currencyConverter, AiClusteringService $aiClustering, FinancialRatingService $ratingService, AiAssistantService $aiAssistant): Response
+    public function index(Request $request, EntityManagerInterface $em, TransactionRepository $transactionRepository, Budget_previsionnelRepository $budgetRepository, ChartBuilderInterface $chartBuilder, CurrencyConverterService $currencyConverter, AiClusteringService $aiClustering, FinancialRatingService $ratingService, AiAssistantService $aiAssistant): Response
     {
-        $transactions = $em->getRepository(Transaction::class)->findAll();
+        $transactions = $transactionRepository->findAll();
 
         $revenus = 0;
         $depenses = 0;
@@ -66,14 +68,7 @@ class DashboardSiegeController extends AbstractController
             $label = $this->getFrenchMonth($month) . ' ' . $date->format('y');
 
             // Calculer Réel (Revenus du mois)
-            $reel = 0;
-            foreach ($transactions as $t) {
-                if ($t->getType() === 'RECETTE'
-                    && (int) $t->getDate()->format('n') === $month
-                    && (int) $t->getDate()->format('Y') === $year) {
-                    $reel += $t->getMontant();
-                }
-            }
+            $reel = $transactionRepository->getNetTotalByMonth(null, $month, $year);
 
             // --- Calculer Objectif de Revenu ---
             $budgetsRev = $em->getRepository(Budget_previsionnel::class)->findBy([
@@ -114,7 +109,7 @@ class DashboardSiegeController extends AbstractController
             }
 
             // Budget Prévu = Objectif de Revenu - Limite de Dépenses
-            $budget = $objectifRevenu - $limiteDepense;
+            $budget = $budgetRepository->getNetPlannedBudgetByMonth($month, $year);
 
             $chartData['labels'][] = $label;
             $chartData['reel'][] = $reel;
@@ -123,17 +118,12 @@ class DashboardSiegeController extends AbstractController
 
         // Créer l'objet Chart via Symfony UX
         $chart = $chartBuilder->createChart(Chart::TYPE_BAR);
-        
-        // Inversion pour affichage chronologique (de gauche à droite)
-        $chartData['labels'] = array_reverse($chartData['labels']);
-        $chartData['reel'] = array_reverse($chartData['reel']);
-        $chartData['budget'] = array_reverse($chartData['budget']);
 
         $chart->setData([
             'labels' => $chartData['labels'],
             'datasets' => [
                 [
-                    'label' => 'Réel (Transactions)',
+                    'label' => 'Réel (Bénéfice Net)',
                     'backgroundColor' => '#00d4ff', // Cyan
                     'data' => $chartData['reel'],
                     'borderRadius' => 4,
