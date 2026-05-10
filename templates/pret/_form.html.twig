@@ -1,0 +1,56 @@
+{{ form_start(form, {'attr': {'class': 'row g-3'}}) }}
+
+    <div class="col-md-6">
+        {{ form_label(form.montant_demande, 'Montant demandé', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.montant_demande, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 50000'}}) }}
+        {{ form_errors(form.montant_demande) }}
+    </div>
+
+    <div class="col-md-6">
+        {{ form_label(form.duree_mois, 'Durée (mois)', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.duree_mois, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 24'}}) }}
+        {{ form_errors(form.duree_mois) }}
+    </div>
+
+    <div class="col-md-6">
+        {{ form_label(form.taux, 'Taux d\'intérêt (%)', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.taux, {'attr': {'class': 'form-control', 'placeholder': 'Ex: 8.5'}}) }}
+        {{ form_errors(form.taux) }}
+    </div>
+
+    <div class="col-md-6">
+        {{ form_label(form.date_demande, 'Date de demande', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.date_demande, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.date_demande) }}
+    </div>
+
+    <div class="col-12">
+        {{ form_label(form.motif, 'Motif de la demande', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.motif, {'attr': {'class': 'form-control', 'rows': 4, 'placeholder': 'Décrivez le motif de votre demande de prêt...'}}) }}
+        {{ form_errors(form.motif) }}
+    </div>
+
+    <div class="col-md-6">
+        {{ form_label(form.statut, 'Statut', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.statut, {'attr': {'class': 'form-select'}}) }}
+        {{ form_errors(form.statut) }}
+    </div>
+
+    <div class="col-md-6">
+        {{ form_label(form.franchise_id, 'Franchise', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.franchise_id, {'attr': {'class': 'form-select'}}) }}
+        {{ form_errors(form.franchise_id) }}
+    </div>
+
+    <div class="col-12">
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary">
+                <i class="bi bi-check-circle me-1"></i>{{ button_label|default('Enregistrer la demande') }}
+            </button>
+            <a href="{{ path('app_pret_index') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Retour à la liste
+            </a>
+        </div>
+    </div>
+
+{{ form_end(form) }}

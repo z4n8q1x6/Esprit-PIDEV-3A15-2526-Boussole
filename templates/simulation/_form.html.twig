@@ -1,0 +1,93 @@
+{{ form_start(form, {'attr': {'class': 'row g-3', 'novalidate': 'novalidate'}}) }}
+
+    <div class="col-12">
+        <div class="mb-3">
+            {{ form_label(form.nom_simulation, 'Nom de la simulation', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.nom_simulation, {
+                'attr': {
+                    'class': form.nom_simulation.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control',
+                    'placeholder': 'Ex: Maison familiale'
+                }
+            }) }}
+            {% if form.nom_simulation.vars.errors|length > 0 %}
+                <div class="invalid-feedback d-block">
+                    {{ form_errors(form.nom_simulation) }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_label(form.capital, 'Montant du capital (TND)', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.capital, {
+                'attr': {
+                    'class': form.capital.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control',
+                    'placeholder': 'Ex: 150000'
+                }
+            }) }}
+            {% if form.capital.vars.errors|length > 0 %}
+                <div class="invalid-feedback d-block">
+                    {{ form_errors(form.capital) }}
+                </div>
+            {% else %}
+                <small class="form-text text-muted">Chiffres uniquement, pas de symboles</small>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_label(form.taux_annuel, 'Taux annuel (%)', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.taux_annuel, {
+                'attr': {
+                    'class': form.taux_annuel.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control',
+                    'placeholder': 'Ex: 4.75',
+                    'min': '0.01',
+                    'max': '30',
+                    'step': '0.01'
+                }
+            }) }}
+            {% if form.taux_annuel.vars.errors|length > 0 %}
+                <div class="invalid-feedback d-block">
+                    {{ form_errors(form.taux_annuel) }}
+                </div>
+            {% else %}
+                <small class="form-text text-muted">Entre 0% et 30%, 2-3 décimales (ex: 4.75)</small>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="mb-3">
+            {{ form_label(form.duree_mois, 'Durée (en mois)', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.duree_mois, {
+                'attr': {
+                    'class': form.duree_mois.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control',
+                    'placeholder': 'Ex: 240',
+                    'min': '1',
+                    'max': '600'
+                }
+            }) }}
+            {% if form.duree_mois.vars.errors|length > 0 %}
+                <div class="invalid-feedback d-block">
+                    {{ form_errors(form.duree_mois) }}
+                </div>
+            {% else %}
+                <small class="form-text text-muted">1 à 600 mois (1 à 50 ans)</small>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" type="submit">
+                <i class="bi bi-calculator me-1"></i>{{ button_label|default('Lancer la simulation') }}
+            </button>
+            <a href="{{ path('app_simulation_index') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left me-1"></i>Retour à la liste
+            </a>
+        </div>
+    </div>
+
+{{ form_end(form) }}

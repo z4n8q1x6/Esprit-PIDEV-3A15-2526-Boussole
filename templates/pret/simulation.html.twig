@@ -1,0 +1,90 @@
+{% extends 'front_base.html.twig' %}
+
+{% block title %}Gestion des Simulations - Boussole{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+    <!-- Titre de la page avec le style du thème -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0">Gestion des Simulations de Prêt</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-dots mb-0">
+                    <li class="breadcrumb-item"><a href="{{ path('app_front_home') }}">Accueil</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Simulations</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Carte de la liste des simulations -->
+        <div class="col-12">
+            <div class="card border rounded-3">
+                <!-- Card header -->
+                <div class="card-header border-bottom bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="card-header-title mb-0">Liste des simulations</h5>
+                    <a href="{{ path('app_simulation_new') }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle me-1"></i>Nouvelle simulation
+                    </a>
+                </div>
+
+                <!-- Card body -->
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom</th>
+                                    <th>Capital</th>
+                                    <th>Taux annuel</th>
+                                    <th>Durée</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for simulation in simulations %}
+                                <tr>
+                                    <td>{{ simulation.id }}</td>
+                                    <td class="fw-bold">{{ simulation.nomSimulation }}</td>
+                                    <td class="text-primary fw-bold">{{ simulation.capital|number_format(0, ',', ' ') }} TND</td>
+                                    <td>{{ simulation.tauxAnnuel }}%</td>
+                                    <td>{{ simulation.dureeMois }} mois</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ path('app_simulation_show', {'id': simulation.id}) }}" class="btn btn-sm btn-outline-primary" title="Voir le tableau d'amortissement">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{{ path('app_simulation_edit', {'id': simulation.id}) }}" class="btn btn-sm btn-outline-secondary" title="Modifier les paramètres">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form method="post" action="{{ path('app_stripe_checkout', {'id': simulation.id}) }}" style="display:inline-block" class="ms-1">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('stripe_checkout' ~ simulation.id) }}">
+                                                <button type="submit" class="btn btn-sm btn-warning" title="Souscrire et payer les frais de dossier (50 TND)">
+                                                    <i class="bi bi-credit-card"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">
+                                        <div class="text-muted">
+                                            <i class="bi bi-info-circle me-2"></i>Aucune simulation trouvée
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

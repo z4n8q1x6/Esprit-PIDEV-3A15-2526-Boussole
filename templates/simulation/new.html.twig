@@ -1,0 +1,40 @@
+{% extends 'front_base.html.twig' %}
+
+{% block title %}Nouvelle Simulation - Boussole{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+    <!-- Titre de la page avec le style du thème -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0">Nouvelle Simulation de Prêt</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-dots mb-0">
+                    <li class="breadcrumb-item"><a href="{{ path('app_front_home') }}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_simulation_index') }}">Simulations</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Nouvelle</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Carte du formulaire -->
+        <div class="col-12">
+            <div class="card border rounded-3">
+                <!-- Card header -->
+                <div class="card-header border-bottom bg-light">
+                    <h5 class="card-header-title mb-0">Paramètres de simulation</h5>
+                </div>
+
+                <!-- Card body -->
+                <div class="card-body">
+                    {{ include('simulation/_form.html.twig') }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
