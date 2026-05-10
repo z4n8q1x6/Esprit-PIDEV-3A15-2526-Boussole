@@ -1,0 +1,944 @@
+﻿ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Command\GenerateEntitiesCommand.php                                                                            
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  24     Property App\Command\GenerateEntitiesCommand::$schemaManager with generic class                                
+         Doctrine\DBAL\Schema\AbstractSchemaManager does not specify its types: T                                       
+         ­ƒ¬¬  missingType.generics                                                                                       
+  25     Property App\Command\GenerateEntitiesCommand::$generatedRelations type has no value type specified in          
+         iterable type array.                                                                                           
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  97     Method App\Command\GenerateEntitiesCommand::getSchemaManager() return type with generic class                  
+         Doctrine\DBAL\Schema\AbstractSchemaManager does not specify its types: T                                       
+         ­ƒ¬¬  missingType.generics                                                                                       
+  112    Method App\Command\GenerateEntitiesCommand::generateEntity() has parameter $manyToOneRelationsName with no     
+         value type specified in iterable type array.                                                                   
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  112    Method App\Command\GenerateEntitiesCommand::generateEntity() has parameter $oneToManyRelations with no value   
+         type specified in iterable type array.                                                                         
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  112    Method App\Command\GenerateEntitiesCommand::generateEntity() has parameter $oneToManyRelationsName with no     
+         value type specified in iterable type array.                                                                   
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  178    Method App\Command\GenerateEntitiesCommand::generateImports() has parameter $manyToOneRelationsName with no    
+         value type specified in iterable type array.                                                                   
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  178    Method App\Command\GenerateEntitiesCommand::generateImports() has parameter $oneToManyRelationsName with no    
+         value type specified in iterable type array.                                                                   
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  211    Method App\Command\GenerateEntitiesCommand::getForeignKeys() has parameter $tables with no value type          
+         specified in iterable type array.                                                                              
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  211    Method App\Command\GenerateEntitiesCommand::getForeignKeys() return type has no value type specified in        
+         iterable type array.                                                                                           
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  312    Method App\Command\GenerateEntitiesCommand::generateProperty() has parameter $foreignKeys with no value type   
+         specified in iterable type array.                                                                              
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  312    Method App\Command\GenerateEntitiesCommand::generateProperty() has parameter $manyToOneRelationsName with no   
+         value type specified in iterable type array.                                                                   
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  312    Method App\Command\GenerateEntitiesCommand::generateProperty() has parameter $oneToManyRelations with no       
+         value type specified in iterable type array.                                                                   
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  312    Method App\Command\GenerateEntitiesCommand::generateProperty() has parameter $oneToManyRelationsName with no   
+         value type specified in iterable type array.                                                                   
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  312    Method App\Command\GenerateEntitiesCommand::generateProperty() has parameter $primaryKeys with no value type   
+         specified in iterable type array.                                                                              
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  405    Method App\Command\GenerateEntitiesCommand::getPrimaryKeyColumns() return type has no value type specified in  
+         iterable type array.                                                                                           
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  447    Method App\Command\GenerateEntitiesCommand::parseRelationAnnotation() return type has no value type specified  
+         in iterable type array.                                                                                        
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------------------- 
+  Line   Command\GenerateRepositoriesCommand.php                                               
+ ------ -------------------------------------------------------------------------------------- 
+  18     Property App\Command\GenerateRepositoriesCommand::$filesystem has no type specified.  
+         ­ƒ¬¬  missingType.property                                                              
+ ------ -------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Controller\AfficherBackChargeController.php                                                                    
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  64     Method App\Controller\AfficherBackChargeController::getExchangeRates() return type has no value type           
+         specified in iterable type array.                                                                              
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  117    Method App\Controller\AfficherBackChargeController::generateChargesEmailHtml() has parameter $charges with no  
+         value type specified in iterable type array.                                                                   
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------------------------------------- 
+  Line   Controller\AfficherBackFournisseurController.php                                                        
+ ------ -------------------------------------------------------------------------------------------------------- 
+  81     Method App\Controller\AfficherBackFournisseurController::generateFournisseursEmailHtml() has parameter  
+         $fournisseurs with no value type specified in iterable type array.                                      
+         ­ƒ¬¬  missingType.iterableValue                                                                           
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type              
+ ------ -------------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------------------- 
+  Line   Controller\AfficherFrontFournisseurController.php                                                          
+ ------ ----------------------------------------------------------------------------------------------------------- 
+  197    Method App\Controller\AfficherFrontFournisseurController::getAIAnalysis() has parameter $pageFournisseurs  
+         with no value type specified in iterable type array.                                                       
+         ­ƒ¬¬  missingType.iterableValue                                                                              
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                 
+  197    Method App\Controller\AfficherFrontFournisseurController::getAIAnalysis() return type has no value type    
+         specified in iterable type array.                                                                          
+         ­ƒ¬¬  missingType.iterableValue                                                                              
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                 
+  290    Method App\Controller\AfficherFrontFournisseurController::getWeatherData() return type has no value type   
+         specified in iterable type array.                                                                          
+         ­ƒ¬¬  missingType.iterableValue                                                                              
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                 
+ ------ ----------------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------- 
+  Line   Controller\AlerteIAController.php                                                                        
+ ------ --------------------------------------------------------------------------------------------------------- 
+  33     Method App\Controller\AlerteIAController::getFranchiseId() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                                   
+  138    Method App\Controller\AlerteIAController::buildPrompt() has parameter $financialData with no value type  
+         specified in iterable type array.                                                                        
+         ­ƒ¬¬  missingType.iterableValue                                                                            
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type               
+ ------ --------------------------------------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------------------------- 
+  Line   Controller\GoogleController.php                                                             
+ ------ -------------------------------------------------------------------------------------------- 
+  15     Method App\Controller\GoogleController::connectAction() has no return type specified.       
+         ­ƒ¬¬  missingType.return                                                                      
+  33     Method App\Controller\GoogleController::connectCheckAction() has no return type specified.  
+         ­ƒ¬¬  missingType.return                                                                      
+ ------ -------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------- 
+  Line   Controller\ReclamationController.php                                                         
+ ------ --------------------------------------------------------------------------------------------- 
+  27     Method App\Controller\ReclamationController::getFranchiseId() has no return type specified.  
+         ­ƒ¬¬  missingType.return                                                                       
+ ------ --------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------- 
+  Line   Entity\Alerteias.php                                                                           
+ ------ ----------------------------------------------------------------------------------------------- 
+  36     Method App\Entity\Alerteias::getId() has no return type specified.                             
+         ­ƒ¬¬  missingType.return                                                                         
+  41     Method App\Entity\Alerteias::setId() has no return type specified.                             
+         ­ƒ¬¬  missingType.return                                                                         
+  41     Method App\Entity\Alerteias::setId() has parameter $value with no type specified.              
+         ­ƒ¬¬  missingType.parameter                                                                      
+  46     Method App\Entity\Alerteias::getType_alerte() has no return type specified.                    
+         ­ƒ¬¬  missingType.return                                                                         
+  51     Method App\Entity\Alerteias::setType_alerte() has no return type specified.                    
+         ­ƒ¬¬  missingType.return                                                                         
+  51     Method App\Entity\Alerteias::setType_alerte() has parameter $value with no type specified.     
+         ­ƒ¬¬  missingType.parameter                                                                      
+  56     Method App\Entity\Alerteias::getMessage() has no return type specified.                        
+         ­ƒ¬¬  missingType.return                                                                         
+  61     Method App\Entity\Alerteias::setMessage() has no return type specified.                        
+         ­ƒ¬¬  missingType.return                                                                         
+  61     Method App\Entity\Alerteias::setMessage() has parameter $value with no type specified.         
+         ­ƒ¬¬  missingType.parameter                                                                      
+  71     Method App\Entity\Alerteias::setScore_gravite() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                         
+  76     Method App\Entity\Alerteias::getDate_detection() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                         
+  81     Method App\Entity\Alerteias::setDate_detection() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                         
+  81     Method App\Entity\Alerteias::setDate_detection() has parameter $value with no type specified.  
+         ­ƒ¬¬  missingType.parameter                                                                      
+  86     Method App\Entity\Alerteias::getFranchise_id() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                         
+  91     Method App\Entity\Alerteias::setFranchise_id() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                         
+  91     Method App\Entity\Alerteias::setFranchise_id() has parameter $value with no type specified.    
+         ­ƒ¬¬  missingType.parameter                                                                      
+ ------ ----------------------------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------------------------------- 
+  Line   Entity\Bilan.php                                                                           
+ ------ ------------------------------------------------------------------------------------------- 
+  46     Method App\Entity\Bilan::getId() has no return type specified.                             
+         ­ƒ¬¬  missingType.return                                                                     
+  51     Method App\Entity\Bilan::setId() has no return type specified.                             
+         ­ƒ¬¬  missingType.return                                                                     
+  51     Method App\Entity\Bilan::setId() has parameter $value with no type specified.              
+         ­ƒ¬¬  missingType.parameter                                                                  
+  56     Method App\Entity\Bilan::getMois() has no return type specified.                           
+         ­ƒ¬¬  missingType.return                                                                     
+  61     Method App\Entity\Bilan::setMois() has no return type specified.                           
+         ­ƒ¬¬  missingType.return                                                                     
+  61     Method App\Entity\Bilan::setMois() has parameter $value with no type specified.            
+         ­ƒ¬¬  missingType.parameter                                                                  
+  66     Method App\Entity\Bilan::getAnnee() has no return type specified.                          
+         ­ƒ¬¬  missingType.return                                                                     
+  71     Method App\Entity\Bilan::setAnnee() has no return type specified.                          
+         ­ƒ¬¬  missingType.return                                                                     
+  71     Method App\Entity\Bilan::setAnnee() has parameter $value with no type specified.           
+         ­ƒ¬¬  missingType.parameter                                                                  
+  76     Method App\Entity\Bilan::getTotal_recettes() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                     
+  81     Method App\Entity\Bilan::setTotal_recettes() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                     
+  81     Method App\Entity\Bilan::setTotal_recettes() has parameter $value with no type specified.  
+         ­ƒ¬¬  missingType.parameter                                                                  
+  86     Method App\Entity\Bilan::getTotal_charges() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                     
+  91     Method App\Entity\Bilan::setTotal_charges() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                     
+  91     Method App\Entity\Bilan::setTotal_charges() has parameter $value with no type specified.   
+         ­ƒ¬¬  missingType.parameter                                                                  
+  96     Method App\Entity\Bilan::getResultat_net() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                     
+  101    Method App\Entity\Bilan::setResultat_net() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                     
+  101    Method App\Entity\Bilan::setResultat_net() has parameter $value with no type specified.    
+         ­ƒ¬¬  missingType.parameter                                                                  
+  106    Method App\Entity\Bilan::getFranchise_id() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                     
+  111    Method App\Entity\Bilan::setFranchise_id() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                     
+  111    Method App\Entity\Bilan::setFranchise_id() has parameter $value with no type specified.    
+         ­ƒ¬¬  missingType.parameter                                                                  
+  117    Method App\Entity\Bilan::getTotalRecettes() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                     
+  118    Method App\Entity\Bilan::setTotalRecettes() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                     
+  118    Method App\Entity\Bilan::setTotalRecettes() has parameter $value with no type specified.   
+         ­ƒ¬¬  missingType.parameter                                                                  
+  119    Method App\Entity\Bilan::getTotalCharges() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                     
+  120    Method App\Entity\Bilan::setTotalCharges() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                     
+  120    Method App\Entity\Bilan::setTotalCharges() has parameter $value with no type specified.    
+         ­ƒ¬¬  missingType.parameter                                                                  
+  121    Method App\Entity\Bilan::getResultatNet() has no return type specified.                    
+         ­ƒ¬¬  missingType.return                                                                     
+  122    Method App\Entity\Bilan::setResultatNet() has no return type specified.                    
+         ­ƒ¬¬  missingType.return                                                                     
+  122    Method App\Entity\Bilan::setResultatNet() has parameter $value with no type specified.     
+         ­ƒ¬¬  missingType.parameter                                                                  
+  123    Method App\Entity\Bilan::getFranchiseId() has no return type specified.                    
+         ­ƒ¬¬  missingType.return                                                                     
+  124    Method App\Entity\Bilan::setFranchiseId() has no return type specified.                    
+         ­ƒ¬¬  missingType.return                                                                     
+  124    Method App\Entity\Bilan::setFranchiseId() has parameter $value with no type specified.     
+         ­ƒ¬¬  missingType.parameter                                                                  
+ ------ ------------------------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------------------------------------- 
+  Line   Entity\Budget_previsionnel.php                                                                          
+ ------ -------------------------------------------------------------------------------------------------------- 
+  46     Method App\Entity\Budget_previsionnel::getId() has no return type specified.                            
+         ­ƒ¬¬  missingType.return                                                                                  
+  51     Method App\Entity\Budget_previsionnel::setId() has no return type specified.                            
+         ­ƒ¬¬  missingType.return                                                                                  
+  51     Method App\Entity\Budget_previsionnel::setId() has parameter $value with no type specified.             
+         ­ƒ¬¬  missingType.parameter                                                                               
+  56     Method App\Entity\Budget_previsionnel::getMois() has no return type specified.                          
+         ­ƒ¬¬  missingType.return                                                                                  
+  61     Method App\Entity\Budget_previsionnel::setMois() has no return type specified.                          
+         ­ƒ¬¬  missingType.return                                                                                  
+  61     Method App\Entity\Budget_previsionnel::setMois() has parameter $value with no type specified.           
+         ­ƒ¬¬  missingType.parameter                                                                               
+  66     Method App\Entity\Budget_previsionnel::getAnnee() has no return type specified.                         
+         ­ƒ¬¬  missingType.return                                                                                  
+  71     Method App\Entity\Budget_previsionnel::setAnnee() has no return type specified.                         
+         ­ƒ¬¬  missingType.return                                                                                  
+  71     Method App\Entity\Budget_previsionnel::setAnnee() has parameter $value with no type specified.          
+         ­ƒ¬¬  missingType.parameter                                                                               
+  76     Method App\Entity\Budget_previsionnel::getMontant_cible() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                                  
+  81     Method App\Entity\Budget_previsionnel::setMontant_cible() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                                  
+  81     Method App\Entity\Budget_previsionnel::setMontant_cible() has parameter $value with no type specified.  
+         ­ƒ¬¬  missingType.parameter                                                                               
+  86     Method App\Entity\Budget_previsionnel::getType_budget() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                                  
+  91     Method App\Entity\Budget_previsionnel::setType_budget() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                                  
+  91     Method App\Entity\Budget_previsionnel::setType_budget() has parameter $value with no type specified.    
+         ­ƒ¬¬  missingType.parameter                                                                               
+  96     Method App\Entity\Budget_previsionnel::getCategorie() has no return type specified.                     
+         ­ƒ¬¬  missingType.return                                                                                  
+  101    Method App\Entity\Budget_previsionnel::setCategorie() has no return type specified.                     
+         ­ƒ¬¬  missingType.return                                                                                  
+  101    Method App\Entity\Budget_previsionnel::setCategorie() has parameter $value with no type specified.      
+         ­ƒ¬¬  missingType.parameter                                                                               
+  106    Method App\Entity\Budget_previsionnel::getFranchise_id() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                                  
+  111    Method App\Entity\Budget_previsionnel::setFranchise_id() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                                  
+  111    Method App\Entity\Budget_previsionnel::setFranchise_id() has parameter $value with no type specified.   
+         ­ƒ¬¬  missingType.parameter                                                                               
+  117    Method App\Entity\Budget_previsionnel::getMontantCible() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                                  
+  118    Method App\Entity\Budget_previsionnel::setMontantCible() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                                  
+  118    Method App\Entity\Budget_previsionnel::setMontantCible() has parameter $value with no type specified.   
+         ­ƒ¬¬  missingType.parameter                                                                               
+  119    Method App\Entity\Budget_previsionnel::getTypeBudget() has no return type specified.                    
+         ­ƒ¬¬  missingType.return                                                                                  
+  120    Method App\Entity\Budget_previsionnel::setTypeBudget() has no return type specified.                    
+         ­ƒ¬¬  missingType.return                                                                                  
+  120    Method App\Entity\Budget_previsionnel::setTypeBudget() has parameter $value with no type specified.     
+         ­ƒ¬¬  missingType.parameter                                                                               
+  121    Method App\Entity\Budget_previsionnel::getFranchiseId() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                                  
+  122    Method App\Entity\Budget_previsionnel::setFranchiseId() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                                  
+  122    Method App\Entity\Budget_previsionnel::setFranchiseId() has parameter $value with no type specified.    
+         ­ƒ¬¬  missingType.parameter                                                                               
+ ------ -------------------------------------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------------------------------------------- 
+  Line   Entity\Commande.php                                                                                           
+ ------ -------------------------------------------------------------------------------------------------------------- 
+  51     Method App\Entity\Commande::getId() has no return type specified.                                             
+         ­ƒ¬¬  missingType.return                                                                                        
+  56     Method App\Entity\Commande::setId() has no return type specified.                                             
+         ­ƒ¬¬  missingType.return                                                                                        
+  56     Method App\Entity\Commande::setId() has parameter $value with no type specified.                              
+         ­ƒ¬¬  missingType.parameter                                                                                     
+  61     Method App\Entity\Commande::getDate_creation() has no return type specified.                                  
+         ­ƒ¬¬  missingType.return                                                                                        
+  66     Method App\Entity\Commande::setDate_creation() has no return type specified.                                  
+         ­ƒ¬¬  missingType.return                                                                                        
+  66     Method App\Entity\Commande::setDate_creation() has parameter $value with no type specified.                   
+         ­ƒ¬¬  missingType.parameter                                                                                     
+  71     Method App\Entity\Commande::getMontant_total() has no return type specified.                                  
+         ­ƒ¬¬  missingType.return                                                                                        
+  76     Method App\Entity\Commande::setMontant_total() has no return type specified.                                  
+         ­ƒ¬¬  missingType.return                                                                                        
+  76     Method App\Entity\Commande::setMontant_total() has parameter $value with no type specified.                   
+         ­ƒ¬¬  missingType.parameter                                                                                     
+  81     Method App\Entity\Commande::getStatut() has no return type specified.                                         
+         ­ƒ¬¬  missingType.return                                                                                        
+  86     Method App\Entity\Commande::setStatut() has no return type specified.                                         
+         ­ƒ¬¬  missingType.return                                                                                        
+  86     Method App\Entity\Commande::setStatut() has parameter $value with no type specified.                          
+         ­ƒ¬¬  missingType.parameter                                                                                     
+  135    Method App\Entity\Commande::getFranchise_id() has no return type specified.                                   
+         ­ƒ¬¬  missingType.return                                                                                        
+  140    Method App\Entity\Commande::setFranchise_id() has no return type specified.                                   
+         ­ƒ¬¬  missingType.return                                                                                        
+  140    Method App\Entity\Commande::setFranchise_id() has parameter $value with no type specified.                    
+         ­ƒ¬¬  missingType.parameter                                                                                     
+  146    Property App\Entity\Commande::$ligne_commandes with generic interface Doctrine\Common\Collections\Collection  
+         does not specify its types: TKey, T                                                                           
+         ­ƒ¬¬  missingType.generics                                                                                      
+  148    Method App\Entity\Commande::getLigne_commandes() return type with generic interface                           
+         Doctrine\Common\Collections\Collection does not specify its types: TKey, T                                    
+         ­ƒ¬¬  missingType.generics                                                                                      
+ ------ -------------------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Entity\Franchises.php                                                                                          
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  61     Method App\Entity\Franchises::setId() has no return type specified.                                            
+         ­ƒ¬¬  missingType.return                                                                                         
+  61     Method App\Entity\Franchises::setId() has parameter $value with no type specified.                             
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  66     Method App\Entity\Franchises::getNom() has no return type specified.                                           
+         ­ƒ¬¬  missingType.return                                                                                         
+  71     Method App\Entity\Franchises::setNom() has no return type specified.                                           
+         ­ƒ¬¬  missingType.return                                                                                         
+  71     Method App\Entity\Franchises::setNom() has parameter $value with no type specified.                            
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  76     Method App\Entity\Franchises::getEmail() has no return type specified.                                         
+         ­ƒ¬¬  missingType.return                                                                                         
+  81     Method App\Entity\Franchises::setEmail() has no return type specified.                                         
+         ­ƒ¬¬  missingType.return                                                                                         
+  81     Method App\Entity\Franchises::setEmail() has parameter $value with no type specified.                          
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  86     Method App\Entity\Franchises::getTelephone() has no return type specified.                                     
+         ­ƒ¬¬  missingType.return                                                                                         
+  91     Method App\Entity\Franchises::setTelephone() has no return type specified.                                     
+         ­ƒ¬¬  missingType.return                                                                                         
+  91     Method App\Entity\Franchises::setTelephone() has parameter $value with no type specified.                      
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  96     Method App\Entity\Franchises::getAdresse() has no return type specified.                                       
+         ­ƒ¬¬  missingType.return                                                                                         
+  101    Method App\Entity\Franchises::setAdresse() has no return type specified.                                       
+         ­ƒ¬¬  missingType.return                                                                                         
+  101    Method App\Entity\Franchises::setAdresse() has parameter $value with no type specified.                        
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  106    Method App\Entity\Franchises::getDate_creation() has no return type specified.                                 
+         ­ƒ¬¬  missingType.return                                                                                         
+  111    Method App\Entity\Franchises::setDate_creation() has no return type specified.                                 
+         ­ƒ¬¬  missingType.return                                                                                         
+  111    Method App\Entity\Franchises::setDate_creation() has parameter $value with no type specified.                  
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  116    Method App\Entity\Franchises::getActif() has no return type specified.                                         
+         ­ƒ¬¬  missingType.return                                                                                         
+  121    Method App\Entity\Franchises::setActif() has no return type specified.                                         
+         ­ƒ¬¬  missingType.return                                                                                         
+  121    Method App\Entity\Franchises::setActif() has parameter $value with no type specified.                          
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  126    Method App\Entity\Franchises::getSolde_actuel() has no return type specified.                                  
+         ­ƒ¬¬  missingType.return                                                                                         
+  131    Method App\Entity\Franchises::setSolde_actuel() has no return type specified.                                  
+         ­ƒ¬¬  missingType.return                                                                                         
+  131    Method App\Entity\Franchises::setSolde_actuel() has parameter $value with no type specified.                   
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  148    Property App\Entity\Franchises::$alerteiass with generic interface Doctrine\Common\Collections\Collection      
+         does not specify its types: TKey, T                                                                            
+         ­ƒ¬¬  missingType.generics                                                                                       
+  150    Method App\Entity\Franchises::getAlerteiass() return type with generic interface                               
+         Doctrine\Common\Collections\Collection does not specify its types: TKey, T                                     
+         ­ƒ¬¬  missingType.generics                                                                                       
+  179    Property App\Entity\Franchises::$bilans with generic interface Doctrine\Common\Collections\Collection does     
+         not specify its types: TKey, T                                                                                 
+         ­ƒ¬¬  missingType.generics                                                                                       
+  183    Property App\Entity\Franchises::$budget_previsionnels with generic interface                                   
+         Doctrine\Common\Collections\Collection does not specify its types: TKey, T                                     
+         ­ƒ¬¬  missingType.generics                                                                                       
+  187    Property App\Entity\Franchises::$charges with generic interface Doctrine\Common\Collections\Collection does    
+         not specify its types: TKey, T                                                                                 
+         ­ƒ¬¬  missingType.generics                                                                                       
+  191    Property App\Entity\Franchises::$commandes with generic interface Doctrine\Common\Collections\Collection does  
+         not specify its types: TKey, T                                                                                 
+         ­ƒ¬¬  missingType.generics                                                                                       
+  195    Property App\Entity\Franchises::$fournisseurs with generic interface Doctrine\Common\Collections\Collection    
+         does not specify its types: TKey, T                                                                            
+         ­ƒ¬¬  missingType.generics                                                                                       
+  199    Property App\Entity\Franchises::$prets with generic interface Doctrine\Common\Collections\Collection does not  
+         specify its types: TKey, T                                                                                     
+         ­ƒ¬¬  missingType.generics                                                                                       
+  203    Property App\Entity\Franchises::$reclamationss with generic interface Doctrine\Common\Collections\Collection   
+         does not specify its types: TKey, T                                                                            
+         ­ƒ¬¬  missingType.generics                                                                                       
+  207    Property App\Entity\Franchises::$transactions with generic interface Doctrine\Common\Collections\Collection    
+         does not specify its types: TKey, T                                                                            
+         ­ƒ¬¬  missingType.generics                                                                                       
+  210    Property App\Entity\Franchises::$utilisateurs with generic interface Doctrine\Common\Collections\Collection    
+         does not specify its types: TKey, T                                                                            
+         ­ƒ¬¬  missingType.generics                                                                                       
+  212    Method App\Entity\Franchises::getUtilisateurs() return type with generic interface                             
+         Doctrine\Common\Collections\Collection does not specify its types: TKey, T                                     
+         ­ƒ¬¬  missingType.generics                                                                                       
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------- 
+  Line   Entity\Ligne_commande.php                                                                          
+ ------ --------------------------------------------------------------------------------------------------- 
+  32     Method App\Entity\Ligne_commande::getId() has no return type specified.                            
+         ­ƒ¬¬  missingType.return                                                                             
+  37     Method App\Entity\Ligne_commande::setId() has no return type specified.                            
+         ­ƒ¬¬  missingType.return                                                                             
+  37     Method App\Entity\Ligne_commande::setId() has parameter $value with no type specified.             
+         ­ƒ¬¬  missingType.parameter                                                                          
+  42     Method App\Entity\Ligne_commande::getQuantite() has no return type specified.                      
+         ­ƒ¬¬  missingType.return                                                                             
+  47     Method App\Entity\Ligne_commande::setQuantite() has no return type specified.                      
+         ­ƒ¬¬  missingType.return                                                                             
+  47     Method App\Entity\Ligne_commande::setQuantite() has parameter $value with no type specified.       
+         ­ƒ¬¬  missingType.parameter                                                                          
+  52     Method App\Entity\Ligne_commande::getPrix_unitaire() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                             
+  57     Method App\Entity\Ligne_commande::setPrix_unitaire() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                             
+  57     Method App\Entity\Ligne_commande::setPrix_unitaire() has parameter $value with no type specified.  
+         ­ƒ¬¬  missingType.parameter                                                                          
+  62     Method App\Entity\Ligne_commande::getCommande_id() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                             
+  67     Method App\Entity\Ligne_commande::setCommande_id() has no return type specified.                   
+         ­ƒ¬¬  missingType.return                                                                             
+  67     Method App\Entity\Ligne_commande::setCommande_id() has parameter $value with no type specified.    
+         ­ƒ¬¬  missingType.parameter                                                                          
+  72     Method App\Entity\Ligne_commande::getProduit_id() has no return type specified.                    
+         ­ƒ¬¬  missingType.return                                                                             
+  77     Method App\Entity\Ligne_commande::setProduit_id() has no return type specified.                    
+         ­ƒ¬¬  missingType.return                                                                             
+  77     Method App\Entity\Ligne_commande::setProduit_id() has parameter $value with no type specified.     
+         ­ƒ¬¬  missingType.parameter                                                                          
+ ------ --------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------- 
+  Line   Entity\Mensualite.php                                                                          
+ ------ ----------------------------------------------------------------------------------------------- 
+  30     Method App\Entity\Mensualite::getId() has no return type specified.                            
+         ­ƒ¬¬  missingType.return                                                                         
+  35     Method App\Entity\Mensualite::setId() has no return type specified.                            
+         ­ƒ¬¬  missingType.return                                                                         
+  35     Method App\Entity\Mensualite::setId() has parameter $value with no type specified.             
+         ­ƒ¬¬  missingType.parameter                                                                      
+  40     Method App\Entity\Mensualite::getDate_echeance() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                         
+  45     Method App\Entity\Mensualite::setDate_echeance() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                         
+  45     Method App\Entity\Mensualite::setDate_echeance() has parameter $value with no type specified.  
+         ­ƒ¬¬  missingType.parameter                                                                      
+  50     Method App\Entity\Mensualite::getMontant() has no return type specified.                       
+         ­ƒ¬¬  missingType.return                                                                         
+  55     Method App\Entity\Mensualite::setMontant() has no return type specified.                       
+         ­ƒ¬¬  missingType.return                                                                         
+  55     Method App\Entity\Mensualite::setMontant() has parameter $value with no type specified.        
+         ­ƒ¬¬  missingType.parameter                                                                      
+  60     Method App\Entity\Mensualite::getEst_paye() has no return type specified.                      
+         ­ƒ¬¬  missingType.return                                                                         
+  65     Method App\Entity\Mensualite::setEst_paye() has no return type specified.                      
+         ­ƒ¬¬  missingType.return                                                                         
+  65     Method App\Entity\Mensualite::setEst_paye() has parameter $value with no type specified.       
+         ­ƒ¬¬  missingType.parameter                                                                      
+  70     Method App\Entity\Mensualite::getPret_id() has no return type specified.                       
+         ­ƒ¬¬  missingType.return                                                                         
+  75     Method App\Entity\Mensualite::setPret_id() has no return type specified.                       
+         ­ƒ¬¬  missingType.return                                                                         
+  75     Method App\Entity\Mensualite::setPret_id() has parameter $value with no type specified.        
+         ­ƒ¬¬  missingType.parameter                                                                      
+ ------ ----------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Entity\Pret.php                                                                                                
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  46     Method App\Entity\Pret::getId() has no return type specified.                                                  
+         ­ƒ¬¬  missingType.return                                                                                         
+  51     Method App\Entity\Pret::setId() has no return type specified.                                                  
+         ­ƒ¬¬  missingType.return                                                                                         
+  51     Method App\Entity\Pret::setId() has parameter $value with no type specified.                                   
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  56     Method App\Entity\Pret::getMontant_demande() has no return type specified.                                     
+         ­ƒ¬¬  missingType.return                                                                                         
+  61     Method App\Entity\Pret::setMontant_demande() has no return type specified.                                     
+         ­ƒ¬¬  missingType.return                                                                                         
+  61     Method App\Entity\Pret::setMontant_demande() has parameter $value with no type specified.                      
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  66     Method App\Entity\Pret::getDuree_mois() has no return type specified.                                          
+         ­ƒ¬¬  missingType.return                                                                                         
+  71     Method App\Entity\Pret::setDuree_mois() has no return type specified.                                          
+         ­ƒ¬¬  missingType.return                                                                                         
+  71     Method App\Entity\Pret::setDuree_mois() has parameter $value with no type specified.                           
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  76     Method App\Entity\Pret::getTaux() has no return type specified.                                                
+         ­ƒ¬¬  missingType.return                                                                                         
+  81     Method App\Entity\Pret::setTaux() has no return type specified.                                                
+         ­ƒ¬¬  missingType.return                                                                                         
+  81     Method App\Entity\Pret::setTaux() has parameter $value with no type specified.                                 
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  86     Method App\Entity\Pret::getMotif() has no return type specified.                                               
+         ­ƒ¬¬  missingType.return                                                                                         
+  91     Method App\Entity\Pret::setMotif() has no return type specified.                                               
+         ­ƒ¬¬  missingType.return                                                                                         
+  91     Method App\Entity\Pret::setMotif() has parameter $value with no type specified.                                
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  96     Method App\Entity\Pret::getDate_demande() has no return type specified.                                        
+         ­ƒ¬¬  missingType.return                                                                                         
+  101    Method App\Entity\Pret::setDate_demande() has no return type specified.                                        
+         ­ƒ¬¬  missingType.return                                                                                         
+  101    Method App\Entity\Pret::setDate_demande() has parameter $value with no type specified.                         
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  106    Method App\Entity\Pret::getStatut() has no return type specified.                                              
+         ­ƒ¬¬  missingType.return                                                                                         
+  111    Method App\Entity\Pret::setStatut() has no return type specified.                                              
+         ­ƒ¬¬  missingType.return                                                                                         
+  111    Method App\Entity\Pret::setStatut() has parameter $value with no type specified.                               
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  116    Method App\Entity\Pret::getFranchise_id() has no return type specified.                                        
+         ­ƒ¬¬  missingType.return                                                                                         
+  121    Method App\Entity\Pret::setFranchise_id() has no return type specified.                                        
+         ­ƒ¬¬  missingType.return                                                                                         
+  121    Method App\Entity\Pret::setFranchise_id() has parameter $value with no type specified.                         
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  128    Property App\Entity\Pret::$mensualites with generic interface Doctrine\Common\Collections\Collection does not  
+         specify its types: TKey, T                                                                                     
+         ­ƒ¬¬  missingType.generics                                                                                       
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------------------------------------------------- 
+  Line   Entity\Produit.php                                                                                           
+ ------ ------------------------------------------------------------------------------------------------------------- 
+  47     Property App\Entity\Produit::$ligne_commandes with generic interface Doctrine\Common\Collections\Collection  
+         does not specify its types: TKey, T                                                                          
+         ­ƒ¬¬  missingType.generics                                                                                     
+  49     Method App\Entity\Produit::getId() has no return type specified.                                             
+         ­ƒ¬¬  missingType.return                                                                                       
+  54     Method App\Entity\Produit::setId() has no return type specified.                                             
+         ­ƒ¬¬  missingType.return                                                                                       
+  54     Method App\Entity\Produit::setId() has parameter $value with no type specified.                              
+         ­ƒ¬¬  missingType.parameter                                                                                    
+  59     Method App\Entity\Produit::getNom() has no return type specified.                                            
+         ­ƒ¬¬  missingType.return                                                                                       
+  64     Method App\Entity\Produit::setNom() has no return type specified.                                            
+         ­ƒ¬¬  missingType.return                                                                                       
+  64     Method App\Entity\Produit::setNom() has parameter $value with no type specified.                             
+         ­ƒ¬¬  missingType.parameter                                                                                    
+  69     Method App\Entity\Produit::getReference() has no return type specified.                                      
+         ­ƒ¬¬  missingType.return                                                                                       
+  74     Method App\Entity\Produit::setReference() has no return type specified.                                      
+         ­ƒ¬¬  missingType.return                                                                                       
+  74     Method App\Entity\Produit::setReference() has parameter $value with no type specified.                       
+         ­ƒ¬¬  missingType.parameter                                                                                    
+  79     Method App\Entity\Produit::getPrixAchat() has no return type specified.                                      
+         ­ƒ¬¬  missingType.return                                                                                       
+  84     Method App\Entity\Produit::setPrixAchat() has no return type specified.                                      
+         ­ƒ¬¬  missingType.return                                                                                       
+  84     Method App\Entity\Produit::setPrixAchat() has parameter $value with no type specified.                       
+         ­ƒ¬¬  missingType.parameter                                                                                    
+  89     Method App\Entity\Produit::getStockDispo() has no return type specified.                                     
+         ­ƒ¬¬  missingType.return                                                                                       
+  94     Method App\Entity\Produit::setStockDispo() has no return type specified.                                     
+         ­ƒ¬¬  missingType.return                                                                                       
+  94     Method App\Entity\Produit::setStockDispo() has parameter $value with no type specified.                      
+         ­ƒ¬¬  missingType.parameter                                                                                    
+  129    Method App\Entity\Produit::getLigne_commandes() return type with generic interface                           
+         Doctrine\Common\Collections\Collection does not specify its types: TKey, T                                   
+         ­ƒ¬¬  missingType.generics                                                                                     
+ ------ ------------------------------------------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------------------------------------ 
+  Line   Entity\Reclamations.php                                                                         
+ ------ ------------------------------------------------------------------------------------------------ 
+  49     Method App\Entity\Reclamations::getId() has no return type specified.                           
+         ­ƒ¬¬  missingType.return                                                                          
+  54     Method App\Entity\Reclamations::setId() has no return type specified.                           
+         ­ƒ¬¬  missingType.return                                                                          
+  54     Method App\Entity\Reclamations::setId() has parameter $value with no type specified.            
+         ­ƒ¬¬  missingType.parameter                                                                       
+  59     Method App\Entity\Reclamations::getSujet() has no return type specified.                        
+         ­ƒ¬¬  missingType.return                                                                          
+  64     Method App\Entity\Reclamations::setSujet() has no return type specified.                        
+         ­ƒ¬¬  missingType.return                                                                          
+  64     Method App\Entity\Reclamations::setSujet() has parameter $value with no type specified.         
+         ­ƒ¬¬  missingType.parameter                                                                       
+  69     Method App\Entity\Reclamations::getDescription() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                          
+  74     Method App\Entity\Reclamations::setDescription() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                          
+  74     Method App\Entity\Reclamations::setDescription() has parameter $value with no type specified.   
+         ­ƒ¬¬  missingType.parameter                                                                       
+  79     Method App\Entity\Reclamations::getStatut() has no return type specified.                       
+         ­ƒ¬¬  missingType.return                                                                          
+  84     Method App\Entity\Reclamations::setStatut() has no return type specified.                       
+         ­ƒ¬¬  missingType.return                                                                          
+  84     Method App\Entity\Reclamations::setStatut() has parameter $value with no type specified.        
+         ­ƒ¬¬  missingType.parameter                                                                       
+  89     Method App\Entity\Reclamations::getDate_creation() has no return type specified.                
+         ­ƒ¬¬  missingType.return                                                                          
+  94     Method App\Entity\Reclamations::setDateCreation() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                          
+  94     Method App\Entity\Reclamations::setDateCreation() has parameter $value with no type specified.  
+         ­ƒ¬¬  missingType.parameter                                                                       
+  99     Method App\Entity\Reclamations::getFranchise_id() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                          
+  104    Method App\Entity\Reclamations::setFranchise_id() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                          
+  104    Method App\Entity\Reclamations::setFranchise_id() has parameter $value with no type specified.  
+         ­ƒ¬¬  missingType.parameter                                                                       
+ ------ ------------------------------------------------------------------------------------------------ 
+
+ ------ ----------------------------------------------------------------------------------------------- 
+  Line   Entity\Transaction.php                                                                         
+ ------ ----------------------------------------------------------------------------------------------- 
+  50     Method App\Entity\Transaction::getId() has no return type specified.                           
+         ­ƒ¬¬  missingType.return                                                                         
+  55     Method App\Entity\Transaction::setId() has no return type specified.                           
+         ­ƒ¬¬  missingType.return                                                                         
+  55     Method App\Entity\Transaction::setId() has parameter $value with no type specified.            
+         ­ƒ¬¬  missingType.parameter                                                                      
+  60     Method App\Entity\Transaction::getDate() has no return type specified.                         
+         ­ƒ¬¬  missingType.return                                                                         
+  65     Method App\Entity\Transaction::setDate() has no return type specified.                         
+         ­ƒ¬¬  missingType.return                                                                         
+  65     Method App\Entity\Transaction::setDate() has parameter $value with no type specified.          
+         ­ƒ¬¬  missingType.parameter                                                                      
+  70     Method App\Entity\Transaction::getMontant() has no return type specified.                      
+         ­ƒ¬¬  missingType.return                                                                         
+  75     Method App\Entity\Transaction::setMontant() has no return type specified.                      
+         ­ƒ¬¬  missingType.return                                                                         
+  75     Method App\Entity\Transaction::setMontant() has parameter $value with no type specified.       
+         ­ƒ¬¬  missingType.parameter                                                                      
+  80     Method App\Entity\Transaction::getType() has no return type specified.                         
+         ­ƒ¬¬  missingType.return                                                                         
+  85     Method App\Entity\Transaction::setType() has no return type specified.                         
+         ­ƒ¬¬  missingType.return                                                                         
+  85     Method App\Entity\Transaction::setType() has parameter $value with no type specified.          
+         ­ƒ¬¬  missingType.parameter                                                                      
+  90     Method App\Entity\Transaction::getDescription() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                         
+  95     Method App\Entity\Transaction::setDescription() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                         
+  95     Method App\Entity\Transaction::setDescription() has parameter $value with no type specified.   
+         ­ƒ¬¬  missingType.parameter                                                                      
+  100    Method App\Entity\Transaction::getFranchise_id() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                         
+  105    Method App\Entity\Transaction::setFranchise_id() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                         
+  105    Method App\Entity\Transaction::setFranchise_id() has parameter $value with no type specified.  
+         ­ƒ¬¬  missingType.parameter                                                                      
+ ------ ----------------------------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------------------------------------ 
+  Line   Entity\Utilisateur.php                                                                          
+ ------ ------------------------------------------------------------------------------------------------ 
+  52     Method App\Entity\Utilisateur::getId_user() has no return type specified.                       
+         ­ƒ¬¬  missingType.return                                                                          
+  57     Method App\Entity\Utilisateur::setId_user() has no return type specified.                       
+         ­ƒ¬¬  missingType.return                                                                          
+  57     Method App\Entity\Utilisateur::setId_user() has parameter $value with no type specified.        
+         ­ƒ¬¬  missingType.parameter                                                                       
+  62     Method App\Entity\Utilisateur::getNom() has no return type specified.                           
+         ­ƒ¬¬  missingType.return                                                                          
+  67     Method App\Entity\Utilisateur::setNom() has no return type specified.                           
+         ­ƒ¬¬  missingType.return                                                                          
+  67     Method App\Entity\Utilisateur::setNom() has parameter $value with no type specified.            
+         ­ƒ¬¬  missingType.parameter                                                                       
+  72     Method App\Entity\Utilisateur::getPrenom() has no return type specified.                        
+         ­ƒ¬¬  missingType.return                                                                          
+  77     Method App\Entity\Utilisateur::setPrenom() has no return type specified.                        
+         ­ƒ¬¬  missingType.return                                                                          
+  77     Method App\Entity\Utilisateur::setPrenom() has parameter $value with no type specified.         
+         ­ƒ¬¬  missingType.parameter                                                                       
+  82     Method App\Entity\Utilisateur::getEmail() has no return type specified.                         
+         ­ƒ¬¬  missingType.return                                                                          
+  87     Method App\Entity\Utilisateur::setEmail() has no return type specified.                         
+         ­ƒ¬¬  missingType.return                                                                          
+  87     Method App\Entity\Utilisateur::setEmail() has parameter $value with no type specified.          
+         ­ƒ¬¬  missingType.parameter                                                                       
+  92     Method App\Entity\Utilisateur::getMot_de_passe() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                          
+  97     Method App\Entity\Utilisateur::setMot_de_passe() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                          
+  97     Method App\Entity\Utilisateur::setMot_de_passe() has parameter $value with no type specified.   
+         ­ƒ¬¬  missingType.parameter                                                                       
+  102    Method App\Entity\Utilisateur::getRole() has no return type specified.                          
+         ­ƒ¬¬  missingType.return                                                                          
+  107    Method App\Entity\Utilisateur::setRole() has no return type specified.                          
+         ­ƒ¬¬  missingType.return                                                                          
+  107    Method App\Entity\Utilisateur::setRole() has parameter $value with no type specified.           
+         ­ƒ¬¬  missingType.parameter                                                                       
+  112    Method App\Entity\Utilisateur::getActif() has no return type specified.                         
+         ­ƒ¬¬  missingType.return                                                                          
+  117    Method App\Entity\Utilisateur::setActif() has no return type specified.                         
+         ­ƒ¬¬  missingType.return                                                                          
+  117    Method App\Entity\Utilisateur::setActif() has parameter $value with no type specified.          
+         ­ƒ¬¬  missingType.parameter                                                                       
+  122    Method App\Entity\Utilisateur::getDate_creation() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                          
+  127    Method App\Entity\Utilisateur::setDate_creation() has no return type specified.                 
+         ­ƒ¬¬  missingType.return                                                                          
+  127    Method App\Entity\Utilisateur::setDate_creation() has parameter $value with no type specified.  
+         ­ƒ¬¬  missingType.parameter                                                                       
+  152    Method App\Entity\Utilisateur::getFace_token() has no return type specified.                    
+         ­ƒ¬¬  missingType.return                                                                          
+  157    Method App\Entity\Utilisateur::setFace_token() has no return type specified.                    
+         ­ƒ¬¬  missingType.return                                                                          
+  157    Method App\Entity\Utilisateur::setFace_token() has parameter $value with no type specified.     
+         ­ƒ¬¬  missingType.parameter                                                                       
+ ------ ------------------------------------------------------------------------------------------------ 
+
+ ------ ---------------------------------------------------------------------------------------------------------- 
+  Line   Repository\AlerteiasRepository.php                                                                        
+ ------ ---------------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\AlerteiasRepository extends generic class                                            
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T       
+         ­ƒ¬¬  missingType.generics                                                                                  
+  21     Method App\Repository\AlerteiasRepository::searchAndSort() has no return type specified.                  
+         ­ƒ¬¬  missingType.return                                                                                    
+  21     Method App\Repository\AlerteiasRepository::searchAndSort() has parameter $franchise_id with no type       
+         specified.                                                                                                
+         ­ƒ¬¬  missingType.parameter                                                                                 
+  37     Method App\Repository\AlerteiasRepository::getFinancialData() has parameter $franchiseId with no type     
+         specified.                                                                                                
+         ­ƒ¬¬  missingType.parameter                                                                                 
+  37     Method App\Repository\AlerteiasRepository::getFinancialData() return type has no value type specified in  
+         iterable type array.                                                                                      
+         ­ƒ¬¬  missingType.iterableValue                                                                             
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                
+ ------ ---------------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------------- 
+  Line   Repository\BilanRepository.php                                                                       
+ ------ ----------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\BilanRepository extends generic class                                           
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T  
+         ­ƒ¬¬  missingType.generics                                                                             
+ ------ ----------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------------- 
+  Line   Repository\Budget_previsionnelRepository.php                                                         
+ ------ ----------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\Budget_previsionnelRepository extends generic class                             
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T  
+         ­ƒ¬¬  missingType.generics                                                                             
+ ------ ----------------------------------------------------------------------------------------------------- 
+
+ ------ ------------------------------------------------------------------------------------------------------------- 
+  Line   Repository\ChargeRepository.php                                                                              
+ ------ ------------------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\ChargeRepository extends generic class                                                  
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T          
+         ­ƒ¬¬  missingType.generics                                                                                     
+  18     Method App\Repository\ChargeRepository::getTotalByType() has parameter $franchiseId with no type specified.  
+         ­ƒ¬¬  missingType.parameter                                                                                    
+  43     Method App\Repository\ChargeRepository::countByStatus() has parameter $franchiseId with no type specified.   
+         ­ƒ¬¬  missingType.parameter                                                                                    
+ ------ ------------------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------------- 
+  Line   Repository\CommandeRepository.php                                                                    
+ ------ ----------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\CommandeRepository extends generic class                                        
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T  
+         ­ƒ¬¬  missingType.generics                                                                             
+ ------ ----------------------------------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------------------------------------------- 
+  Line   Repository\CouponRepository.php                                                                               
+ ------ -------------------------------------------------------------------------------------------------------------- 
+  17     Class App\Repository\CouponRepository has PHPDoc tag @method for method findBy() parameter #1 $criteria with  
+         no value type specified in iterable type array.                                                               
+         ­ƒ¬¬  missingType.iterableValue                                                                                 
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                    
+  17     Class App\Repository\CouponRepository has PHPDoc tag @method for method findBy() parameter #2 $orderBy with   
+         no value type specified in iterable type array.                                                               
+         ­ƒ¬¬  missingType.iterableValue                                                                                 
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                    
+  17     Class App\Repository\CouponRepository has PHPDoc tag @method for method findOneBy() parameter #1 $criteria    
+         with no value type specified in iterable type array.                                                          
+         ­ƒ¬¬  missingType.iterableValue                                                                                 
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                    
+  17     Class App\Repository\CouponRepository has PHPDoc tag @method for method findOneBy() parameter #2 $orderBy     
+         with no value type specified in iterable type array.                                                          
+         ­ƒ¬¬  missingType.iterableValue                                                                                 
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                    
+ ------ -------------------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------------- 
+  Line   Repository\FournisseurRepository.php                                                                 
+ ------ ----------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\FournisseurRepository extends generic class                                     
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T  
+         ­ƒ¬¬  missingType.generics                                                                             
+ ------ ----------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------------- 
+  Line   Repository\FranchisesRepository.php                                                                  
+ ------ ----------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\FranchisesRepository extends generic class                                      
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T  
+         ­ƒ¬¬  missingType.generics                                                                             
+ ------ ----------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------------- 
+  Line   Repository\Ligne_commandeRepository.php                                                              
+ ------ ----------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\Ligne_commandeRepository extends generic class                                  
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T  
+         ­ƒ¬¬  missingType.generics                                                                             
+ ------ ----------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------------- 
+  Line   Repository\MensualiteRepository.php                                                                  
+ ------ ----------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\MensualiteRepository extends generic class                                      
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T  
+         ­ƒ¬¬  missingType.generics                                                                             
+ ------ ----------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------------- 
+  Line   Repository\PretRepository.php                                                                        
+ ------ ----------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\PretRepository extends generic class                                            
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T  
+         ­ƒ¬¬  missingType.generics                                                                             
+ ------ ----------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------------- 
+  Line   Repository\ProduitRepository.php                                                                     
+ ------ ----------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\ProduitRepository extends generic class                                         
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T  
+         ­ƒ¬¬  missingType.generics                                                                             
+ ------ ----------------------------------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------------------------------------- 
+  Line   Repository\ReclamationsRepository.php                                                                   
+ ------ -------------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\ReclamationsRepository extends generic class                                       
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T     
+         ­ƒ¬¬  missingType.generics                                                                                
+  16     Method App\Repository\ReclamationsRepository::searchAndSort() has no return type specified.             
+         ­ƒ¬¬  missingType.return                                                                                  
+  16     Method App\Repository\ReclamationsRepository::searchAndSort() has parameter $franchise_id with no type  
+         specified.                                                                                              
+         ­ƒ¬¬  missingType.parameter                                                                               
+ ------ -------------------------------------------------------------------------------------------------------- 
+
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  Line   Repository\TransactionRepository.php                                                                           
+ ------ --------------------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\TransactionRepository extends generic class                                               
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T            
+         ­ƒ¬¬  missingType.generics                                                                                       
+  18     Method App\Repository\TransactionRepository::getTotalByType() has parameter $franchiseId with no type          
+         specified.                                                                                                     
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  41     Method App\Repository\TransactionRepository::countByMonth() has parameter $franchiseId with no type            
+         specified.                                                                                                     
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  62     Method App\Repository\TransactionRepository::findFilteredTransactions() has no return type specified.          
+         ­ƒ¬¬  missingType.return                                                                                         
+  62     Method App\Repository\TransactionRepository::findFilteredTransactions() has parameter $franchise with no type  
+         specified.                                                                                                     
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  128    Method App\Repository\TransactionRepository::getFinancialDataForClustering() return type has no value type     
+         specified in iterable type array.                                                                              
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+  153    Method App\Repository\TransactionRepository::findTransactionsNonClotureesPourMois() has parameter $franchise   
+         with no type specified.                                                                                        
+         ­ƒ¬¬  missingType.parameter                                                                                      
+  153    Method App\Repository\TransactionRepository::findTransactionsNonClotureesPourMois() return type has no value   
+         type specified in iterable type array.                                                                         
+         ­ƒ¬¬  missingType.iterableValue                                                                                  
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                     
+ ------ --------------------------------------------------------------------------------------------------------------- 
+
+ ------ ----------------------------------------------------------------------------------------------------- 
+  Line   Repository\UtilisateurRepository.php                                                                 
+ ------ ----------------------------------------------------------------------------------------------------- 
+  9      Class App\Repository\UtilisateurRepository extends generic class                                     
+         Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository but does not specify its types: T  
+         ­ƒ¬¬  missingType.generics                                                                             
+ ------ ----------------------------------------------------------------------------------------------------- 
+
+ ------ -------------------------------------------------------------------------------------------------------------- 
+  Line   Service\AiClusteringService.php                                                                               
+ ------ -------------------------------------------------------------------------------------------------------------- 
+  17     Method App\Service\AiClusteringService::analyzeFranchisePerformances() has parameter $franchisesData with no  
+         value type specified in iterable type array.                                                                  
+         ­ƒ¬¬  missingType.iterableValue                                                                                 
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                    
+  17     Method App\Service\AiClusteringService::analyzeFranchisePerformances() return type has no value type          
+         specified in iterable type array.                                                                             
+         ­ƒ¬¬  missingType.iterableValue                                                                                 
+         ­ƒÆí  See: https://phpstan.org/blog/solving-phpstan-no-value-type-specified-in-iterable-type                    
+ ------ -------------------------------------------------------------------------------------------------------------- 
+
+ [ERROR] Found 330 errors                                                                                              
+

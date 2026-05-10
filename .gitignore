@@ -27,3 +27,8 @@ compose.override.yaml
 ###< lexik/jwt-authentication-bundle ###
 
 *.md
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###

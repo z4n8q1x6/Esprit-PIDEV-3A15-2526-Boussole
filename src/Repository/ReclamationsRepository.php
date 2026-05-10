@@ -16,6 +16,8 @@ class ReclamationsRepository extends ServiceEntityRepository
     public function searchAndSort(?string $search, string $sort, string $direction, $franchise_id = null)
     {
         $qb = $this->createQueryBuilder('r')
+            ->leftJoin('r.franchise_id', 'f')
+            ->addSelect('f')
             ->andWhere('r.sujet LIKE :search')
             ->setParameter('search', '%' . $search . '%');
 
@@ -25,8 +27,14 @@ class ReclamationsRepository extends ServiceEntityRepository
                ->setParameter('f', $franchise_id);
         }
 
-        return $qb->orderBy('r.' . $sort, $direction)
-            ->getQuery()
+        // Handle sorting by franchise name
+        if ($sort === 'franchise_id') {
+            $qb->orderBy('f.nom', $direction);
+        } else {
+            $qb->orderBy('r.' . $sort, $direction);
+        }
+
+        return $qb->getQuery()
             ->getResult();
     }
 }

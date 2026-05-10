@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
@@ -45,6 +46,12 @@ class ProduitType extends AbstractType
                     '- 40%' => 40,
                 ],
                 'attr' => ['class' => 'form-select']
+            ])
+            ->add('date_fin_reduction', DateTimeType::class, [
+                'label' => 'Date fin de réduction',
+                'widget' => 'single_text',
+                'required' => false,
+                'attr' => ['class' => 'form-control']
             ])
             ->add('image', FileType::class, [
                 'label' => 'Image (JPG, PNG)',
