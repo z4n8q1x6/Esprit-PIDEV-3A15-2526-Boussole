@@ -1,0 +1,6 @@
+<form method="post" action="{{ path('app_simulation_delete', {'id': simulation.id}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette simulation ? Cette action est irréversible.');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ simulation.id) }}">
+    <button class="btn btn-sm btn-outline-danger" title="Supprimer cette simulation">
+        <i class="bi bi-trash"></i>
+    </button>
+</form>

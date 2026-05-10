@@ -1,0 +1,6 @@
+<form method="post" action="{{ path('app_pret_delete', {'id': pret.id}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette demande de prêt ? Cette action est irréversible.');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ pret.id) }}">
+    <button class="btn btn-sm btn-outline-danger" title="Supprimer cette demande">
+        <i class="bi bi-trash"></i>
+    </button>
+</form>

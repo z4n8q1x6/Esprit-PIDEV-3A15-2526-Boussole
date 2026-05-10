@@ -1,0 +1,111 @@
+{% extends 'front_base.html.twig' %}
+
+{% block title %}Tableau d'Amortissement - {{ simulation.nomSimulation }} - Boussole{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+    <!-- Titre de la page avec le style du thème -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0">Tableau d'Amortissement - {{ simulation.nomSimulation }}</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-dots mb-0">
+                    <li class="breadcrumb-item"><a href="{{ path('app_front_home') }}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_simulation_index') }}">Simulations</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Tableau #{{ simulation.id }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Informations de la simulation -->
+        <div class="col-lg-4">
+            <div class="card border rounded-3">
+                <div class="card-header border-bottom bg-light">
+                    <h5 class="card-header-title mb-0">Paramètres de la Simulation</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="border rounded p-3">
+                                <div class="text-muted small mb-1">Nom de la simulation</div>
+                                <div class="h5 mb-0">{{ simulation.nomSimulation }}</div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="border rounded p-3">
+                                <div class="text-muted small mb-1">Capital emprunté</div>
+                                <div class="h5 mb-0 text-primary">{{ simulation.capital|number_format(0, ',', ' ') }} TND</div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="border rounded p-3">
+                                <div class="text-muted small mb-1">Taux annuel</div>
+                                <div class="h5 mb-0">{{ simulation.tauxAnnuel }}%</div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="border rounded p-3">
+                                <div class="text-muted small mb-1">Durée</div>
+                                <div class="h5 mb-0">{{ simulation.dureeMois }} mois</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="{{ path('app_simulation_edit', {'id': simulation.id}) }}" class="btn btn-outline-primary btn-sm me-2">
+                            <i class="bi bi-pencil me-1"></i>Modifier
+                        </a>
+                        <a href="{{ path('app_simulation_index') }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="bi bi-arrow-left me-1"></i>Retour à la liste
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau d'amortissement -->
+        <div class="col-lg-8">
+            <div class="card border rounded-3">
+                <div class="card-header border-bottom bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="card-header-title mb-0">Tableau d'Amortissement</h5>
+                    <form method="post" action="{{ path('app_stripe_checkout', {'id': simulation.id}) }}" style="display:inline-block">
+                        <input type="hidden" name="_token" value="{{ csrf_token('stripe_checkout' ~ simulation.id) }}">
+                        <button type="submit" class="btn btn-warning btn-sm" title="Souscrire et payer les frais de dossier (50 TND)">
+                            <i class="bi bi-credit-card me-1"></i>Souscrire (50 TND)
+                        </button>
+                    </form>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Période</th>
+                                    <th>Mensualité</th>
+                                    <th>Intérêts</th>
+                                    <th>Principal</th>
+                                    <th>Solde restant</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for ligne in tableau %}
+                                <tr>
+                                    <td>{{ ligne.periode }}</td>
+                                    <td class="text-primary fw-bold">{{ ligne.mensualite|number_format(2, ',', ' ') }} TND</td>
+                                    <td>{{ ligne.interet|number_format(2, ',', ' ') }} TND</td>
+                                    <td>{{ ligne.principal|number_format(2, ',', ' ') }} TND</td>
+                                    <td class="fw-bold">{{ ligne.solde_restant|number_format(2, ',', ' ') }} TND</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

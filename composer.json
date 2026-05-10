@@ -1,4 +1,6 @@
 {
+    "name": "boussole/boussole-app",
+    "description": "Application Symfony Boussole pour gestion interne",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
@@ -11,7 +13,7 @@
         "doctrine/doctrine-bundle": "^3.2.2",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.6.3",
-        "dompdf/dompdf": "^3.1.5",
+        "dompdf/dompdf": "^3.1",
         "endroid/qr-code-bundle": "^6.1",
         "google-gemini-php/client": "^2.7.4",
         "knpuniversity/oauth2-client-bundle": "^2.20.2",
@@ -22,6 +24,7 @@
         "php-flasher/flasher-sweetalert-symfony": "^1.15.14",
         "phpoffice/phpspreadsheet": "^5.6",
         "psr/http-client": "^1.0.3",
+        "stripe/stripe-php": "^20.1",
         "symfony/asset": "6.4.*",
         "symfony/console": "6.4.*",
         "symfony/dotenv": "6.4.*",

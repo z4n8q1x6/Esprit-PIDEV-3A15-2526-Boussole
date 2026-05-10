@@ -46,20 +46,9 @@ final class SecurityController extends AbstractController
             return $this->redirectToRoute('app_front_home');
         }
 
-        if ($request->hasSession() && !$request->getSession()->isStarted()) {
-            $request->getSession()->start();
-        }
-
-        $csrfToken = $csrfTokenManager->refreshToken('authenticate')->getValue();
-
-        if ($request->hasSession() && $request->getSession()->isStarted()) {
-            $request->getSession()->save();
-        }
-
-        // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
+        $csrfToken = $csrfTokenManager->getToken('authenticate')->getValue();
 
         return $this->render('login/index.html.twig', [
             'last_username' => $lastUsername,

@@ -1,0 +1,102 @@
+{% extends 'front_base.html.twig' %}
+
+{% block title %}Gestion des Prêts - Boussole{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid mt-4">
+    <!-- Titre de la page avec le style du thème -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-0">Gestion des Prêts</h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb breadcrumb-dots mb-0">
+                    <li class="breadcrumb-item"><a href="{{ path('app_front_home') }}">Accueil</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Prêts</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Carte de la liste des prêts -->
+        <div class="col-12">
+            <div class="card border rounded-3">
+                <!-- Card header -->
+                <div class="card-header border-bottom bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="card-header-title mb-0">Liste des demandes de prêt</h5>
+                    <a href="{{ path('app_pret_new') }}" class="btn btn-primary btn-sm">
+                        <i class="bi bi-plus-circle me-1"></i>Nouvelle demande
+                    </a>
+                </div>
+
+                <!-- Card body -->
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Montant demandé</th>
+                                    <th>Durée</th>
+                                    <th>Taux</th>
+                                    <th>Motif</th>
+                                    <th>Date demande</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for pret in prets %}
+                                <tr>
+                                    <td>{{ pret.id }}</td>
+                                    <td class="fw-bold text-primary">{{ pret.montantDemande|number_format(0, ',', ' ') }} TND</td>
+                                    <td>{{ pret.dureeMois }} mois</td>
+                                    <td>{{ pret.taux }}%</td>
+                                    <td>
+                                        <span title="{{ pret.motif }}">
+                                            {{ pret.motif|length > 50 ? pret.motif|slice(0, 50) ~ '...' : pret.motif }}
+                                        </span>
+                                    </td>
+                                    <td>{{ pret.dateDemande ? pret.dateDemande|date('d/m/Y') : '' }}</td>
+                                    <td>
+                                        {% if pret.statut == 'APPROUVE' %}
+                                            <span class="badge bg-success">Approuvé</span>
+                                        {% elseif pret.statut == 'REFUSE' %}
+                                            <span class="badge bg-danger">Refusé</span>
+                                        {% elseif pret.statut == 'EN_ATTENTE' %}
+                                            <span class="badge bg-warning">En attente</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ pret.statut }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{{ path('app_pret_show', {'id': pret.id}) }}" class="btn btn-sm btn-outline-primary" title="Voir détails">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="{{ path('app_pret_edit', {'id': pret.id}) }}" class="btn btn-sm btn-outline-secondary" title="Modifier">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">
+                                        <div class="text-muted">
+                                            <i class="bi bi-info-circle me-2"></i>Aucune demande de prêt trouvée
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
