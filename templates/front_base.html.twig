@@ -214,20 +214,40 @@
 
 			<!-- Profile START -->
 			<div class="dropdown ms-1 ms-lg-0">
-			<a class="avatar avatar-sm p-0" href="#" id="profileDropdown" role="button" data-bs-auto-close="outside" data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
-				<img class="avatar-img rounded-circle" src="{{ asset('assets/images/avatar/01.jpg') }}" alt="avatar">
+			<a class="avatar avatar-sm p-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center text-decoration-none fw-bold" href="#" id="profileDropdown" role="button" data-bs-auto-close="outside" data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
+				{% if app.user %}
+					{{ app.user.email|slice(0, 2)|upper }}
+				{% else %}
+					FR
+				{% endif %}
 			</a>
 				<ul class="dropdown-menu dropdown-animation dropdown-menu-end shadow pt-3" aria-labelledby="profileDropdown">
 					<!-- Profile info -->
 					<li class="px-3 mb-3">
 						<div class="d-flex align-items-center">
 					<!-- Avatar -->
-						<div class="avatar me-3">
-							<img class="avatar-img rounded-circle shadow" src="{{ asset('assets/images/avatar/01.jpg') }}" alt="avatar">
+						<div class="avatar me-3 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fs-4 fw-bold shadow">
+							{% if app.user %}
+								{{ app.user.email|slice(0, 2)|upper }}
+							{% else %}
+								FR
+							{% endif %}
 						</div>
 							<div>
-								<a class="h6" href="#">Lori Ferguson</a>
-								<p class="small m-0">example@gmail.com</p>
+								<a class="h6" href="#">
+									{% if app.user %}
+										{{ app.user.nom|default(app.user.prenom|default('Utilisateur')) }}
+									{% else %}
+										Franchise
+									{% endif %}
+								</a>
+								<p class="small m-0">
+									{% if app.user %}
+										{{ app.user.email|default('email@example.com') }}
+									{% else %}
+										contact@boussole.tn
+									{% endif %}
+								</p>
 							</div>
 						</div>
 					</li>

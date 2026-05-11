@@ -402,8 +402,12 @@
 						<!-- Profile dropdown START -->
 						<li class="nav-item ms-2 ms-md-3 dropdown">
 							<!-- Avatar -->
-							<a class="avatar avatar-sm p-0" href="#" id="profileDropdown" role="button" data-bs-auto-close="outside" data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
-								<img class="avatar-img rounded-circle" src="{{ asset('assets/images/avatar/01.jpg') }}" alt="avatar">
+							<a class="avatar avatar-sm p-0 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center text-decoration-none fw-bold" href="#" id="profileDropdown" role="button" data-bs-auto-close="outside" data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
+								{% if app.user %}
+									{{ app.user.email|slice(0, 2)|upper }}
+								{% else %}
+									AD
+								{% endif %}
 							</a>
 
 							<!-- Profile dropdown START -->
@@ -412,12 +416,28 @@
 								<li class="px-3">
 									<div class="d-flex align-items-center">
 								<!-- Avatar -->
-								<div class="avatar me-3 mb-3">
-									<img class="avatar-img rounded-circle shadow" src="{{ asset('assets/images/avatar/01.jpg') }}" alt="avatar">
+								<div class="avatar me-3 mb-3 bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fs-4 fw-bold shadow">
+									{% if app.user %}
+										{{ app.user.email|slice(0, 2)|upper }}
+									{% else %}
+										AD
+									{% endif %}
 								</div>
 										<div>
-											<a class="h6 mt-2 mt-sm-0" href="#">Lori Ferguson</a>
-											<p class="small m-0">example@gmail.com</p>
+												<a class="h6 mt-2 mt-sm-0" href="#">
+													{% if app.user %}
+														{{ app.user.nom|default(app.user.prenom|default('Utilisateur')) }}
+													{% else %}
+														Admin
+													{% endif %}
+												</a>
+												<p class="small m-0">
+													{% if app.user %}
+														{{ app.user.email }}
+													{% else %}
+														admin@boussole.tn
+													{% endif %}
+												</p>
 										</div>
 									</div>
 								</li>

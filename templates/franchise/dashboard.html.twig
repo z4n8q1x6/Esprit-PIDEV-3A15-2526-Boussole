@@ -504,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }, 500);
             } else {
-                showToast('Erreur lors de la suppression.', 'error');
+                showToast(data.message || 'Suppression refusée.', 'error');
             }
             deleteModal.hide();
             deleteId = null;

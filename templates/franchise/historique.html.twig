@@ -107,7 +107,7 @@
     /* Hover : afficher l'icône de suppression */
     .tx-row:hover .delete-icon { opacity: 1 !important; }
 
-    /* Cellule éditable */
+    /* Cellule Ã©ditable */
     .editable-cell {
         cursor: pointer;
         position: relative;
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.text())
         .then(html => {
             document.getElementById('transactions-container').innerHTML = html;
-            // Ré-attacher les listeners dynamiques sur le nouveau contenu
+            // RÃ©-attacher les listeners dynamiques sur le nouveau contenu
             bindSortHeaders();
             bindEditableCells();
             bindDeleteIcons();
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ===== DEBOUNCE (éviter trop de requêtes pendant la saisie) =====
+    // ===== DEBOUNCE (Ã©viter trop de requêtes pendant la saisie) =====
     let debounceTimer = null;
     function debounce(fn, delay) {
         clearTimeout(debounceTimer);
@@ -359,7 +359,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return parseFloat(num).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' TND';
     }
 
-    // ===== ÉDITION INLINE (double-clic) — liaison dynamique =====
+    // ===== ÉDITION INLINE (double-clic) â€” liaison dynamique =====
     function bindEditableCells() {
         document.querySelectorAll('.editable-cell').forEach(function(cell) {
             cell.addEventListener('dblclick', function() {
@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (field === 'description' && newValue.length < 3) { cancelEdit(); showToast('Minimum 3 caractères.', 'error'); return; }
                     if (field === 'montant') {
                         const num = parseFloat(newValue.replace(',', '.'));
-                        if (isNaN(num) || num <= 0) { cancelEdit(); showToast('Le montant doit être > 0.', 'error'); return; }
+                        if (isNaN(num) || num <= 0) { cancelEdit(); showToast('Le montant doit Ãªtre > 0.', 'error'); return; }
                     }
 
                     const payload = {};
@@ -420,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     bindEditableCells(); // Premier bind
 
-    // ===== SUPPRESSION — liaison dynamique =====
+    // ===== SUPPRESSION â€” liaison dynamique =====
     let deleteId = null;
     const deleteModalEl = document.getElementById('deleteModal');
     let deleteModal = null;
@@ -441,28 +441,30 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('confirmDeleteBtn')) {
         document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
             if (!deleteId) return;
-
             fetch('/transaction/' + deleteId, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
-            }).then(r => {
-                if (r.redirected || !r.headers.get('content-type')?.includes('application/json')) {
-                    return { success: true };
-                }
-                return r.json();
-            }).then(data => {
+            }).then(async r => {
+                const data = await r.json();
+                return { ok: r.ok, data: data };
+            }).then(result => {
                 if (deleteModal) deleteModal.hide();
-                showToast('Transaction supprimée !', 'success');
+                if (result.ok && result.data.success) {
+                    showToast('Transaction supprimée !', 'success');
+                    deleteId = null;
+                    setTimeout(() => updateTable(), 500);
+                    return;
+                }
+                showToast(result.data.message || 'Suppression refusée.', 'error');
                 deleteId = null;
-                setTimeout(() => updateTable(), 500);
             }).catch(() => {
                 if (deleteModal) deleteModal.hide();
-                showToast('Action effectuée.', 'success');
+                showToast('Erreur réseau.', 'error');
                 deleteId = null;
-                setTimeout(() => updateTable(), 500);
             });
         });
     }
 });
 </script>
 {% endblock %}
+

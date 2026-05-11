@@ -115,6 +115,17 @@ HTML;
             ->leftJoin('c.franchise_id', 'f')
             ->addSelect('f');
 
+        // Filtrer par la franchise de l'utilisateur
+        $user = $this->getUser();
+        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
+            $franchiseId = $user->getIdFranchise()->getId();
+            $qb->andWhere('c.franchise_id = :franchiseId')
+               ->setParameter('franchiseId', $franchiseId);
+        } else {
+            // Si pas d'utilisateur connecté ou pas de franchise, on ne montre rien
+            $qb->andWhere('1 = 0');
+        }
+
         if (!empty($search)) {
             $qb->andWhere('c.titre LIKE :search OR c.type LIKE :search OR c.status_validation LIKE :search')
                ->setParameter('search', '%' . $search . '%');
@@ -238,6 +249,17 @@ HTML;
         $qb = $repo->createQueryBuilder('c')
             ->leftJoin('c.franchise_id', 'f')
             ->addSelect('f');
+
+        // Filtrer par la franchise de l'utilisateur
+        $user = $this->getUser();
+        if ($user && method_exists($user, 'getIdFranchise') && $user->getIdFranchise()) {
+            $franchiseId = $user->getIdFranchise()->getId();
+            $qb->andWhere('c.franchise_id = :franchiseId')
+               ->setParameter('franchiseId', $franchiseId);
+        } else {
+            // Si pas d'utilisateur connecté ou pas de franchise, on ne montre rien
+            $qb->andWhere('1 = 0');
+        }
 
         if (!empty($search)) {
             $qb->andWhere('c.titre LIKE :search OR c.type LIKE :search OR c.status_validation LIKE :search')
